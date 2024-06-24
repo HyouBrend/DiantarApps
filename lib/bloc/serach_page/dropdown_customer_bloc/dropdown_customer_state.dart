@@ -1,4 +1,4 @@
-import 'package:diantar_jarak/data/models/dropdown_customer_model.dart';
+import 'package:diantar_jarak/data/models/model_page_search/dropdown_customer_model.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class CustomerState extends Equatable {

@@ -1,11 +1,12 @@
-import 'package:diantar_jarak/bloc/dropdown_customer_bloc/dropdown_customer_bloc.dart';
-import 'package:diantar_jarak/bloc/dropdown_customer_bloc/dropdown_customer_event.dart';
-import 'package:diantar_jarak/bloc/dropdown_customer_bloc/dropdown_customer_state.dart';
-import 'package:diantar_jarak/data/models/dropdown_customer_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-
+import 'package:diantar_jarak/bloc/serach_page/dropdown_customer_bloc/dropdown_customer_bloc.dart';
+import 'package:diantar_jarak/bloc/serach_page/dropdown_customer_bloc/dropdown_customer_event.dart';
+import 'package:diantar_jarak/bloc/serach_page/dropdown_customer_bloc/dropdown_customer_state.dart';
+import 'package:diantar_jarak/data/models/model_page_search/dropdown_customer_model.dart';
+import 'package:diantar_jarak/theme/size.dart';
+import 'package:diantar_jarak/theme/theme.dart';
 
 class DropdownCustomer extends StatefulWidget {
   final Function(Map<String, String>) onDetailsEntered;
@@ -26,7 +27,7 @@ class _DropdownCustomerState extends State<DropdownCustomer> {
     return Column(
       children: [
         SizedBox(
-          width: 600,
+          width: Sizes.dp94(context),
           child: Row(
             children: [
               Expanded(
@@ -34,11 +35,16 @@ class _DropdownCustomerState extends State<DropdownCustomer> {
                 child: TypeAheadFormField<DropdownCustomerModel>(
                   textFieldConfiguration: TextFieldConfiguration(
                     controller: _typeAheadController,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Customer',
+                      hintText: 'Enter customer name',
+                      hintStyle:
+                          TextStyle(color: CustomColorPalette.hintTextColor),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(10.0)),
                       ),
+                      filled: true,
+                      fillColor: CustomColorPalette.surfaceColor,
                     ),
                   ),
                   suggestionsCallback: (pattern) async {
@@ -62,20 +68,19 @@ class _DropdownCustomerState extends State<DropdownCustomer> {
                       _longitudeController.text = suggestion.longitude ?? '';
                       widget.onDetailsEntered({
                         'name': suggestion.displayName ?? '',
-                        'type': suggestion.type ?? '',
-                        'location': suggestion.lokasi ?? '',
                         'latitude': suggestion.latitude ?? '',
                         'longitude': suggestion.longitude ?? '',
                       });
                     });
                   },
-                  noItemsFoundBuilder: (context) => const Padding(
+                  noItemsFoundBuilder: (context) => Padding(
                     padding: EdgeInsets.all(8.0),
-                    child: Text('No customers found'),
+                    child: Text('No customers found',
+                        style: TextStyle(color: CustomColorPalette.textColor)),
                   ),
                 ),
               ),
-              const SizedBox(width: 10),
+              SizedBox(width: Sizes.dp10(context)),
               Expanded(
                 flex: 1,
                 child: Column(
@@ -89,7 +94,7 @@ class _DropdownCustomerState extends State<DropdownCustomer> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: Sizes.dp10(context)),
                     TextFormField(
                       controller: _longitudeController,
                       decoration: const InputDecoration(

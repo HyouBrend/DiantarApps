@@ -1,5 +1,6 @@
-import 'package:diantar_jarak/data/models/dropdown_drive_model.dart';
-import 'package:diantar_jarak/data/network/api_helper.dart';
+import 'package:diantar_jarak/helpers/api/api_strings.dart';
+import 'package:diantar_jarak/data/models/model_page_search/dropdown_drive_model.dart';
+import 'package:diantar_jarak/helpers/network/api_helper.dart';
 
 class DropdriveService {
   final ApiHelper apiHelper;
@@ -9,7 +10,7 @@ class DropdriveService {
   Future<DropdownDriveModelData> getAllDrivers() async {
     try {
       final result = await apiHelper.get(
-        url: 'http://127.0.0.1:8010/proxy/list_driver',
+        url: APIJarakLocal.listDrivers,
       );
       return DropdownDriveModelData.fromJson(result);
     } catch (e) {
@@ -20,7 +21,9 @@ class DropdriveService {
   Future<DropdownDriveModelData> getDrivers(String query) async {
     try {
       final result = await apiHelper.get(
-        url: query.isEmpty ? 'http://127.0.0.1:8010/proxy/list_driver' : 'http://127.0.0.1:8010/proxy/get_driver/$query',
+        url: query.isEmpty
+            ? APIJarakLocal.listDrivers
+            : '${APIJarakLocal.getDriver}/$query',
       );
       return DropdownDriveModelData.fromJson(result);
     } catch (e) {

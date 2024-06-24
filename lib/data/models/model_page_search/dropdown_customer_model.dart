@@ -26,6 +26,17 @@ class DropdownCustomerModel {
     longitude = json['longitude'];
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'DisplayName': displayName,
+      'KontakID': kontakID,
+      'Type': type,
+      'latitude': latitude,
+      'lokasi': lokasi,
+      'longitude': longitude,
+    };
+  }
+
   @override
   String toString() {
     return 'DropdownCustomerModel(displayName: $displayName, kontakID: $kontakID, type: $type, latitude: $latitude, lokasi: $lokasi, longitude: $longitude)';
@@ -50,10 +61,18 @@ class CustomerData {
 
   CustomerData.fromJson(Map<String, dynamic> json) {
     if (json['data'] != null) {
-      data = (json['data'] as List).map((item) => DropdownCustomerModel.fromJson(item)).toList();
+      data = (json['data'] as List)
+          .map((item) => DropdownCustomerModel.fromJson(item))
+          .toList();
     } else {
       data = [];
     }
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'data': data?.map((item) => item.toJson()).toList(),
+    };
   }
 
   @override

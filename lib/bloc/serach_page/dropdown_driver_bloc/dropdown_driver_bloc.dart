@@ -1,6 +1,7 @@
+import 'package:diantar_jarak/bloc/serach_page/dropdown_driver_bloc/dropdown_driver_event.dart';
+import 'package:diantar_jarak/bloc/serach_page/dropdown_driver_bloc/dropdown_driver_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:diantar_jarak/bloc/dropdown_driver_bloc/dropdown_driver_event.dart';
-import 'package:diantar_jarak/bloc/dropdown_driver_bloc/dropdown_driver_state.dart';
+
 import 'package:diantar_jarak/data/service/search_page_service.dart/dropdown_driver_service.dart';
 
 class DriverBloc extends Bloc<DriverEvent, DriverState> {
@@ -18,9 +19,13 @@ class DriverBloc extends Bloc<DriverEvent, DriverState> {
       print('Fetching drivers for query: ${event.query}');
       final drivers = await dropdriveService.getDrivers(event.query);
       final filteredDrivers = drivers.data
-          ?.where((driver) =>
-              driver.nama?.toLowerCase().contains(event.query.toLowerCase()) ?? false)
-          .toList() ?? [];
+              ?.where((driver) =>
+                  driver.nama
+                      ?.toLowerCase()
+                      .contains(event.query.toLowerCase()) ??
+                  false)
+              .toList() ??
+          [];
       print('Drivers fetched: ${filteredDrivers.length}');
       emit(DriverLoaded(filteredDrivers));
     } catch (e) {

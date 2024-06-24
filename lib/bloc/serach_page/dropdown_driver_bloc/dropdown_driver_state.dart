@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:diantar_jarak/data/models/dropdown_drive_model.dart';
+import 'package:diantar_jarak/data/models/model_page_search/dropdown_drive_model.dart';
 
 abstract class DriverState extends Equatable {
   const DriverState();

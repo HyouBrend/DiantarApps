@@ -1,7 +1,9 @@
-import 'package:diantar_jarak/bloc/dropdown_driver_bloc/dropdown_driver_bloc.dart';
-import 'package:diantar_jarak/bloc/dropdown_driver_bloc/dropdown_driver_event.dart';
-import 'package:diantar_jarak/bloc/dropdown_driver_bloc/dropdown_driver_state.dart';
-import 'package:diantar_jarak/data/models/dropdown_drive_model.dart';
+import 'package:diantar_jarak/bloc/serach_page/dropdown_driver_bloc/dropdown_driver_bloc.dart';
+import 'package:diantar_jarak/bloc/serach_page/dropdown_driver_bloc/dropdown_driver_event.dart';
+import 'package:diantar_jarak/bloc/serach_page/dropdown_driver_bloc/dropdown_driver_state.dart';
+import 'package:diantar_jarak/data/models/model_page_search/dropdown_drive_model.dart';
+import 'package:diantar_jarak/theme/size.dart';
+import 'package:diantar_jarak/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -26,7 +28,7 @@ class _DropdownDriverState extends State<DropdownDriver> {
     return Column(
       children: [
         SizedBox(
-          width: 600,
+          width: Sizes.dp94(context),
           child: Row(
             children: [
               Expanded(
@@ -34,11 +36,16 @@ class _DropdownDriverState extends State<DropdownDriver> {
                 child: TypeAheadFormField<DropdownDriveModel>(
                   textFieldConfiguration: TextFieldConfiguration(
                     controller: widget.controller,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Driver',
+                      hintText: 'Enter driver name',
+                      hintStyle:
+                          TextStyle(color: CustomColorPalette.hintTextColor),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(10.0)),
                       ),
+                      filled: true,
+                      fillColor: CustomColorPalette.surfaceColor,
                     ),
                   ),
                   suggestionsCallback: (pattern) async {
@@ -61,9 +68,10 @@ class _DropdownDriverState extends State<DropdownDriver> {
                       widget.onPositionSelected(suggestion.posisi ?? '');
                     });
                   },
-                  noItemsFoundBuilder: (context) => const Padding(
+                  noItemsFoundBuilder: (context) => Padding(
                     padding: EdgeInsets.all(8.0),
-                    child: Text('No drivers found'),
+                    child: Text('No drivers found',
+                        style: TextStyle(color: CustomColorPalette.textColor)),
                   ),
                 ),
               ),

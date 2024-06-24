@@ -1,17 +1,32 @@
-import 'package:dio/dio.dart';
-import 'package:diantar_jarak/data/models/dropdown_customer_model.dart';
-import 'package:diantar_jarak/data/models/dropdown_drive_model.dart';
+import 'package:diantar_jarak/helpers/api/api_strings.dart';
+import 'package:diantar_jarak/helpers/network/api_helper.dart';
+import 'package:diantar_jarak/data/models/model_page_search/dropdown_customer_model.dart';
+import 'package:diantar_jarak/data/models/model_page_search/dropdown_drive_model.dart';
 
 class MapsService {
-  final Dio dio = Dio();
+  final ApiHelper apiHelper;
 
-  Future<List<DropdownDriveModel>> fetchDrivers() async {
-    final response = await dio.get('http://127.0.0.1:8010/proxy/list_driver');
-    return (response.data['data'] as List).map((driver) => DropdownDriveModel.fromJson(driver)).toList();
+  MapsService({required this.apiHelper});
+
+  Future<DropdownDriveModelData> getAllDrivers() async {
+    try {
+      final result = await apiHelper.get(
+        url: APIJarakLocal.listDrivers,
+      );
+      return DropdownDriveModelData.fromJson(result);
+    } catch (e) {
+      rethrow;
+    }
   }
 
-  Future<List<DropdownCustomerModel>> fetchCustomers() async {
-    final response = await dio.get('http://127.0.0.1:8010/proxy/list_pelanggan');
-    return (response.data['data'] as List).map((customer) => DropdownCustomerModel.fromJson(customer)).toList();
+  Future<CustomerData> getAllCustomers() async {
+    try {
+      final result = await apiHelper.get(
+        url: APIJarakLocal.listCustomers,
+      );
+      return CustomerData.fromJson(result);
+    } catch (e) {
+      rethrow;
+    }
   }
 }
