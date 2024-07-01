@@ -1,10 +1,9 @@
-import 'package:diantar_jarak/bloc/list_history_page/list_history_page_bloc.dart';
-import 'package:diantar_jarak/bloc/serach_page/dropdown_customer_bloc/dropdown_customer_bloc.dart';
-import 'package:diantar_jarak/bloc/serach_page/dropdown_driver_bloc/dropdown_driver_bloc.dart';
-import 'package:diantar_jarak/bloc/serach_page/submit/submit_bloc.dart';
-import 'package:diantar_jarak/data/service/list_history_service/list_history_service.dart';
-import 'package:diantar_jarak/data/service/search_page_service.dart/dropdown_customer_service.dart';
-import 'package:diantar_jarak/data/service/search_page_service.dart/dropdown_driver_service.dart';
+import 'package:diantar_jarak/bloc/search_page/dropdown_customer_bloc/dropdown_customer_bloc.dart';
+import 'package:diantar_jarak/bloc/search_page/dropdown_customer_bloc/dropdown_customer_event.dart';
+import 'package:diantar_jarak/bloc/search_page/dropdown_driver_bloc/dropdown_driver_bloc.dart';
+import 'package:diantar_jarak/bloc/search_page/submit/submit_bloc.dart';
+import 'package:diantar_jarak/data/service/search_page_service/dropdown_customer_service.dart';
+import 'package:diantar_jarak/data/service/search_page_service/dropdown_driver_service.dart';
 import 'package:diantar_jarak/helpers/network/api_helper_dio.dart';
 import 'package:diantar_jarak/pages/page_screen.dart';
 import 'package:diantar_jarak/theme/theme.dart';
@@ -22,21 +21,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final apiHelper = ApiHelperImpl(dio: Dio());
-    //final listHistoryService = ListHistoryService();
     final dropdriveService = DropdriveService(apiHelper: apiHelper);
     final customerService = CustomerService(apiHelper: apiHelper);
 
     return MultiBlocProvider(
       providers: [
-        //BlocProvider(
-        //create: (context) =>
-        //ListHistoryBloc(listHistoryService: listHistoryService),
-        //),
         BlocProvider(
           create: (context) => DriverBloc(dropdriveService: dropdriveService),
         ),
         BlocProvider(
-          create: (context) => CustomerBloc(customerService: customerService),
+          create: (context) => CustomerBloc(customerService: customerService)
+            ..add(FetchCustomers('')),
         ),
         BlocProvider(
           create: (context) => SubmitBloc(),

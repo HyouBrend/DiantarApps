@@ -22,6 +22,34 @@ class MapsResultsModel {
     pointLatLong = json['PointLatLong'];
   }
 
+  get nomorFaktur => null;
+
+  get perjalananId => null;
+
+  get shiftKe => null;
+
+  get jamPengiriman => null;
+
+  get jamKembali => null;
+
+  get urutanPengiriman => null;
+
+  get driverId => null;
+
+  get namaDriver => null;
+
+  get kontakId => null;
+
+  get inputLatitude => null;
+
+  get inputLongitude => null;
+
+  get tipeKendaraan => null;
+
+  get nomorPolisiKendaraan => null;
+
+  get googleMapUrl => null;
+
   Map<String, dynamic> toJson() {
     return {
       'DisplayName': displayName,

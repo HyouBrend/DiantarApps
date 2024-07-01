@@ -20,6 +20,13 @@
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"
+        },
+        {
+            "name": "Flutter Web (Edge)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "debug",
+            "deviceId": "edge" // Pastikan ini diset ke "edge"
         }
     ]
 }

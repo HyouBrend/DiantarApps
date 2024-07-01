@@ -1,15 +1,19 @@
-import 'package:diantar_jarak/bloc/serach_page/submit/submit_bloc.dart';
-import 'package:diantar_jarak/bloc/serach_page/submit/submit_event.dart';
-import 'package:diantar_jarak/bloc/serach_page/submit/submit_state.dart';
-import 'package:diantar_jarak/pages/list_history_page/list_history_page.dart';
-import 'package:diantar_jarak/theme/theme.dart';
+import 'package:diantar_jarak/data/models/model_page_search/cek_google_model.dart';
+import 'package:diantar_jarak/data/models/model_page_search/dropdown_customer_model.dart';
+import 'package:diantar_jarak/data/service/search_page_service/cek_google_service.dart';
+import 'package:diantar_jarak/helpers/network/api_helper.dart';
+import 'package:diantar_jarak/helpers/network/api_helper_dio.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:diantar_jarak/pages/result_page/result_page.dart';
-import 'package:diantar_jarak/pages/search_page/search_page_widget/dropdown_customer.dart';
-import 'package:diantar_jarak/pages/search_page/search_page_widget/dropdown_driver.dart';
-import 'package:diantar_jarak/data/models/model_page_result/result_maps_model.dart';
+import 'package:diantar_jarak/data/models/model_page_search/dropdown_drive_model.dart';
 import 'package:diantar_jarak/theme/size.dart';
+import 'package:diantar_jarak/theme/theme.dart';
+import 'package:diantar_jarak/pages/list_history_page/list_history_page.dart';
+import 'package:diantar_jarak/pages/search_page/search_page_widget/dropdown_agent.dart';
+import 'package:diantar_jarak/pages/search_page/search_page_widget/dropdown_driver.dart';
+import 'package:diantar_jarak/pages/search_page/search_page_widget/dropdown_customer.dart';
+import 'package:diantar_jarak/pages/search_page/search_page_widget/dropdown_tipekendaraan.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -19,9 +23,15 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  List<Map<String, String>> customerDetails = [];
+  final TextEditingController _agentController = TextEditingController();
   final TextEditingController _driverController = TextEditingController();
+  final TextEditingController _vehicleTypeController = TextEditingController();
+  String? _agent;
   String? _driverPosition;
+  String? _vehicleType;
+  DropdownDriveModel? _selectedDriver;
+  final ApiHelper apiHelper = ApiHelperImpl(dio: Dio());
+  List<DropdownCustomerModel> _selectedCustomers = [];
 
   void _showLoadingDialog(BuildContext context) {
     showDialog(
@@ -50,176 +60,297 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
+  void _addCustomerDropdown() {
+    setState(() {
+      _selectedCustomers.add(DropdownCustomerModel());
+    });
+  }
+
+  void _removeCustomerDropdown(DropdownCustomerModel customer) {
+    setState(() {
+      _selectedCustomers.remove(customer);
+    });
+  }
+
+  void _openGoogleMaps() async {
+    try {
+      _showLoadingDialog(context);
+
+      // Buat daftar KontakModel dari _selectedCustomers
+      List<KontakModel> kontakModels = _selectedCustomers.map((customer) {
+        return KontakModel(
+          kontakID: customer.kontakID ?? '',
+          displayName: customer.displayName ?? '',
+          type: customer.type ?? '',
+          lokasi: customer.lokasi ?? '',
+          latitude: customer.latitude ?? '',
+          longitude: customer.longitude ?? '',
+        );
+      }).toList();
+
+      // Buat CekGoogleModel
+      CekGoogleModel cekGoogleModel = CekGoogleModel(
+        karyawanID: _selectedDriver?.karyawanID ?? 0,
+        nama: _selectedDriver?.nama ?? '',
+        posisi: _selectedDriver?.posisi ?? '',
+        noHP: _selectedDriver?.noHP ?? '',
+        kontaks: kontakModels,
+      );
+
+      final cekGoogleService = CekGoogleService(apiHelper: apiHelper);
+      final result = await cekGoogleService.cekGoogle(cekGoogleModel);
+      Navigator.pop(context);
+
+      // Buat URL Google Maps dengan beberapa koordinat
+      if (_selectedCustomers.isNotEmpty) {
+        String googleMapsUrl = "https://www.google.com/maps/dir";
+        for (var customer in _selectedCustomers) {
+          googleMapsUrl += "/${customer.latitude},${customer.longitude}";
+        }
+        if (await canLaunch(googleMapsUrl)) {
+          await launch(
+            googleMapsUrl,
+            forceSafariVC: false,
+            forceWebView: false,
+          );
+        } else {
+          throw 'Could not launch $googleMapsUrl';
+        }
+      }
+    } catch (e) {
+      Navigator.pop(context);
+      print('Error: $e');
+    }
+  }
+
+  Widget _buildCustomerDropdown(DropdownCustomerModel customer) {
+    return Column(
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 4,
+              child: DropdownCustomer(
+                onDetailsEntered: (newDetails) {},
+                onCustomerSelected: (selectedCustomer) {
+                  setState(() {
+                    int index = _selectedCustomers.indexOf(customer);
+                    _selectedCustomers[index] = selectedCustomer;
+                  });
+                },
+                selectedCustomer: customer,
+              ),
+            ),
+            SizedBox(width: Sizes.dp4(context)),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: ElevatedButton(
+                onPressed: () => _removeCustomerDropdown(customer),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: CustomColorPalette.buttonTextColor,
+                  backgroundColor: CustomColorPalette.buttonColor,
+                ),
+                child: const Icon(Icons.remove),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSubmitButton() {
+    return Center(
+      child: ElevatedButton(
+        onPressed: () {
+          // Handle submit action
+        },
+        style: ElevatedButton.styleFrom(
+          foregroundColor: CustomColorPalette.buttonTextColor,
+          backgroundColor: CustomColorPalette.buttonColor,
+        ),
+        child: Text('Submit'),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Diantar Jarak',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        title: const Text('Diantar Jarak',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         centerTitle: true,
-        backgroundColor:
-            CustomColorPalette.backgroundColor, // Warna background AppBar
+        backgroundColor: CustomColorPalette.backgroundColor,
         actions: [
           IconButton(
-            icon: Icon(Icons.history,
-                color: CustomColorPalette.textColor), // Warna ikon AppBar
+            icon: Icon(Icons.history, color: CustomColorPalette.textColor),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ListHistoryPage(),
-                ),
-              );
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ListHistoryPage()));
             },
           ),
-          SizedBox(width: Sizes.dp4(context)), // SizedBox added here
+          SizedBox(width: Sizes.dp4(context)),
         ],
       ),
-      body: BlocProvider(
-        create: (_) => SubmitBloc(),
-        child: Padding(
-          padding: EdgeInsets.all(Sizes.dp16(context)),
-          child: Column(
-            children: [
-              Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      flex: 2,
+      body: Padding(
+        padding: EdgeInsets.all(Sizes.dp16(context)),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(height: Sizes.dp12(context)),
+                          DropdownAgent(
+                            controller: _agentController,
+                            onAgentSelected: (agent) {
+                              setState(() {
+                                _agent = agent;
+                              });
+                            },
+                          ),
+                          SizedBox(height: 12),
                           DropdownDriver(
                             controller: _driverController,
                             onPositionSelected: (position) {
-                              _driverPosition = position;
+                              setState(() {
+                                _driverPosition = position;
+                              });
+                            },
+                            onDriverSelected: (driver) {
+                              setState(() {
+                                _selectedDriver = driver;
+                              });
                             },
                           ),
+                          SizedBox(height: 12),
+                          DropdownTipeKendaraan(
+                            controller: _vehicleTypeController,
+                            onTipeSelected: (tipe) {
+                              setState(() {
+                                _vehicleType = tipe;
+                              });
+                            },
+                            selectedDriver: _selectedDriver,
+                          ),
+                          SizedBox(height: 12),
                         ],
                       ),
                     ),
-                    Expanded(
-                      flex: 1,
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(width: Sizes.dp4(context)),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: ElevatedButton(
+                      onPressed: _addCustomerDropdown,
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: CustomColorPalette.buttonTextColor,
+                        backgroundColor: CustomColorPalette.buttonColor,
+                      ),
+                      child: const Icon(Icons.add),
+                    ),
+                  ),
+                  SizedBox(height: Sizes.dp4(context)),
+                  Expanded(
+                    child: SingleChildScrollView(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SizedBox(height: Sizes.dp4(context)),
-                          ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                customerDetails.add({});
-                              });
-                            },
-                            style: ElevatedButton.styleFrom(
-                              foregroundColor:
-                                  CustomColorPalette.buttonTextColor,
-                              backgroundColor: CustomColorPalette.buttonColor,
-                            ),
-                            child: const Icon(Icons.add),
-                          ),
-                          SizedBox(height: Sizes.dp10(context)),
-                          ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                if (customerDetails.isNotEmpty) {
-                                  customerDetails.removeLast();
-                                }
-                              });
-                            },
-                            style: ElevatedButton.styleFrom(
-                              foregroundColor:
-                                  CustomColorPalette.buttonTextColor,
-                              backgroundColor: CustomColorPalette.buttonColor,
-                            ),
-                            child: const Icon(Icons.remove),
-                          ),
-                        ],
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: _selectedCustomers.map((customer) {
+                          return _buildCustomerDropdown(customer);
+                        }).toList(),
                       ),
                     ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  if (_selectedCustomers.isNotEmpty)
                     Expanded(
-                      flex: 2,
                       child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(height: Sizes.dp4(context)),
-                            ...customerDetails.asMap().entries.map((entry) {
-                              int index = entry.key;
-                              Map<String, String> details = entry.value;
-                              return Padding(
-                                padding: EdgeInsets.only(
-                                    bottom: Sizes.dp10(context)),
-                                child: DropdownCustomer(
-                                  onDetailsEntered: (newDetails) {
-                                    setState(() {
-                                      customerDetails[index] = newDetails;
-                                    });
-                                  },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: CustomColorPalette.BgBorder,
+                            border:
+                                Border.all(color: CustomColorPalette.textColor),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: EdgeInsets.all(Sizes.dp4(context)),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Tautan ke Google Maps:",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                "Klik tombol di bawah untuk memeriksa Google Maps.",
+                                style: TextStyle(
+                                    color: CustomColorPalette.textColor),
+                              ),
+                              ..._selectedCustomers.map((customer) {
+                                return Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: Sizes.dp4(context)),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Nama: ${customer.displayName ?? 'N/A'}",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Text(
+                                        "Lokasi: ${customer.lokasi ?? 'N/A'}",
+                                        style: TextStyle(
+                                            color:
+                                                CustomColorPalette.textColor),
+                                      ),
+                                      Text(
+                                        "Latitude: ${customer.latitude ?? 'N/A'}, Longitude: ${customer.longitude ?? 'N/A'}",
+                                        style: TextStyle(
+                                            color:
+                                                CustomColorPalette.textColor),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
+                              Center(
+                                child: ElevatedButton(
+                                  onPressed: _openGoogleMaps,
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor:
+                                        CustomColorPalette.buttonTextColor,
+                                    backgroundColor:
+                                        CustomColorPalette.buttonColor,
+                                  ),
+                                  child: Text('Cek Google Maps'),
                                 ),
-                              );
-                            }).toList(),
-                          ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ],
-                ),
+                ],
               ),
-              SizedBox(height: Sizes.dp4(context)),
-              BlocConsumer<SubmitBloc, SubmitState>(
-                listener: (context, state) {
-                  if (state is SubmitSuccess) {
-                    Navigator.pop(context); // Close the loading dialog
-                    List<MapsResultsModel> mapsResults =
-                        customerDetails.map((details) {
-                      return MapsResultsModel(
-                        displayName: details['name'],
-                        kontakID: details['kontakID'],
-                        pointLatLong:
-                            '${details['latitude']},${details['longitude']}',
-                      );
-                    }).toList();
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ResultPage(
-                          driverName: _driverController.text,
-                          driverPosition: _driverPosition ?? 'Unknown',
-                          customers: mapsResults,
-                        ),
-                      ),
-                    );
-                  } else if (state is SubmitInProgress) {
-                    _showLoadingDialog(context);
-                  }
-                },
-                builder: (context, state) {
-                  return Column(
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          BlocProvider.of<SubmitBloc>(context)
-                              .add(SubmitButtonPressed());
-                        },
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: CustomColorPalette.buttonTextColor,
-                          backgroundColor: CustomColorPalette.buttonColor,
-                        ),
-                        child: const Text('Submit'),
-                      ),
-                    ],
-                  );
-                },
-              ),
-              SizedBox(height: Sizes.dp20(context)),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

@@ -1,7 +1,7 @@
-import 'package:diantar_jarak/bloc/serach_page/dropdown_customer_bloc/dropdown_customer_event.dart';
-import 'package:diantar_jarak/bloc/serach_page/dropdown_customer_bloc/dropdown_customer_state.dart';
+import 'package:diantar_jarak/bloc/search_page/dropdown_customer_bloc/dropdown_customer_event.dart';
+import 'package:diantar_jarak/bloc/search_page/dropdown_customer_bloc/dropdown_customer_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:diantar_jarak/data/service/search_page_service.dart/dropdown_customer_service.dart';
+import 'package:diantar_jarak/data/service/search_page_service/dropdown_customer_service.dart';
 
 class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
   final CustomerService customerService;

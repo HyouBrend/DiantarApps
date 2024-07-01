@@ -1,20 +1,22 @@
+import 'package:diantar_jarak/data/models/model_page_result/result_maps_model.dart';
+import 'package:equatable/equatable.dart';
 import 'package:collection/collection.dart';
 
-class DropdownDriveModel {
-  final int karyawanID;
-  final String nama;
-  final String noHP;
-  final String posisi;
-  final double latitude;
-  final double longitude;
+class DropdownDriveModel extends Equatable {
+  final int? karyawanID;
+  final String? nama;
+  final String? noHP;
+  final String? posisi;
+  final List<MapsResultsModel>? kontaks;
+  final String? imageName;
 
   DropdownDriveModel({
-    required this.karyawanID,
-    required this.nama,
-    required this.noHP,
-    required this.posisi,
-    this.latitude = -6.1819591, // Default latitude kantor
-    this.longitude = 106.7763663, // Default longitude kantor
+    this.karyawanID,
+    this.nama,
+    this.noHP,
+    this.posisi,
+    this.kontaks,
+    this.imageName,
   });
 
   factory DropdownDriveModel.fromJson(Map<String, dynamic> json) {
@@ -23,30 +25,41 @@ class DropdownDriveModel {
       nama: json['Nama'],
       noHP: json['NoHP'],
       posisi: json['Posisi'],
-      latitude: json.containsKey('latitude') ? double.parse(json['latitude']) : -6.1819591,
-      longitude: json.containsKey('longitude') ? double.parse(json['longitude']) : 106.7763663,
+      kontaks: (json['Kontaks'] as List<dynamic>?)
+          ?.map((e) => MapsResultsModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      imageName: json['ImageName'],
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'KaryawanID': karyawanID,
+      'Nama': nama,
+      'NoHP': noHP,
+      'Posisi': posisi,
+      'Kontaks': kontaks?.map((e) => e.toJson()).toList(),
+      'ImageName': imageName,
+    };
+  }
+
+  @override
+  List<Object?> get props => [karyawanID];
+
   @override
   String toString() {
-    return 'DropdownDriveModel(karyawanID: $karyawanID, nama: $nama, noHP: $noHP, posisi: $posisi, latitude: $latitude, longitude: $longitude)';
+    return 'DropdownDriveModel(karyawanID: $karyawanID, nama: $nama, noHP: $noHP, posisi: $posisi, kontaks: $kontaks, imageName: $imageName)';
   }
 
   @override
   bool operator ==(covariant DropdownDriveModel other) {
     if (identical(this, other)) return true;
-    return other.karyawanID == karyawanID &&
-        other.nama == nama &&
-        other.noHP == noHP &&
-        other.posisi == posisi &&
-        other.latitude == latitude &&
-        other.longitude == longitude;
+    return other.karyawanID == karyawanID;
   }
 
   @override
   int get hashCode {
-    return karyawanID.hashCode ^ nama.hashCode ^ noHP.hashCode ^ posisi.hashCode ^ latitude.hashCode ^ longitude.hashCode;
+    return karyawanID.hashCode;
   }
 }
 
@@ -59,8 +72,16 @@ class DropdownDriveModelData {
 
   factory DropdownDriveModelData.fromJson(Map<String, dynamic> json) {
     return DropdownDriveModelData(
-      data: (json['data'] as List).map((item) => DropdownDriveModel.fromJson(item)).toList(),
+      data: (json['data'] as List)
+          .map((item) => DropdownDriveModel.fromJson(item))
+          .toList(),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'data': data.map((item) => item.toJson()).toList(),
+    };
   }
 
   @override

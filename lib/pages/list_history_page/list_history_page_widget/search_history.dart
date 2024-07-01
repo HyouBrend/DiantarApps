@@ -31,6 +31,7 @@ class _SearchHistoryState extends State<SearchHistory> {
       _isLoading = true;
     });
 
+    // Simulate a search operation with a delay
     Future.delayed(Duration(seconds: 2), () {
       setState(() {
         _isLoading = false;
@@ -44,7 +45,8 @@ class _SearchHistoryState extends State<SearchHistory> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16.0),
-      color: CustomColorPalette.backgroundColor,
+      color: CustomColorPalette
+          .backgroundColor, // Corrected property for background color
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -57,7 +59,6 @@ class _SearchHistoryState extends State<SearchHistory> {
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
-              fillColor: CustomColorPalette.surfaceColor,
               suffixIcon: IconButton(
                 icon: Icon(Icons.search),
                 onPressed: _isLoading ? null : _onSearch,
