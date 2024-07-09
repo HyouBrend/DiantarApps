@@ -9,9 +9,10 @@ class DropdriveService {
 
   Future<DropdownDriveModelData> getAllDrivers() async {
     try {
-      final result = await apiHelper.get(
+      final response = await apiHelper.get(
         url: APIJarakLocal.listDrivers,
       );
+      final result = response.data as Map<String, dynamic>;
       return DropdownDriveModelData.fromJson(result);
     } catch (e) {
       rethrow;
@@ -20,11 +21,12 @@ class DropdriveService {
 
   Future<DropdownDriveModelData> getDrivers(String query) async {
     try {
-      final result = await apiHelper.get(
+      final response = await apiHelper.get(
         url: query.isEmpty
             ? APIJarakLocal.listDrivers
             : '${APIJarakLocal.getDriver}/$query',
       );
+      final result = response.data as Map<String, dynamic>;
       return DropdownDriveModelData.fromJson(result);
     } catch (e) {
       rethrow;

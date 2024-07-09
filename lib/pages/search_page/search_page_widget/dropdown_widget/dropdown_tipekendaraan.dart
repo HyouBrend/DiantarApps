@@ -4,13 +4,15 @@ import 'package:diantar_jarak/theme/theme.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class DropdownTipeKendaraan extends StatefulWidget {
-  final TextEditingController controller;
-  final Function(String) onTipeSelected;
+  final TextEditingController vehicleTypeController;
+  final TextEditingController plateNumberController;
+  final Function(DropdownVehicleModel) onTipeSelected;
   final DropdownDriveModel? selectedDriver;
 
   const DropdownTipeKendaraan({
     Key? key,
-    required this.controller,
+    required this.vehicleTypeController,
+    required this.plateNumberController,
     required this.onTipeSelected,
     this.selectedDriver,
   }) : super(key: key);
@@ -20,9 +22,6 @@ class DropdownTipeKendaraan extends StatefulWidget {
 }
 
 class _DropdownTipeKendaraanState extends State<DropdownTipeKendaraan> {
-  TextEditingController _platNomorController = TextEditingController();
-  bool _isVehicleTypeSelected = false;
-
   final Map<String, List<String>> _platNomorByTipeKendaraan = {
     'Pick Up': [
       'B9809BAY',
@@ -45,7 +44,7 @@ class _DropdownTipeKendaraanState extends State<DropdownTipeKendaraan> {
             Expanded(
               child: TypeAheadFormField<String>(
                 textFieldConfiguration: TextFieldConfiguration(
-                  controller: widget.controller,
+                  controller: widget.vehicleTypeController,
                   decoration: InputDecoration(
                     labelText: 'Tipe Kendaraan',
                     labelStyle: TextStyle(fontSize: 14),
@@ -59,7 +58,7 @@ class _DropdownTipeKendaraanState extends State<DropdownTipeKendaraan> {
                     fillColor: CustomColorPalette.surfaceColor,
                     contentPadding:
                         EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                    isDense: true, // Reduces the height of the TextField
+                    isDense: true,
                   ),
                   style: TextStyle(fontSize: 14),
                 ),
@@ -77,11 +76,14 @@ class _DropdownTipeKendaraanState extends State<DropdownTipeKendaraan> {
                 },
                 onSuggestionSelected: (String suggestion) {
                   setState(() {
-                    widget.controller.text = suggestion;
-                    widget.onTipeSelected(suggestion);
-                    _isVehicleTypeSelected = true;
-                    _platNomorController
-                        .clear(); // Clear plat nomor when vehicle type changes
+                    widget.vehicleTypeController.text = suggestion;
+                    widget.onTipeSelected(
+                      DropdownVehicleModel(
+                        tipe: suggestion,
+                        nomorPolisi: widget.plateNumberController.text,
+                      ),
+                    );
+                    widget.plateNumberController.clear();
                   });
                 },
                 noItemsFoundBuilder: (context) => Padding(
@@ -93,56 +95,60 @@ class _DropdownTipeKendaraanState extends State<DropdownTipeKendaraan> {
               ),
             ),
             SizedBox(width: 12),
-            if (_isVehicleTypeSelected)
-              Expanded(
-                child: TypeAheadFormField<String>(
-                  textFieldConfiguration: TextFieldConfiguration(
-                    controller: _platNomorController,
-                    decoration: InputDecoration(
-                      labelText: 'Nomor Plat',
-                      labelStyle: TextStyle(fontSize: 14),
-                      hintText: 'Masukkan nomor plat',
-                      hintStyle: TextStyle(
-                          color: CustomColorPalette.hintTextColor,
-                          fontSize: 14),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                      ),
-                      filled: true,
-                      fillColor: CustomColorPalette.surfaceColor,
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                      isDense: true, // Reduces the height of the TextField
+            Expanded(
+              child: TypeAheadFormField<String>(
+                textFieldConfiguration: TextFieldConfiguration(
+                  controller: widget.plateNumberController,
+                  decoration: InputDecoration(
+                    labelText: 'Nomor Plat',
+                    labelStyle: TextStyle(fontSize: 14),
+                    hintText: 'Masukkan nomor plat',
+                    hintStyle: TextStyle(
+                        color: CustomColorPalette.hintTextColor, fontSize: 14),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
                     ),
-                    style: TextStyle(fontSize: 14),
+                    filled: true,
+                    fillColor: CustomColorPalette.surfaceColor,
+                    contentPadding:
+                        EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                    isDense: true,
                   ),
-                  suggestionsCallback: (pattern) async {
-                    final tipe = widget.controller.text;
-                    final platNomor = _platNomorByTipeKendaraan[tipe] ?? [];
-                    await Future.delayed(const Duration(milliseconds: 500));
-                    return platNomor
-                        .where((plat) =>
-                            plat.toLowerCase().contains(pattern.toLowerCase()))
-                        .toList();
-                  },
-                  itemBuilder: (context, String suggestion) {
-                    return ListTile(
-                      title: Text(suggestion, style: TextStyle(fontSize: 14)),
+                  style: TextStyle(fontSize: 14),
+                ),
+                suggestionsCallback: (pattern) async {
+                  final tipe = widget.vehicleTypeController.text;
+                  final platNomor = _platNomorByTipeKendaraan[tipe] ?? [];
+                  await Future.delayed(const Duration(milliseconds: 500));
+                  return platNomor
+                      .where((plat) =>
+                          plat.toLowerCase().contains(pattern.toLowerCase()))
+                      .toList();
+                },
+                itemBuilder: (context, String suggestion) {
+                  return ListTile(
+                    title: Text(suggestion, style: TextStyle(fontSize: 14)),
+                  );
+                },
+                onSuggestionSelected: (String suggestion) {
+                  setState(() {
+                    widget.plateNumberController.text = suggestion;
+                    widget.onTipeSelected(
+                      DropdownVehicleModel(
+                        tipe: widget.vehicleTypeController.text,
+                        nomorPolisi: suggestion,
+                      ),
                     );
-                  },
-                  onSuggestionSelected: (String suggestion) {
-                    setState(() {
-                      _platNomorController.text = suggestion;
-                    });
-                  },
-                  noItemsFoundBuilder: (context) => Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text('Tidak ada nomor plat ditemukan',
-                        style: TextStyle(
-                            color: CustomColorPalette.textColor, fontSize: 14)),
-                  ),
+                  });
+                },
+                noItemsFoundBuilder: (context) => Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text('Tidak ada nomor plat ditemukan',
+                      style: TextStyle(
+                          color: CustomColorPalette.textColor, fontSize: 14)),
                 ),
               ),
+            ),
           ],
         ),
         SizedBox(height: 12),
@@ -169,5 +175,22 @@ class _DropdownTipeKendaraanState extends State<DropdownTipeKendaraan> {
           ),
       ],
     );
+  }
+}
+
+class DropdownVehicleModel {
+  final String tipe;
+  final String nomorPolisi;
+
+  DropdownVehicleModel({
+    required this.tipe,
+    required this.nomorPolisi,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'tipe': tipe,
+      'nomorPolisi': nomorPolisi,
+    };
   }
 }

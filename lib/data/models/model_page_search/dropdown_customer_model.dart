@@ -1,3 +1,4 @@
+import 'package:diantar_jarak/data/models/model_page_result/detail_pengantaran_model.dart';
 import 'package:equatable/equatable.dart';
 
 class DropdownCustomerModel extends Equatable {
@@ -7,6 +8,8 @@ class DropdownCustomerModel extends Equatable {
   final String? latitude;
   final String? lokasi;
   final String? longitude;
+  final String? nomorFaktur;
+  final int? urutanPengiriman;
 
   DropdownCustomerModel({
     this.displayName,
@@ -15,6 +18,8 @@ class DropdownCustomerModel extends Equatable {
     this.latitude,
     this.lokasi,
     this.longitude,
+    this.nomorFaktur,
+    this.urutanPengiriman,
   });
 
   factory DropdownCustomerModel.fromJson(Map<String, dynamic> json) {
@@ -25,6 +30,8 @@ class DropdownCustomerModel extends Equatable {
       latitude: json['latitude'],
       lokasi: json['lokasi'],
       longitude: json['longitude'],
+      nomorFaktur: json['nomor_faktur'],
+      urutanPengiriman: json['urutan_pengiriman'],
     );
   }
 
@@ -36,16 +43,48 @@ class DropdownCustomerModel extends Equatable {
       'latitude': latitude,
       'lokasi': lokasi,
       'longitude': longitude,
+      'nomor_faktur': nomorFaktur,
+      'urutan_pengiriman': urutanPengiriman,
     };
   }
 
-  @override
-  List<Object?> get props => [kontakID];
+  factory DropdownCustomerModel.fromKontak(KontakModel kontak) {
+    return DropdownCustomerModel(
+      displayName: kontak.displayName,
+      kontakID: kontak.kontakID,
+      type: kontak.type,
+      latitude: kontak.latitude,
+      lokasi: kontak.lokasi,
+      longitude: kontak.longitude,
+      nomorFaktur: kontak.nomorFaktur,
+      urutanPengiriman: kontak.urutanPengiriman,
+    );
+  }
+
+  KontakModel toKontak() {
+    return KontakModel(
+      displayName: displayName ?? '',
+      kontakID: kontakID ?? '',
+      type: type ?? '',
+      latitude: latitude ?? '',
+      lokasi: lokasi ?? '',
+      longitude: longitude ?? '',
+      nomorFaktur: nomorFaktur ?? '',
+      urutanPengiriman: urutanPengiriman ?? 0,
+    );
+  }
 
   @override
-  String toString() {
-    return 'DropdownCustomerModel(displayName: $displayName, kontakID: $kontakID, type: $type, latitude: $latitude, lokasi: $lokasi, longitude: $longitude)';
-  }
+  List<Object?> get props => [
+        displayName,
+        kontakID,
+        type,
+        latitude,
+        lokasi,
+        longitude,
+        nomorFaktur,
+        urutanPengiriman,
+      ];
 }
 
 class CustomerData {

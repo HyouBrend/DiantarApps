@@ -1,19 +1,13 @@
+import 'package:diantar_jarak/helpers/network/api_helper.dart';
 import 'package:dio/dio.dart';
-import 'api_helper.dart';
 
-class ApiHelperImpl extends ApiHelper {
+class ApiHelperImpl implements ApiHelper {
   final Dio dio;
 
-  ApiHelperImpl({required this.dio}) {
-    initDio();
-  }
-
-  Dio initDio() {
-    return dio;
-  }
+  ApiHelperImpl({required this.dio});
 
   @override
-  Future<Map<String, dynamic>> get({
+  Future<Response> get({
     required String url,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? queryParameters,
@@ -27,18 +21,10 @@ class ApiHelperImpl extends ApiHelper {
         queryParameters: queryParameters,
       );
       print('Response received: ${response.data}');
-      return response.data as Map<String, dynamic>;
+      return response;
     } on DioError catch (e) {
       print('DioError: ${e.response?.statusCode} - ${e.message}');
-      if (e.type == DioErrorType.connectTimeout) {
-        print('Connection Timeout Error');
-      } else if (e.type == DioErrorType.receiveTimeout) {
-        print('Receive Timeout Error');
-      } else if (e.type == DioErrorType.response) {
-        print('Response Error: ${e.response?.data}');
-      } else if (e.type == DioErrorType.other) {
-        print('Other Error: ${e.message}');
-      }
+      print('Response data: ${e.response?.data}');
       rethrow;
     } on Exception {
       rethrow;
@@ -46,7 +32,7 @@ class ApiHelperImpl extends ApiHelper {
   }
 
   @override
-  Future<Map<String, dynamic>> post({
+  Future<Response> post({
     required String url,
     required dynamic body,
     Options? options,
@@ -58,22 +44,23 @@ class ApiHelperImpl extends ApiHelper {
       Response response = await dio.post(
         url,
         data: body,
-        options: options,
+        options: options?.copyWith(
+              validateStatus: (status) {
+                return status != null && status >= 200 && status < 500;
+              },
+            ) ??
+            Options(
+              validateStatus: (status) {
+                return status != null && status >= 200 && status < 500;
+              },
+            ),
         queryParameters: queryParameters,
       );
       print('Response received: ${response.data}');
-      return response.data as Map<String, dynamic>;
+      return response;
     } on DioError catch (e) {
       print('DioError: ${e.response?.statusCode} - ${e.message}');
-      if (e.type == DioErrorType.connectTimeout) {
-        print('Connection Timeout Error');
-      } else if (e.type == DioErrorType.receiveTimeout) {
-        print('Receive Timeout Error');
-      } else if (e.type == DioErrorType.response) {
-        print('Response Error: ${e.response?.data}');
-      } else if (e.type == DioErrorType.other) {
-        print('Other Error: ${e.message}');
-      }
+      print('Response data: ${e.response?.data}');
       rethrow;
     } on Exception {
       rethrow;
@@ -81,7 +68,7 @@ class ApiHelperImpl extends ApiHelper {
   }
 
   @override
-  Future<Map<String, dynamic>> patch({
+  Future<Response> patch({
     required String url,
     required dynamic body,
     Options? options,
@@ -97,18 +84,10 @@ class ApiHelperImpl extends ApiHelper {
         queryParameters: queryParameters,
       );
       print('Response received: ${response.data}');
-      return response.data as Map<String, dynamic>;
+      return response;
     } on DioError catch (e) {
       print('DioError: ${e.response?.statusCode} - ${e.message}');
-      if (e.type == DioErrorType.connectTimeout) {
-        print('Connection Timeout Error');
-      } else if (e.type == DioErrorType.receiveTimeout) {
-        print('Receive Timeout Error');
-      } else if (e.type == DioErrorType.response) {
-        print('Response Error: ${e.response?.data}');
-      } else if (e.type == DioErrorType.other) {
-        print('Other Error: ${e.message}');
-      }
+      print('Response data: ${e.response?.data}');
       rethrow;
     } on Exception {
       rethrow;
@@ -132,6 +111,7 @@ class ApiHelperImpl extends ApiHelper {
       return response;
     } on DioError catch (e) {
       print('DioError: ${e.response?.statusCode} - ${e.message}');
+      print('Response data: ${e.response?.data}');
       rethrow;
     } on Exception {
       rethrow;
@@ -155,6 +135,7 @@ class ApiHelperImpl extends ApiHelper {
       return response;
     } on DioError catch (e) {
       print('DioError: ${e.response?.statusCode} - ${e.message}');
+      print('Response data: ${e.response?.data}');
       rethrow;
     } on Exception {
       rethrow;

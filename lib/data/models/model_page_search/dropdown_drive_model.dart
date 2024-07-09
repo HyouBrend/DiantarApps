@@ -1,4 +1,4 @@
-import 'package:diantar_jarak/data/models/model_page_result/result_maps_model.dart';
+import 'package:diantar_jarak/data/models/model_page_search/dropdown_customer_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:collection/collection.dart';
 
@@ -7,7 +7,7 @@ class DropdownDriveModel extends Equatable {
   final String? nama;
   final String? noHP;
   final String? posisi;
-  final List<MapsResultsModel>? kontaks;
+  final List<DropdownCustomerModel>? kontaks;
   final String? imageName;
 
   DropdownDriveModel({
@@ -26,7 +26,8 @@ class DropdownDriveModel extends Equatable {
       noHP: json['NoHP'],
       posisi: json['Posisi'],
       kontaks: (json['Kontaks'] as List<dynamic>?)
-          ?.map((e) => MapsResultsModel.fromJson(e as Map<String, dynamic>))
+          ?.map(
+              (e) => DropdownCustomerModel.fromJson(e as Map<String, dynamic>))
           .toList(),
       imageName: json['ImageName'],
     );

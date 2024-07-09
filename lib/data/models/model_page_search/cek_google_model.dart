@@ -1,74 +1,37 @@
-import 'package:equatable/equatable.dart';
+import 'package:diantar_jarak/data/models/model_page_result/detail_pengantaran_model.dart';
 
-class CekGoogleModel extends Equatable {
-  final int karyawanID;
-  final String nama;
-  final String posisi;
-  final String noHP;
+class CekGoogleResult {
+  final String googleMapsUrl;
   final List<KontakModel> kontaks;
+  final double minDistance;
+  final double minDuration;
 
-  CekGoogleModel({
-    required this.karyawanID,
-    required this.nama,
-    required this.posisi,
-    required this.noHP,
+  CekGoogleResult({
+    required this.googleMapsUrl,
     required this.kontaks,
+    required this.minDistance,
+    required this.minDuration,
   });
 
-  Map<String, dynamic> toJson() {
-    return {
-      'KaryawanID': karyawanID,
-      'Nama': nama,
-      'Posisi': posisi,
-      'NoHP': noHP,
-      'Kontaks': kontaks.map((kontak) => kontak.toJson()).toList(),
-    };
-  }
-
-  @override
-  List<Object?> get props => [karyawanID, nama, posisi, noHP, kontaks];
-}
-
-class KontakModel extends Equatable {
-  final String kontakID;
-  final String displayName;
-  final String type;
-  final String lokasi;
-  final String latitude;
-  final String longitude;
-
-  KontakModel({
-    required this.kontakID,
-    required this.displayName,
-    required this.type,
-    required this.lokasi,
-    required this.latitude,
-    required this.longitude,
-  });
-
-  factory KontakModel.fromJson(Map<String, dynamic> json) {
-    return KontakModel(
-      kontakID: json['KontakID'],
-      displayName: json['DisplayName'],
-      type: json['Type'],
-      lokasi: json['lokasi'],
-      latitude: json['latitude'],
-      longitude: json['longitude'],
+  factory CekGoogleResult.fromJson(Map<String, dynamic> json) {
+    return CekGoogleResult(
+      googleMapsUrl: json['data']['google_maps_url'],
+      kontaks: (json['data']['kontaks'] as List<dynamic>)
+          .map((item) => KontakModel.fromJson(item))
+          .toList(),
+      minDistance: json['data']['min_distance'],
+      minDuration: json['data']['min_duration'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'KontakID': kontakID,
-      'DisplayName': displayName,
-      'Type': type,
-      'lokasi': lokasi,
-      'latitude': latitude,
-      'longitude': longitude,
+      'data': {
+        'google_maps_url': googleMapsUrl,
+        'kontaks': kontaks.map((item) => item.toJson()).toList(),
+        'min_distance': minDistance,
+        'min_duration': minDuration,
+      },
     };
   }
-
-  @override
-  List<Object?> get props =>
-      [kontakID, displayName, type, lokasi, latitude, longitude];
 }

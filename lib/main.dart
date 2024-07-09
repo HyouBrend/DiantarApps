@@ -2,6 +2,7 @@ import 'package:diantar_jarak/bloc/search_page/dropdown_customer_bloc/dropdown_c
 import 'package:diantar_jarak/bloc/search_page/dropdown_customer_bloc/dropdown_customer_event.dart';
 import 'package:diantar_jarak/bloc/search_page/dropdown_driver_bloc/dropdown_driver_bloc.dart';
 import 'package:diantar_jarak/bloc/search_page/submit/submit_bloc.dart';
+import 'package:diantar_jarak/data/service/result_page_service.dart/detail_pengantaran_service.dart';
 import 'package:diantar_jarak/data/service/search_page_service/dropdown_customer_service.dart';
 import 'package:diantar_jarak/data/service/search_page_service/dropdown_driver_service.dart';
 import 'package:diantar_jarak/helpers/network/api_helper_dio.dart';
@@ -32,9 +33,6 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => CustomerBloc(customerService: customerService)
             ..add(FetchCustomers('')),
-        ),
-        BlocProvider(
-          create: (context) => SubmitBloc(),
         ),
       ],
       child: MaterialApp(
