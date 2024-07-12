@@ -1,102 +1,138 @@
-import 'package:diantar_jarak/theme/theme.dart';
+import 'package:diantar_jarak/bloc/list_history_page/dropdown_filter/dropdown_filter_bloc.dart';
+import 'package:diantar_jarak/bloc/list_history_page/dropdown_filter/dropdown_filter_event.dart';
+import 'package:diantar_jarak/bloc/list_history_page/dropdown_filter/dropdown_filter_state.dart';
+import 'package:diantar_jarak/data/models/model_page_search/dropdown_drive_model.dart';
+import 'package:diantar_jarak/theme/size.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:diantar_jarak/theme/theme.dart';
 
 class SearchHistory extends StatefulWidget {
-  const SearchHistory({Key? key}) : super(key: key);
-
   @override
   _SearchHistoryState createState() => _SearchHistoryState();
 }
 
 class _SearchHistoryState extends State<SearchHistory> {
-  String? _selectedFilter;
-  bool _isLoading = false;
-  final TextEditingController _searchController = TextEditingController();
-
-  void _onFilterChanged(String? newValue) {
-    setState(() {
-      _selectedFilter = newValue;
-      _isLoading = true;
-    });
-
-    Future.delayed(Duration(seconds: 2), () {
-      setState(() {
-        _isLoading = false;
-      });
-    });
-  }
+  String? _selectedDriver;
+  DropdownDriveModel? selectedDriverModel;
+  bool _isLoading = false; // State variable to manage loading state
 
   void _onSearch() {
-    setState(() {
-      _isLoading = true;
-    });
-
-    // Simulate a search operation with a delay
-    Future.delayed(Duration(seconds: 2), () {
-      setState(() {
-        _isLoading = false;
-        // Implement your search logic here
-        // Example: Perform a search with _searchController.text
-      });
-    });
+    // Perform search operation
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16.0),
-      color: CustomColorPalette
-          .backgroundColor, // Corrected property for background color
+      color: CustomColorPalette.backgroundColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 10),
           TextField(
-            controller: _searchController,
             decoration: InputDecoration(
-              hintText: 'Search history...',
-              hintStyle: TextStyle(color: CustomColorPalette.hintTextColor),
+              labelText: 'History',
+              labelStyle: TextStyle(fontSize: 14),
+              hintText: 'Enter history',
+              hintStyle: TextStyle(
+                  color: CustomColorPalette.hintTextColor, fontSize: 14),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.all(Radius.circular(10.0)),
               ),
-              suffixIcon: IconButton(
-                icon: Icon(Icons.search),
-                onPressed: _isLoading ? null : _onSearch,
-              ),
+              filled: true,
+              fillColor: CustomColorPalette.surfaceColor,
+              contentPadding:
+                  EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+              isDense: true, // Reduce TextField height
             ),
+            style: TextStyle(fontSize: 14),
+            onChanged: (value) {
+              context
+                  .read<DropdownFilterBloc>()
+                  .add(FetchDropdownFilterData(query: value));
+            },
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 16),
           Text(
-            'Filter',
+            'Filter Driver',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 10),
-          Container(
-            width: 200, // Adjust the width as needed
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: DropdownButton<String>(
-              value: _selectedFilter,
-              hint: Text('Select filter'),
-              isExpanded: true,
-              underline: SizedBox(), // Remove the default underline
-              items: ['Filter 1', 'Filter 2', 'Filter 3'].map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: _onFilterChanged,
+          const SizedBox(height: 10),
+          BlocListener<DropdownFilterBloc, DropdownFilterState>(
+            listener: (context, state) {
+              if (state is DropdownFilterLoading) {
+                setState(() {
+                  _isLoading = true;
+                });
+              } else {
+                setState(() {
+                  _isLoading = false;
+                });
+              }
+            },
+            child: Container(
+              width: Sizes.dp40(context),
+              child: TypeAheadField<DropdownDriveModel>(
+                textFieldConfiguration: TextFieldConfiguration(
+                  decoration: InputDecoration(
+                    labelText: 'Driver',
+                    labelStyle: TextStyle(fontSize: 14),
+                    hintText: 'Masukkan nama driver',
+                    hintStyle: TextStyle(
+                        color: CustomColorPalette.hintTextColor, fontSize: 14),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                    ),
+                    filled: true,
+                    fillColor: CustomColorPalette.surfaceColor,
+                    contentPadding:
+                        EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                    isDense: true, // Mengurangi tinggi TextField
+                  ),
+                  style: TextStyle(fontSize: 14),
+                ),
+                suggestionsCallback: (pattern) async {
+                  context
+                      .read<DropdownFilterBloc>()
+                      .add(FetchDropdownFilterData(query: pattern));
+                  final state = await context
+                      .read<DropdownFilterBloc>()
+                      .stream
+                      .firstWhere(
+                        (state) => state is! DropdownFilterLoading,
+                      );
+                  if (state is DropdownFilterHasData) {
+                    return state.drivers.where((driver) => driver.nama!
+                        .toLowerCase()
+                        .contains(pattern.toLowerCase()));
+                  }
+                  return [];
+                },
+                itemBuilder: (context, DropdownDriveModel suggestion) {
+                  return ListTile(
+                    title: Text(suggestion.nama ?? ''),
+                  );
+                },
+                onSuggestionSelected: (DropdownDriveModel suggestion) {
+                  setState(() {
+                    _selectedDriver = suggestion.nama;
+                    selectedDriverModel = suggestion;
+                  });
+                  _onSearch();
+                },
+                noItemsFoundBuilder: (context) => Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('Driver tidak ditemukan'),
+                ),
+                loadingBuilder: (context) => Center(
+                  child: CircularProgressIndicator(),
+                ),
+                hideOnLoading:
+                    !_isLoading, // Mengontrol visibilitas indikator loading
+              ),
             ),
           ),
-          if (_isLoading)
-            Padding(
-              padding: const EdgeInsets.only(top: 20.0),
-              child: Center(child: CircularProgressIndicator()),
-            ),
         ],
       ),
     );

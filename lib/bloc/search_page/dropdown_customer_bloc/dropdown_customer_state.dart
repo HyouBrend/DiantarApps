@@ -1,5 +1,5 @@
-import 'package:diantar_jarak/data/models/model_page_search/dropdown_customer_model.dart';
 import 'package:equatable/equatable.dart';
+import 'package:diantar_jarak/data/models/model_page_search/dropdown_customer_model.dart';
 
 abstract class CustomerState extends Equatable {
   const CustomerState();
@@ -12,15 +12,6 @@ class CustomerInitial extends CustomerState {}
 
 class CustomerLoading extends CustomerState {}
 
-class CustomerLoaded extends CustomerState {
-  final List<DropdownCustomerModel> customers;
-
-  const CustomerLoaded(this.customers);
-
-  @override
-  List<Object> get props => [customers];
-}
-
 class CustomerError extends CustomerState {
   final String message;
 
@@ -29,3 +20,14 @@ class CustomerError extends CustomerState {
   @override
   List<Object> get props => [message];
 }
+
+class CustomerHasData extends CustomerState {
+  final List<DropdownCustomerModel> customers;
+
+  const CustomerHasData(this.customers);
+
+  @override
+  List<Object> get props => [customers];
+}
+
+class CustomerEmpty extends CustomerState {}

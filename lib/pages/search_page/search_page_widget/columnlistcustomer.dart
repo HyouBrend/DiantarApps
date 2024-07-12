@@ -113,6 +113,10 @@ class ColumnCustomerList extends StatelessWidget {
                           'Alamat: ${customer.lokasi}',
                           style: TextStyle(fontSize: 14),
                         ),
+                        Text(
+                          'Urutan Pengiriman: ${customer.urutanPengiriman}',
+                          style: TextStyle(fontSize: 14),
+                        ),
                         const Divider(color: Colors.purple),
                       ],
                     );

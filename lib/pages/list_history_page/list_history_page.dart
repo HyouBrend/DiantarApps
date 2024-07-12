@@ -35,25 +35,29 @@ class _ListHistoryPageState extends State<ListHistoryPage> {
 
   Widget _buildPaginationControls(int totalItems) {
     final totalPages = (totalItems / _itemsPerPage).ceil();
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(totalPages, (index) {
-        return TextButton(
-          onPressed: () {
-            setState(() {
-              _currentPage = index + 1;
-            });
-          },
-          child: Text(
-            '${index + 1}',
-            style: TextStyle(
-              fontWeight: _currentPage == index + 1
-                  ? FontWeight.bold
-                  : FontWeight.normal,
+    return Container(
+      height: 50, // Tinggi pagination control
+      margin: EdgeInsets.only(bottom: 16), // Jarak bawah pagination control
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(totalPages, (index) {
+          return TextButton(
+            onPressed: () {
+              setState(() {
+                _currentPage = index + 1;
+              });
+            },
+            child: Text(
+              '${index + 1}',
+              style: TextStyle(
+                fontWeight: _currentPage == index + 1
+                    ? FontWeight.bold
+                    : FontWeight.normal,
+              ),
             ),
-          ),
-        );
-      }),
+          );
+        }),
+      ),
     );
   }
 

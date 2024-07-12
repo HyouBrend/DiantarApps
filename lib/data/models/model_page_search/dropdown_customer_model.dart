@@ -1,35 +1,35 @@
-import 'package:diantar_jarak/data/models/model_page_result/detail_pengantaran_model.dart';
 import 'package:equatable/equatable.dart';
+import 'package:collection/collection.dart';
 
 class DropdownCustomerModel extends Equatable {
-  final String? displayName;
-  final String? kontakID;
+  final String displayName;
+  final String kontakID;
   final String? type;
-  final String? latitude;
-  final String? lokasi;
-  final String? longitude;
-  final String? nomorFaktur;
-  final int? urutanPengiriman;
+  final String latitude;
+  final String lokasi;
+  final String longitude;
+  final String nomorFaktur;
+  final int urutanPengiriman;
 
   DropdownCustomerModel({
-    this.displayName,
-    this.kontakID,
+    required this.displayName,
+    required this.kontakID,
     this.type,
-    this.latitude,
-    this.lokasi,
-    this.longitude,
-    this.nomorFaktur,
-    this.urutanPengiriman,
+    required this.latitude,
+    required this.lokasi,
+    required this.longitude,
+    required this.nomorFaktur,
+    required this.urutanPengiriman,
   });
 
   factory DropdownCustomerModel.fromJson(Map<String, dynamic> json) {
     return DropdownCustomerModel(
-      displayName: json['DisplayName'],
-      kontakID: json['KontakID'],
+      displayName: json['DisplayName'] ?? '',
+      kontakID: json['KontakID'] ?? '',
       type: json['Type'],
-      latitude: json['latitude'],
-      lokasi: json['lokasi'],
-      longitude: json['longitude'],
+      latitude: json['latitude'] ?? '',
+      lokasi: json['lokasi'] ?? '',
+      longitude: json['longitude'] ?? '',
       nomorFaktur: json['nomor_faktur'],
       urutanPengiriman: json['urutan_pengiriman'],
     );
@@ -46,32 +46,6 @@ class DropdownCustomerModel extends Equatable {
       'nomor_faktur': nomorFaktur,
       'urutan_pengiriman': urutanPengiriman,
     };
-  }
-
-  factory DropdownCustomerModel.fromKontak(KontakModel kontak) {
-    return DropdownCustomerModel(
-      displayName: kontak.displayName,
-      kontakID: kontak.kontakID,
-      type: kontak.type,
-      latitude: kontak.latitude,
-      lokasi: kontak.lokasi,
-      longitude: kontak.longitude,
-      nomorFaktur: kontak.nomorFaktur,
-      urutanPengiriman: kontak.urutanPengiriman,
-    );
-  }
-
-  KontakModel toKontak() {
-    return KontakModel(
-      displayName: displayName ?? '',
-      kontakID: kontakID ?? '',
-      type: type ?? '',
-      latitude: latitude ?? '',
-      lokasi: lokasi ?? '',
-      longitude: longitude ?? '',
-      nomorFaktur: nomorFaktur ?? '',
-      urutanPengiriman: urutanPengiriman ?? 0,
-    );
   }
 
   @override
@@ -107,10 +81,19 @@ class CustomerData {
   }
 
   @override
-  List<Object?> get props => [data];
-
-  @override
   String toString() {
     return 'CustomerData(data: $data)';
+  }
+
+  @override
+  bool operator ==(covariant CustomerData other) {
+    if (identical(this, other)) return true;
+    final listEquals = const DeepCollectionEquality().equals;
+    return listEquals(other.data, data);
+  }
+
+  @override
+  int get hashCode {
+    return data.hashCode;
   }
 }

@@ -9,12 +9,11 @@ class CustomerService {
 
   Future<CustomerData> getAllCustomers() async {
     try {
-      final response = await apiHelper.get(
-        url: APIJarakLocal.listCustomers,
-      );
-      final result = response.data as Map<String, dynamic>;
-      return CustomerData.fromJson(result);
+      final response = await apiHelper.get(url: APIJarakLocal.listCustomers);
+      print('Response: ${response.data}');
+      return CustomerData.fromJson(response.data);
     } catch (e) {
+      print('Error fetching all customers: $e');
       rethrow;
     }
   }
@@ -26,9 +25,10 @@ class CustomerService {
             ? APIJarakLocal.listCustomers
             : '${APIJarakLocal.getCustomer}/$query',
       );
-      final result = response.data as Map<String, dynamic>;
-      return CustomerData.fromJson(result);
+      print('Response: ${response.data}');
+      return CustomerData.fromJson(response.data);
     } catch (e) {
+      print('Error fetching customers: $e');
       rethrow;
     }
   }

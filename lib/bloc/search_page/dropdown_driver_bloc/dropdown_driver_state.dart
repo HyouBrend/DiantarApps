@@ -12,15 +12,6 @@ class DriverInitial extends DriverState {}
 
 class DriverLoading extends DriverState {}
 
-class DriverLoaded extends DriverState {
-  final List<DropdownDriveModel> drivers;
-
-  const DriverLoaded(this.drivers);
-
-  @override
-  List<Object> get props => [drivers];
-}
-
 class DriverError extends DriverState {
   final String message;
 
@@ -29,3 +20,14 @@ class DriverError extends DriverState {
   @override
   List<Object> get props => [message];
 }
+
+class DriverHasData extends DriverState {
+  final List<DropdownDriveModel> drivers;
+
+  const DriverHasData(this.drivers);
+
+  @override
+  List<Object> get props => [drivers];
+}
+
+class DriverEmpty extends DriverState {}

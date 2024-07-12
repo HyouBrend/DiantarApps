@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:diantar_jarak/bloc/list_history_page/list_history_page_event.dart';
-import 'package:diantar_jarak/bloc/list_history_page/list_history_page_state.dart';
+import 'package:diantar_jarak/bloc/list_history_page/list_history/list_history_page_event.dart';
+import 'package:diantar_jarak/bloc/list_history_page/list_history/list_history_page_state.dart';
 import 'package:diantar_jarak/data/service/list_history_service/list_history_service.dart';
 import 'package:diantar_jarak/data/models/model_list_history_page/model_list_history_page.dart';
 

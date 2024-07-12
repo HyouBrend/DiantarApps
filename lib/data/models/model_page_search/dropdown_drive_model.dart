@@ -1,4 +1,3 @@
-import 'package:diantar_jarak/data/models/model_page_search/dropdown_customer_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:collection/collection.dart';
 
@@ -7,7 +6,6 @@ class DropdownDriveModel extends Equatable {
   final String? nama;
   final String? noHP;
   final String? posisi;
-  final List<DropdownCustomerModel>? kontaks;
   final String? imageName;
 
   DropdownDriveModel({
@@ -15,7 +13,6 @@ class DropdownDriveModel extends Equatable {
     this.nama,
     this.noHP,
     this.posisi,
-    this.kontaks,
     this.imageName,
   });
 
@@ -25,10 +22,6 @@ class DropdownDriveModel extends Equatable {
       nama: json['Nama'],
       noHP: json['NoHP'],
       posisi: json['Posisi'],
-      kontaks: (json['Kontaks'] as List<dynamic>?)
-          ?.map(
-              (e) => DropdownCustomerModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
       imageName: json['ImageName'],
     );
   }
@@ -39,7 +32,6 @@ class DropdownDriveModel extends Equatable {
       'Nama': nama,
       'NoHP': noHP,
       'Posisi': posisi,
-      'Kontaks': kontaks?.map((e) => e.toJson()).toList(),
       'ImageName': imageName,
     };
   }
@@ -49,7 +41,7 @@ class DropdownDriveModel extends Equatable {
 
   @override
   String toString() {
-    return 'DropdownDriveModel(karyawanID: $karyawanID, nama: $nama, noHP: $noHP, posisi: $posisi, kontaks: $kontaks, imageName: $imageName)';
+    return 'DropdownDriveModel(karyawanID: $karyawanID, nama: $nama, noHP: $noHP, posisi: $posisi, imageName: $imageName)';
   }
 
   @override

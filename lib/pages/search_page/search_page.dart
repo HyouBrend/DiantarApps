@@ -1,13 +1,16 @@
-import 'package:diantar_jarak/bloc/search_page/submit/submit_event.dart';
-import 'package:diantar_jarak/bloc/search_page/submit/submit_state.dart';
-import 'package:diantar_jarak/pages/search_page/search_page_widget/columnlistcustomer.dart';
-import 'package:flutter/material.dart';
-import 'package:diantar_jarak/bloc/search_page/submit/submit_bloc.dart';
+import 'package:diantar_jarak/bloc/submit_pengantaran/submit_pengantaran_bloc.dart';
+import 'package:diantar_jarak/bloc/submit_pengantaran/submit_pengantaran_event.dart';
+import 'package:diantar_jarak/bloc/submit_pengantaran/submit_pengantaran_state.dart';
 import 'package:diantar_jarak/data/models/model_page_result/detail_pengantaran_model.dart';
-import 'package:diantar_jarak/data/models/model_page_search/dropdown_drive_model.dart';
+import 'package:diantar_jarak/data/models/model_page_search/cek_google_model.dart';
 import 'package:diantar_jarak/data/service/result_page_service.dart/detail_pengantaran_service.dart';
-import 'package:diantar_jarak/pages/list_history_page/list_history_page.dart';
 import 'package:diantar_jarak/pages/result_page/detail_customer.dart';
+import 'package:diantar_jarak/pages/search_page/search_page_widget/columnlistcustomer.dart';
+import 'package:diantar_jarak/theme/size.dart';
+import 'package:diantar_jarak/theme/theme.dart';
+import 'package:flutter/material.dart';
+import 'package:diantar_jarak/data/models/model_page_search/dropdown_drive_model.dart';
+import 'package:diantar_jarak/pages/list_history_page/list_history_page.dart';
 import 'package:diantar_jarak/data/models/model_page_search/dropdown_customer_model.dart';
 import 'package:diantar_jarak/data/service/search_page_service/cek_google_service.dart';
 import 'package:diantar_jarak/helpers/network/api_helper.dart';
@@ -19,7 +22,6 @@ import 'package:diantar_jarak/pages/search_page/search_page_widget/dropdown_widg
 import 'package:diantar_jarak/pages/search_page/search_page_widget/dropdown_widget/dropdown_tipekendaraan.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -29,8 +31,6 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  final TextEditingController _googleMapsUrlController =
-      TextEditingController();
   final TextEditingController _shiftController = TextEditingController();
   final TextEditingController _jamPengirimanController =
       TextEditingController();
@@ -39,93 +39,21 @@ class _SearchPageState extends State<SearchPage> {
       TextEditingController();
   final TextEditingController _nomorPolisiKendaraanController =
       TextEditingController();
-  final TextEditingController _createdByController = TextEditingController();
-  final TextEditingController _minDistanceController = TextEditingController();
-  final TextEditingController _minDurationController = TextEditingController();
   final TextEditingController _agentController = TextEditingController();
   final TextEditingController _driverController = TextEditingController();
   DropdownDriveModel? _selectedDriver;
   DropdownVehicleModel? _selectedVehicle;
   List<DropdownCustomerModel> _selectedCustomers = [];
+  late final SubmitPengantaranBloc submitPengantaranBloc;
 
   late final ApiHelper apiHelper;
-  late final SubmitPengantaranService submitPengantaranService;
   late final CekGoogleService cekGoogleService;
 
   _SearchPageState() {
     apiHelper = ApiHelperImpl(dio: Dio());
-    submitPengantaranService = SubmitPengantaranService(apiHelper: apiHelper);
     cekGoogleService = CekGoogleService(apiHelper: apiHelper);
-  }
-
-  void _openGoogleMaps(BuildContext context) async {
-    try {
-      if (_selectedCustomers.isNotEmpty && _selectedDriver != null) {
-        final result = await cekGoogleService.cekGoogle(
-            _selectedCustomers, _selectedDriver!);
-
-        String googleMapsUrl = result.googleMapsUrl;
-        if (await canLaunch(googleMapsUrl)) {
-          await launch(
-            googleMapsUrl,
-            forceSafariVC: false,
-            forceWebView: false,
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Could not launch $googleMapsUrl')),
-          );
-        }
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
-    }
-  }
-
-  void _submitPengantaran() {
-    try {
-      if (_selectedDriver != null && _selectedCustomers.isNotEmpty) {
-        final detailPengantaran = DetailPengantaranModel(
-          googleMapsUrl: _googleMapsUrlController.text,
-          shiftKe: int.tryParse(_shiftController.text) ?? 0,
-          jamPengiriman: _jamPengirimanController.text,
-          jamKembali: _jamKembaliController.text,
-          driverId: _selectedDriver?.karyawanID ?? 0,
-          namaDriver: _selectedDriver?.nama ?? '',
-          tipeKendaraan: _tipeKendaraanController.text,
-          nomorPolisiKendaraan: _nomorPolisiKendaraanController.text,
-          createdBy: _createdByController.text,
-          kontaks: _selectedCustomers
-              .map((customer) => customer.toKontak())
-              .toList(),
-          minDistance: double.tryParse(_minDistanceController.text) ?? 0.0,
-          minDuration: double.tryParse(_minDurationController.text) ?? 0.0,
-        );
-
-        context
-            .read<SubmitBloc>()
-            .add(SubmitPengantaranEvent(detailPengantaran));
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Please select a driver and customers')),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
-    }
-  }
-
-  double? _parseDouble(String value) {
-    try {
-      return double.parse(value);
-    } catch (e) {
-      print('Invalid double: $value');
-      return null;
-    }
+    submitPengantaranBloc = SubmitPengantaranBloc(
+        repository: DetailPengantaranRepository(apiHelper: apiHelper));
   }
 
   void _showLoadingDialog(BuildContext context) {
@@ -138,14 +66,19 @@ class _SearchPageState extends State<SearchPage> {
             borderRadius: BorderRadius.circular(10),
           ),
           child: Padding(
-            padding: EdgeInsets.all(16),
+            padding: EdgeInsets.all(30), // Diperbesar sedikit paddingnya
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const CircularProgressIndicator(),
-                SizedBox(width: 10),
-                const Text("DATA SEDANG DALAM PROSES",
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                CircularProgressIndicator(),
+                SizedBox(width: 18), // Diperbesar sedikit spasinya
+                Text(
+                  "Data sedang diproses",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16, // Ukuran font diperbesar sedikit
+                  ),
+                ),
               ],
             ),
           ),
@@ -156,8 +89,18 @@ class _SearchPageState extends State<SearchPage> {
 
   void _addCustomerDropdown() {
     setState(() {
-      _selectedCustomers
-          .add(DropdownCustomerModel(kontakID: UniqueKey().toString()));
+      _selectedCustomers.add(
+        DropdownCustomerModel(
+          kontakID: UniqueKey().toString(),
+          displayName: '',
+          type: '',
+          latitude: '',
+          lokasi: '',
+          longitude: '',
+          nomorFaktur: '',
+          urutanPengiriman: 0,
+        ),
+      );
     });
   }
 
@@ -177,7 +120,6 @@ class _SearchPageState extends State<SearchPage> {
             Expanded(
               flex: 4,
               child: DropdownCustomer(
-                key: ValueKey(customer.kontakID),
                 onDetailsEntered: (newDetails) {},
                 onCustomerSelected: (selectedCustomer) {
                   setState(() {
@@ -194,8 +136,8 @@ class _SearchPageState extends State<SearchPage> {
               child: ElevatedButton(
                 onPressed: () => _removeCustomerDropdown(customer),
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Colors.red,
+                  foregroundColor: CustomColorPalette.buttonTextColor,
+                  backgroundColor: CustomColorPalette.buttonColor,
                 ),
                 child: const Icon(Icons.remove),
               ),
@@ -206,63 +148,95 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  Widget _buildSubmitButton() {
-    return Center(
-      child: ElevatedButton(
-        onPressed: _submitPengantaran,
-        style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.white,
-          backgroundColor: Colors.blue,
-        ),
-        child: const Text('Submit'),
-      ),
-    );
+  void _submitData() async {
+    try {
+      if (_selectedCustomers.isNotEmpty && _selectedDriver != null) {
+        // Generate Google Maps URL
+        String maps = '';
+        for (int i = 0; i < _selectedCustomers.length; i++) {
+          final customer = _selectedCustomers[i];
+          maps += '/${customer.latitude},${customer.longitude}';
+        }
+        maps = maps.replaceAll(' ', '');
+        String googleMapsUrl = 'https://www.google.com/maps/dir' + maps;
+
+        // Show loading dialog
+        _showLoadingDialog(context);
+
+        // Call the API to get minDistance and minDuration
+        final cekGoogleResult = await cekGoogleService.cekGoogle(
+            _selectedCustomers, _selectedDriver!);
+
+        // Buat objek Kontak dari hasil cekGoogleResult.kontaks yang sudah diurutkan
+        final kontaks = cekGoogleResult.kontaks.map((customer) {
+          return Kontak(
+            displayName: customer.displayName,
+            kontakID: customer.kontakID,
+            type: customer.type,
+            urutanPengiriman: customer.urutanPengiriman,
+            latitude: customer.latitude,
+            lokasi: customer.lokasi,
+            longitude: customer.longitude,
+            nomorFaktur: int.tryParse(customer.nomorFaktur) ?? 0,
+          );
+        }).toList();
+
+        // Create DetailPengantaran object with API response
+        final detailPengantaran = DetailPengantaran(
+          googleMapsUrl: googleMapsUrl,
+          shiftKe: int.parse(_shiftController.text),
+          jamPengiriman: DateTime.now(),
+          jamKembali: DateTime.now().add(Duration(hours: 2)),
+          driverId: _selectedDriver!.karyawanID ?? 0,
+          namaDriver: _selectedDriver!.nama ?? '',
+          tipeKendaraan: _selectedVehicle!.tipe,
+          nomorPolisiKendaraan: _selectedVehicle!.nomorPolisi,
+          createdBy: _agentController.text,
+          kontaks: kontaks,
+          minDistance: cekGoogleResult.minDistance, // Nilai dari API
+          minDuration: cekGoogleResult.minDuration, // Nilai dari API
+        );
+
+        // Close loading dialog
+        Navigator.of(context).pop();
+
+        // Submit detailPengantaran to Bloc
+        submitPengantaranBloc
+            .add(SubmitPengantaran(detailPengantaran: detailPengantaran));
+
+        // Navigate to SubmitResultPage
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                SubmitResultPage(detailPengantaran: detailPengantaran),
+          ),
+        );
+      } else {
+        throw FormatException("Selected customers or driver is invalid");
+      }
+    } catch (e) {
+      // Handle format error
+      Navigator.of(context).pop(); // Close loading dialog if an error occurs
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<SubmitBloc, SubmitState>(
-      listener: (context, state) {
-        if (state is SubmitSuccess) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => DetailCustomer(
-                googleMapsUrl: state.response.googleMapsUrl,
-                shiftKe: state.response.shiftKe.toString(),
-                jamPengiriman: state.response.jamPengiriman,
-                jamKembali: state.response.jamKembali,
-                driverId: state.response.driverId,
-                namaDriver: state.response.namaDriver,
-                tipeKendaraan: state.response.tipeKendaraan,
-                nomorPolisiKendaraan: state.response.nomorPolisiKendaraan,
-                createdBy: state.response.createdBy,
-                kontaks: state.response.kontaks
-                    .map((kontak) => DropdownCustomerModel.fromKontak(kontak))
-                    .toList(),
-                minDistance: state.response.minDistance,
-                minDuration: state.response.minDuration,
-                responseData: state.response.toJson(),
-                submitPengantaranService:
-                    context.read<SubmitPengantaranService>(),
-              ),
-            ),
-          );
-        } else if (state is SubmitFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: ${state.error}')),
-          );
-        }
-      },
+    return BlocProvider(
+      create: (context) => submitPengantaranBloc,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Diantar Jarak',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
           centerTitle: true,
-          backgroundColor: Colors.blue,
+          backgroundColor: CustomColorPalette.backgroundColor,
           actions: [
             IconButton(
-              icon: Icon(Icons.history, color: Colors.white),
+              icon: Icon(Icons.history, color: CustomColorPalette.buttonColor),
               onPressed: () {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => ListHistoryPage()));
@@ -271,132 +245,154 @@ class _SearchPageState extends State<SearchPage> {
             SizedBox(width: 4),
           ],
         ),
-        body: Padding(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Expanded(
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  DropdownAgent(
-                                    controller: _agentController,
-                                    onAgentSelected: (agent) {
-                                      setState(() {
-                                        // Handle agent selected
-                                      });
-                                    },
-                                  ),
-                                  const SizedBox(height: 12),
-                                  DropdownDriver(
-                                    controller: _driverController,
-                                    onPositionSelected: (position) {
-                                      setState(() {
-                                        // Handle position selected
-                                      });
-                                    },
-                                    onDriverSelected: (driver) {
-                                      setState(() {
-                                        _selectedDriver = driver;
-                                      });
-                                    },
-                                  ),
-                                  const SizedBox(height: 12),
-                                  DropdownShift(
-                                    controller: _shiftController,
-                                    onShiftSelected: (shift) {
-                                      setState(() {
-                                        // Handle shift selected
-                                      });
-                                    },
-                                  ),
-                                  const SizedBox(height: 12),
-                                  DropdownTipeKendaraan(
-                                    vehicleTypeController:
-                                        _tipeKendaraanController,
-                                    plateNumberController:
-                                        _nomorPolisiKendaraanController,
-                                    onTipeSelected: (tipe) {
-                                      setState(() {
-                                        _selectedVehicle = DropdownVehicleModel(
-                                          tipe: _tipeKendaraanController.text,
-                                          nomorPolisi:
-                                              _nomorPolisiKendaraanController
-                                                  .text,
-                                        );
-                                      });
-                                    },
-                                    selectedDriver: _selectedDriver,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(width: 4),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: ElevatedButton(
-                              onPressed: _addCustomerDropdown,
-                              style: ElevatedButton.styleFrom(
-                                foregroundColor: Colors.white,
-                                backgroundColor: Colors.green,
-                              ),
-                              child: const Icon(Icons.add),
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Expanded(
-                            child: SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: _selectedCustomers.map((customer) {
-                                  return _buildCustomerDropdown(customer);
-                                }).toList(),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          if (_selectedCustomers.isNotEmpty &&
-                              _selectedDriver != null)
+        body: BlocListener<SubmitPengantaranBloc, SubmitPengantaranState>(
+          listener: (context, state) {
+            if (state is PengantaranSubmitted) {
+              Navigator.of(context).pop(); // Close the loading dialog
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SubmitResultPage(
+                      detailPengantaran: state.detailPengantaran),
+                ),
+              );
+            } else if (state is SubmitPengantaranError) {
+              Navigator.of(context).pop(); // Close the loading dialog
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Error: ${state.message}')),
+              );
+            }
+          },
+          child: Padding(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              children: [
+                Expanded(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
                             Expanded(
-                              child: ColumnCustomerList(
-                                key: UniqueKey(),
-                                selectedCustomers: _selectedCustomers,
-                                selectedDriver: _selectedDriver!,
-                                cekGoogleService: cekGoogleService,
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    DropdownAgent(
+                                      controller: _agentController,
+                                      onAgentSelected: (agent) {
+                                        setState(() {
+                                          // Handle agent selected
+                                        });
+                                      },
+                                    ),
+                                    const SizedBox(height: 12),
+                                    DropdownDriver(
+                                      controller: _driverController,
+                                      onPositionSelected: (position) {
+                                        setState(() {
+                                          // Handle position selected
+                                        });
+                                      },
+                                      onDriverSelected: (driver) {
+                                        setState(() {
+                                          _selectedDriver = driver;
+                                        });
+                                      },
+                                    ),
+                                    const SizedBox(height: 12),
+                                    DropdownShift(
+                                      controller: _shiftController,
+                                      onShiftSelected: (shift) {
+                                        setState(() {
+                                          // Handle shift selected
+                                        });
+                                      },
+                                    ),
+                                    const SizedBox(height: 12),
+                                    DropdownTipeKendaraan(
+                                      vehicleTypeController:
+                                          _tipeKendaraanController,
+                                      plateNumberController:
+                                          _nomorPolisiKendaraanController,
+                                      onTipeSelected: (tipe) {
+                                        setState(() {
+                                          _selectedVehicle =
+                                              DropdownVehicleModel(
+                                            tipe: _tipeKendaraanController.text,
+                                            nomorPolisi:
+                                                _nomorPolisiKendaraanController
+                                                    .text,
+                                          );
+                                        });
+                                      },
+                                      selectedDriver: _selectedDriver,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                      SizedBox(width: Sizes.dp3(context)),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: ElevatedButton(
+                                onPressed: _addCustomerDropdown,
+                                style: ElevatedButton.styleFrom(
+                                  foregroundColor:
+                                      CustomColorPalette.buttonTextColor,
+                                  backgroundColor:
+                                      CustomColorPalette.buttonColor,
+                                ),
+                                child: const Icon(Icons.add),
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Expanded(
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: _selectedCustomers.map((customer) {
+                                    return _buildCustomerDropdown(customer);
+                                  }).toList(),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            if (_selectedCustomers.isNotEmpty &&
+                                _selectedDriver != null)
+                              Expanded(
+                                child: ColumnCustomerList(
+                                  key: UniqueKey(),
+                                  selectedCustomers: _selectedCustomers,
+                                  selectedDriver: _selectedDriver!,
+                                  cekGoogleService: cekGoogleService,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _submitPengantaran,
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Colors.blue,
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: _submitData,
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: CustomColorPalette.buttonTextColor,
+                    backgroundColor: CustomColorPalette.buttonColor,
+                  ),
+                  child: const Text('Submit'),
                 ),
-                child: Text('Submit'),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

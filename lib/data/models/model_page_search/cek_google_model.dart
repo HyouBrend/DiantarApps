@@ -1,8 +1,8 @@
-import 'package:diantar_jarak/data/models/model_page_result/detail_pengantaran_model.dart';
+import 'package:diantar_jarak/data/models/model_page_search/dropdown_customer_model.dart';
 
 class CekGoogleResult {
   final String googleMapsUrl;
-  final List<KontakModel> kontaks;
+  final List<DropdownCustomerModel> kontaks;
   final double minDistance;
   final double minDuration;
 
@@ -17,7 +17,7 @@ class CekGoogleResult {
     return CekGoogleResult(
       googleMapsUrl: json['data']['google_maps_url'],
       kontaks: (json['data']['kontaks'] as List<dynamic>)
-          .map((item) => KontakModel.fromJson(item))
+          .map((item) => DropdownCustomerModel.fromJson(item))
           .toList(),
       minDistance: json['data']['min_distance'],
       minDuration: json['data']['min_duration'],

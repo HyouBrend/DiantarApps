@@ -8,29 +8,18 @@ class DriverBloc extends Bloc<DriverEvent, DriverState> {
   final DropdriveService dropdriveService;
 
   DriverBloc({required this.dropdriveService}) : super(DriverInitial()) {
-    on<FetchDrivers>(_onFetchDrivers);
-    // Memanggil FetchDrivers saat inisialisasi
-    add(FetchDrivers(''));
-  }
-
-  void _onFetchDrivers(FetchDrivers event, Emitter<DriverState> emit) async {
-    emit(DriverLoading());
-    try {
-      print('Fetching drivers for query: ${event.query}');
-      final drivers = await dropdriveService.getDrivers(event.query);
-      final filteredDrivers = drivers.data
-              ?.where((driver) =>
-                  driver.nama
-                      ?.toLowerCase()
-                      .contains(event.query.toLowerCase()) ??
-                  false)
-              .toList() ??
-          [];
-      print('Drivers fetched: ${filteredDrivers.length}');
-      emit(DriverLoaded(filteredDrivers));
-    } catch (e) {
-      print('Error fetching drivers: $e'); // Logging error detail
-      emit(DriverError('Failed to fetch drivers'));
-    }
+    on<FetchDrivers>((event, emit) async {
+      emit(DriverLoading());
+      try {
+        final result = await dropdriveService.getDrivers(event.query);
+        if (result.data.isNotEmpty) {
+          emit(DriverHasData(result.data));
+        } else {
+          emit(DriverEmpty());
+        }
+      } catch (error) {
+        emit(DriverError(error.toString()));
+      }
+    });
   }
 }

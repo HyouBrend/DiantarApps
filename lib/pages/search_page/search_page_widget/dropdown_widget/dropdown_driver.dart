@@ -26,6 +26,7 @@ class DropdownDriver extends StatefulWidget {
 
 class _DropdownDriverState extends State<DropdownDriver> {
   DropdownDriveModel? selectedDriver;
+  bool _isLoading = false; // Variabel state untuk mengelola loading
 
   @override
   Widget build(BuildContext context) {
@@ -33,54 +34,81 @@ class _DropdownDriverState extends State<DropdownDriver> {
       children: [
         SizedBox(
           width: Sizes.dp94(context),
-          child: TypeAheadFormField<DropdownDriveModel>(
-            textFieldConfiguration: TextFieldConfiguration(
-              controller: widget.controller,
-              decoration: InputDecoration(
-                labelText: 'Driver',
-                labelStyle: TextStyle(fontSize: 14),
-                hintText: 'Enter driver name',
-                hintStyle: TextStyle(
-                    color: CustomColorPalette.hintTextColor, fontSize: 14),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                ),
-                filled: true,
-                fillColor: CustomColorPalette.surfaceColor,
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                isDense: true, // Reduces the height of the TextField
-              ),
-              style: TextStyle(fontSize: 14),
-            ),
-            suggestionsCallback: (pattern) async {
-              context.read<DriverBloc>().add(FetchDrivers(pattern));
-              await Future.delayed(const Duration(milliseconds: 500));
-              final state = context.read<DriverBloc>().state;
-              if (state is DriverLoaded) {
-                return state.drivers.take(10).toList();
+          child: BlocListener<DriverBloc, DriverState>(
+            listener: (context, state) {
+              if (state is DriverLoading) {
+                setState(() {
+                  _isLoading = true;
+                });
+              } else {
+                setState(() {
+                  _isLoading = false;
+                });
               }
-              return [];
             },
-            itemBuilder: (context, DropdownDriveModel suggestion) {
-              return ListTile(
-                title:
-                    Text(suggestion.nama ?? '', style: TextStyle(fontSize: 14)),
-              );
-            },
-            onSuggestionSelected: (DropdownDriveModel suggestion) {
-              setState(() {
-                widget.controller.text = suggestion.nama ?? '';
-                widget.onPositionSelected(suggestion.posisi ?? '');
-                selectedDriver = suggestion;
-                widget.onDriverSelected(suggestion);
-              });
-            },
-            noItemsFoundBuilder: (context) => Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text('No drivers found',
-                  style: TextStyle(
-                      color: CustomColorPalette.textColor, fontSize: 14)),
+            child: TypeAheadFormField<DropdownDriveModel>(
+              textFieldConfiguration: TextFieldConfiguration(
+                controller: widget.controller,
+                decoration: InputDecoration(
+                  labelText: 'Driver',
+                  labelStyle: TextStyle(fontSize: 14),
+                  hintText: 'Masukkan nama driver',
+                  hintStyle: TextStyle(
+                      color: CustomColorPalette.hintTextColor, fontSize: 14),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                  ),
+                  filled: true,
+                  fillColor: CustomColorPalette.surfaceColor,
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                  isDense: true, // Mengurangi tinggi TextField
+                ),
+                style: TextStyle(fontSize: 14),
+              ),
+              suggestionsCallback: (pattern) async {
+                context.read<DriverBloc>().add(FetchDrivers(query: pattern));
+                final state =
+                    await context.read<DriverBloc>().stream.firstWhere(
+                          (state) => state is! DriverLoading,
+                        );
+
+                if (state is DriverHasData) {
+                  return state.drivers.where((driver) => driver.nama!
+                      .toLowerCase()
+                      .contains(pattern.toLowerCase()));
+                }
+                return [];
+              },
+              itemBuilder: (context, DropdownDriveModel suggestion) {
+                return ListTile(
+                  title: Text(suggestion.nama ?? '',
+                      style: TextStyle(fontSize: 14)),
+                );
+              },
+              onSuggestionSelected: (DropdownDriveModel suggestion) {
+                setState(() {
+                  widget.controller.text = suggestion.nama ?? '';
+                  widget.onPositionSelected(suggestion.posisi ?? '');
+                  selectedDriver = suggestion;
+                  widget.onDriverSelected(suggestion);
+                });
+              },
+              noItemsFoundBuilder: (context) => Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text('Driver tidak ditemukan',
+                    style: TextStyle(
+                        color: CustomColorPalette.textColor, fontSize: 14)),
+              ),
+              loadingBuilder: (context) => Center(
+                child: CircularProgressIndicator(),
+              ),
+              hideOnLoading:
+                  !_isLoading, // Mengontrol visibilitas indikator loading
+              suggestionsBoxDecoration: SuggestionsBoxDecoration(
+                constraints: BoxConstraints(
+                    maxHeight: 500), // Mengatur tinggi maksimal dropdown
+              ),
             ),
           ),
         ),

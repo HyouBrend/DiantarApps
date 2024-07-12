@@ -29,6 +29,178 @@ class _DropdownCustomerState extends State<DropdownCustomer> {
   final TextEditingController _typeAheadController = TextEditingController();
   final TextEditingController _latitudeController = TextEditingController();
   final TextEditingController _longitudeController = TextEditingController();
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.selectedCustomer != null) {
+      _typeAheadController.text = widget.selectedCustomer!.displayName;
+      _latitudeController.text = widget.selectedCustomer!.latitude ?? '';
+      _longitudeController.text = widget.selectedCustomer!.longitude ?? '';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<CustomerBloc, CustomerState>(
+      listener: (context, state) {
+        if (state is CustomerLoading) {
+          setState(() {
+            _isLoading = true;
+          });
+        } else {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      },
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: TypeAheadFormField<DropdownCustomerModel>(
+                  textFieldConfiguration: TextFieldConfiguration(
+                    controller: _typeAheadController,
+                    decoration: InputDecoration(
+                      labelText: 'Pelanggan',
+                      labelStyle: const TextStyle(fontSize: 14),
+                      hintText: 'Masukkan Nama Pelanggan',
+                      hintStyle: const TextStyle(fontSize: 14),
+                      border: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                      ),
+                      filled: true,
+                      fillColor: CustomColorPalette.surfaceColor,
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 12),
+                      isDense: true, // Mengurangi tinggi TextField
+                    ),
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  suggestionsCallback: (pattern) async {
+                    context
+                        .read<CustomerBloc>()
+                        .add(FetchCustomers(query: pattern));
+                    final state =
+                        await context.read<CustomerBloc>().stream.firstWhere(
+                              (state) => state is! CustomerLoading,
+                            );
+
+                    if (state is CustomerHasData) {
+                      return state.customers
+                          .where((customer) => customer.displayName
+                              .toLowerCase()
+                              .contains(pattern.toLowerCase()))
+                          .take(10)
+                          .toList();
+                    }
+                    return [];
+                  },
+                  itemBuilder: (context, DropdownCustomerModel suggestion) {
+                    return ListTile(
+                      title: Text(suggestion.displayName,
+                          style: const TextStyle(fontSize: 14)),
+                    );
+                  },
+                  onSuggestionSelected: (DropdownCustomerModel suggestion) {
+                    setState(() {
+                      _typeAheadController.text = suggestion.displayName;
+                      _latitudeController.text = suggestion.latitude ?? '';
+                      _longitudeController.text = suggestion.longitude ?? '';
+                      widget.onDetailsEntered({
+                        'name': suggestion.displayName,
+                        'latitude': suggestion.latitude ?? '',
+                        'longitude': suggestion.longitude ?? '',
+                      });
+                      widget.onCustomerSelected(suggestion);
+                    });
+                  },
+                  noItemsFoundBuilder: (context) => const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('Pelanggan Tidak Ada',
+                        style: TextStyle(fontSize: 14)),
+                  ),
+                  loadingBuilder: (context) => Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                  hideOnLoading:
+                      !_isLoading, // Mengontrol visibilitas indikator loading
+                  suggestionsBoxDecoration: SuggestionsBoxDecoration(
+                    constraints: BoxConstraints(
+                        maxHeight: 500), // Mengatur tinggi maksimal dropdown
+                  ),
+                ),
+              ),
+              SizedBox(width: Sizes.dp4(context)),
+              Expanded(
+                flex: 1,
+                child: TextFormField(
+                  controller: _latitudeController,
+                  decoration: const InputDecoration(
+                    labelText: 'Latitude',
+                    labelStyle: TextStyle(fontSize: 14),
+                    hintStyle: TextStyle(fontSize: 14),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                    ),
+                    filled: true,
+                    contentPadding:
+                        EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                    isDense: true, // Mengurangi tinggi TextField
+                  ),
+                  style: const TextStyle(fontSize: 14),
+                ),
+              ),
+              SizedBox(width: Sizes.dp4(context)),
+              Expanded(
+                flex: 1,
+                child: TextFormField(
+                  controller: _longitudeController,
+                  decoration: const InputDecoration(
+                    labelText: 'Longitude',
+                    labelStyle: TextStyle(fontSize: 14),
+                    hintStyle: TextStyle(fontSize: 14),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                    ),
+                    filled: true,
+                    contentPadding:
+                        EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                    isDense: true, // Mengurangi tinggi TextField
+                  ),
+                  style: const TextStyle(fontSize: 14),
+                ),
+              ),
+              SizedBox(width: Sizes.dp4(context)),
+              IconButton(
+                icon: Icon(Icons.location_on,
+                    color: CustomColorPalette.textColor),
+                onPressed: () {
+                  final lat = _latitudeController.text;
+                  final lon = _longitudeController.text;
+                  if (lat.isNotEmpty && lon.isNotEmpty) {
+                    _launchMapsUrl(lat, lon);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content:
+                            Text('Latitude dan Longitude tidak boleh kosong'),
+                      ),
+                    );
+                  }
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          if (widget.selectedCustomer != null) Container(),
+        ],
+      ),
+    );
+  }
 
   void _launchMapsUrl(String lat, String lon) async {
     final url = 'https://www.google.com/maps/search/?api=1&query=$lat,$lon';
@@ -37,149 +209,5 @@ class _DropdownCustomerState extends State<DropdownCustomer> {
     } else {
       throw 'Could not launch $url';
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.selectedCustomer != null) {
-      _typeAheadController.text = widget.selectedCustomer!.displayName ?? '';
-      _latitudeController.text = widget.selectedCustomer!.latitude ?? '';
-      _longitudeController.text = widget.selectedCustomer!.longitude ?? '';
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<CustomerBloc, CustomerState>(
-      builder: (context, state) {
-        return Column(
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: TypeAheadFormField<DropdownCustomerModel>(
-                    textFieldConfiguration: TextFieldConfiguration(
-                      controller: _typeAheadController,
-                      decoration: InputDecoration(
-                        labelText: 'Pelanggan',
-                        labelStyle: const TextStyle(fontSize: 14),
-                        hintText: 'Masukkan Nama Pelanggan',
-                        hintStyle: const TextStyle(fontSize: 14),
-                        border: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                        ),
-                        filled: true,
-                        fillColor: CustomColorPalette.surfaceColor,
-                        contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 12),
-                        isDense: true, // Reduces the height of the TextField
-                      ),
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                    suggestionsCallback: (pattern) async {
-                      context.read<CustomerBloc>().add(FetchCustomers(pattern));
-                      await Future.delayed(const Duration(milliseconds: 500));
-                      final state = context.read<CustomerBloc>().state;
-                      if (state is CustomerLoaded) {
-                        return state.customers.take(10).toList();
-                      }
-                      return [];
-                    },
-                    itemBuilder: (context, DropdownCustomerModel suggestion) {
-                      return ListTile(
-                        title: Text(suggestion.displayName ?? '',
-                            style: const TextStyle(fontSize: 14)),
-                      );
-                    },
-                    onSuggestionSelected: (DropdownCustomerModel suggestion) {
-                      setState(() {
-                        _typeAheadController.text =
-                            suggestion.displayName ?? '';
-                        _latitudeController.text = suggestion.latitude ?? '';
-                        _longitudeController.text = suggestion.longitude ?? '';
-                        widget.onDetailsEntered({
-                          'name': suggestion.displayName ?? '',
-                          'latitude': suggestion.latitude ?? '',
-                          'longitude': suggestion.longitude ?? '',
-                        });
-                        widget.onCustomerSelected(suggestion);
-                      });
-                    },
-                    noItemsFoundBuilder: (context) => const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text('Pelanggan Tidak Ada',
-                          style: TextStyle(fontSize: 14)),
-                    ),
-                  ),
-                ),
-                SizedBox(width: Sizes.dp4(context)),
-                Expanded(
-                  flex: 1,
-                  child: TextFormField(
-                    controller: _latitudeController,
-                    decoration: const InputDecoration(
-                      labelText: 'Latitude',
-                      labelStyle: TextStyle(fontSize: 14),
-                      hintStyle: TextStyle(fontSize: 14),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                      ),
-                      filled: true,
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                      isDense: true, // Reduces the height of the TextField
-                    ),
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                ),
-                SizedBox(width: Sizes.dp4(context)),
-                Expanded(
-                  flex: 1,
-                  child: TextFormField(
-                    controller: _longitudeController,
-                    decoration: const InputDecoration(
-                      labelText: 'Longitude',
-                      labelStyle: TextStyle(fontSize: 14),
-                      hintStyle: TextStyle(fontSize: 14),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                      ),
-                      filled: true,
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                      isDense: true, // Reduces the height of the TextField
-                    ),
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                ),
-                SizedBox(width: Sizes.dp4(context)),
-                IconButton(
-                  icon: Icon(Icons.location_on,
-                      color: CustomColorPalette.textColor),
-                  onPressed: () {
-                    final lat = _latitudeController.text;
-                    final lon = _longitudeController.text;
-                    if (lat.isNotEmpty && lon.isNotEmpty) {
-                      _launchMapsUrl(lat, lon);
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content:
-                              Text('Latitude dan Longitude tidak boleh kosong'),
-                        ),
-                      );
-                    }
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            if (widget.selectedCustomer != null) Container(),
-          ],
-        );
-      },
-    );
   }
 }
