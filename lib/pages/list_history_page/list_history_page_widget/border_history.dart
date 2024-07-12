@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:diantar_jarak/data/models/model_list_history_page/model_list_history_page.dart';
+import 'package:flutter/material.dart';
 import 'package:diantar_jarak/pages/history_page/history_page.dart';
 import 'package:diantar_jarak/theme/theme.dart';
 
 class BorderHistory extends StatefulWidget {
-  final List<ListHistoryModel> historyItems;
+  final List<HistoryPengantaranModel> historyItems;
 
   const BorderHistory({Key? key, required this.historyItems}) : super(key: key);
 

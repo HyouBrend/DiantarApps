@@ -13,31 +13,29 @@ class ListHistoryPage extends StatefulWidget {
 }
 
 class _ListHistoryPageState extends State<ListHistoryPage> {
-  late ListHistoryService _listHistoryService;
-  late Future<ListHistoryModelData> _futureListHistory;
+  late HistoryPengantaranService historyPengantaranService;
+  late Future<HistoryPengantaranModelData> _futureListHistory;
   int _currentPage = 1;
   static const int _itemsPerPage = 10;
 
   @override
   void initState() {
     super.initState();
-    _listHistoryService =
-        ListHistoryService(apiHelper: ApiHelperImpl(dio: Dio()));
-    _futureListHistory = _listHistoryService.getAllHistories();
+    historyPengantaranService = HistoryPengantaranService(apiHelper: ApiHelperImpl(dio: Dio()));
+    _futureListHistory = historyPengantaranService.getAllHistories();
   }
 
-  List<ListHistoryModel> _getPaginatedItems(List<ListHistoryModel> items) {
+  List<HistoryPengantaranModel> _getPaginatedItems(List<HistoryPengantaranModel> items) {
     final startIndex = (_currentPage - 1) * _itemsPerPage;
     final endIndex = (_currentPage * _itemsPerPage);
-    return items.sublist(
-        startIndex, endIndex > items.length ? items.length : endIndex);
+    return items.sublist(startIndex, endIndex > items.length ? items.length : endIndex);
   }
 
   Widget _buildPaginationControls(int totalItems) {
     final totalPages = (totalItems / _itemsPerPage).ceil();
     return Container(
-      height: 50, // Tinggi pagination control
-      margin: EdgeInsets.only(bottom: 16), // Jarak bawah pagination control
+      height: 50,
+      margin: EdgeInsets.only(bottom: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: List.generate(totalPages, (index) {
@@ -50,9 +48,7 @@ class _ListHistoryPageState extends State<ListHistoryPage> {
             child: Text(
               '${index + 1}',
               style: TextStyle(
-                fontWeight: _currentPage == index + 1
-                    ? FontWeight.bold
-                    : FontWeight.normal,
+                fontWeight: _currentPage == index + 1 ? FontWeight.bold : FontWeight.normal,
               ),
             ),
           );
@@ -68,7 +64,7 @@ class _ListHistoryPageState extends State<ListHistoryPage> {
         title: Text('List History'),
         backgroundColor: CustomColorPalette.backgroundColor,
       ),
-      body: FutureBuilder<ListHistoryModelData>(
+      body: FutureBuilder<HistoryPengantaranModelData>(
         future: _futureListHistory,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {

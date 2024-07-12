@@ -14,7 +14,6 @@ class SearchHistory extends StatefulWidget {
 }
 
 class _SearchHistoryState extends State<SearchHistory> {
-  String? _selectedDriver;
   DropdownDriveModel? selectedDriverModel;
   bool _isLoading = false; // State variable to manage loading state
 

@@ -1,8 +1,9 @@
-import 'package:diantar_jarak/bloc/submit_pengantaran/submit_pengantaran_bloc.dart';
-import 'package:diantar_jarak/bloc/submit_pengantaran/submit_pengantaran_event.dart';
-import 'package:diantar_jarak/bloc/submit_pengantaran/submit_pengantaran_state.dart';
+import 'package:diantar_jarak/bloc/search_page/submit_pengantaran/submit_pengantaran_bloc.dart';
+import 'package:diantar_jarak/bloc/search_page/submit_pengantaran/submit_pengantaran_event.dart';
+import 'package:diantar_jarak/bloc/search_page/submit_pengantaran/submit_pengantaran_state.dart';
+import 'package:diantar_jarak/data/models/model_list_history_page/model_list_history_page.dart';
 import 'package:diantar_jarak/data/models/model_page_result/detail_pengantaran_model.dart';
-import 'package:diantar_jarak/data/models/model_page_search/cek_google_model.dart';
+import 'package:diantar_jarak/data/service/list_history_service/list_history_service.dart';
 import 'package:diantar_jarak/data/service/result_page_service.dart/detail_pengantaran_service.dart';
 import 'package:diantar_jarak/pages/result_page/detail_customer.dart';
 import 'package:diantar_jarak/pages/search_page/search_page_widget/columnlistcustomer.dart';
@@ -32,13 +33,10 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   final TextEditingController _shiftController = TextEditingController();
-  final TextEditingController _jamPengirimanController =
-      TextEditingController();
+  final TextEditingController _jamPengirimanController = TextEditingController();
   final TextEditingController _jamKembaliController = TextEditingController();
-  final TextEditingController _tipeKendaraanController =
-      TextEditingController();
-  final TextEditingController _nomorPolisiKendaraanController =
-      TextEditingController();
+  final TextEditingController _tipeKendaraanController = TextEditingController();
+  final TextEditingController _nomorPolisiKendaraanController = TextEditingController();
   final TextEditingController _agentController = TextEditingController();
   final TextEditingController _driverController = TextEditingController();
   DropdownDriveModel? _selectedDriver;
@@ -48,12 +46,13 @@ class _SearchPageState extends State<SearchPage> {
 
   late final ApiHelper apiHelper;
   late final CekGoogleService cekGoogleService;
+  late final HistoryPengantaranService historyPengantaranService; // Tambahkan ini
 
   _SearchPageState() {
     apiHelper = ApiHelperImpl(dio: Dio());
     cekGoogleService = CekGoogleService(apiHelper: apiHelper);
-    submitPengantaranBloc = SubmitPengantaranBloc(
-        repository: DetailPengantaranRepository(apiHelper: apiHelper));
+    historyPengantaranService = HistoryPengantaranService(apiHelper: apiHelper); // Tambahkan ini
+    submitPengantaranBloc = SubmitPengantaranBloc(repository: DetailPengantaranRepository(apiHelper: apiHelper));
   }
 
   void _showLoadingDialog(BuildContext context) {
@@ -164,8 +163,7 @@ class _SearchPageState extends State<SearchPage> {
         _showLoadingDialog(context);
 
         // Call the API to get minDistance and minDuration
-        final cekGoogleResult = await cekGoogleService.cekGoogle(
-            _selectedCustomers, _selectedDriver!);
+        final cekGoogleResult = await cekGoogleService.cekGoogle(_selectedCustomers, _selectedDriver!);
 
         // Buat objek Kontak dari hasil cekGoogleResult.kontaks yang sudah diurutkan
         final kontaks = cekGoogleResult.kontaks.map((customer) {
@@ -201,15 +199,16 @@ class _SearchPageState extends State<SearchPage> {
         Navigator.of(context).pop();
 
         // Submit detailPengantaran to Bloc
-        submitPengantaranBloc
-            .add(SubmitPengantaran(detailPengantaran: detailPengantaran));
+        submitPengantaranBloc.add(SubmitPengantaran(detailPengantaran: detailPengantaran));
+
+        // Save to history
+        await historyPengantaranService.getAllHistories();
 
         // Navigate to SubmitResultPage
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                SubmitResultPage(detailPengantaran: detailPengantaran),
+            builder: (context) => SubmitResultPage(detailPengantaran: detailPengantaran),
           ),
         );
       } else {
@@ -230,16 +229,14 @@ class _SearchPageState extends State<SearchPage> {
       create: (context) => submitPengantaranBloc,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Diantar Jarak',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          title: const Text('Diantar Jarak', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
           centerTitle: true,
           backgroundColor: CustomColorPalette.backgroundColor,
           actions: [
             IconButton(
               icon: Icon(Icons.history, color: CustomColorPalette.buttonColor),
               onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => ListHistoryPage()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => ListHistoryPage()));
               },
             ),
             SizedBox(width: 4),
@@ -252,8 +249,7 @@ class _SearchPageState extends State<SearchPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => SubmitResultPage(
-                      detailPengantaran: state.detailPengantaran),
+                  builder: (context) => SubmitResultPage(detailPengantaran: state.detailPengantaran),
                 ),
               );
             } else if (state is SubmitPengantaranError) {
@@ -312,18 +308,13 @@ class _SearchPageState extends State<SearchPage> {
                                     ),
                                     const SizedBox(height: 12),
                                     DropdownTipeKendaraan(
-                                      vehicleTypeController:
-                                          _tipeKendaraanController,
-                                      plateNumberController:
-                                          _nomorPolisiKendaraanController,
+                                      vehicleTypeController: _tipeKendaraanController,
+                                      plateNumberController: _nomorPolisiKendaraanController,
                                       onTipeSelected: (tipe) {
                                         setState(() {
-                                          _selectedVehicle =
-                                              DropdownVehicleModel(
+                                          _selectedVehicle = DropdownVehicleModel(
                                             tipe: _tipeKendaraanController.text,
-                                            nomorPolisi:
-                                                _nomorPolisiKendaraanController
-                                                    .text,
+                                            nomorPolisi: _nomorPolisiKendaraanController.text,
                                           );
                                         });
                                       },
@@ -346,10 +337,8 @@ class _SearchPageState extends State<SearchPage> {
                               child: ElevatedButton(
                                 onPressed: _addCustomerDropdown,
                                 style: ElevatedButton.styleFrom(
-                                  foregroundColor:
-                                      CustomColorPalette.buttonTextColor,
-                                  backgroundColor:
-                                      CustomColorPalette.buttonColor,
+                                  foregroundColor: CustomColorPalette.buttonTextColor,
+                                  backgroundColor: CustomColorPalette.buttonColor,
                                 ),
                                 child: const Icon(Icons.add),
                               ),
@@ -366,8 +355,7 @@ class _SearchPageState extends State<SearchPage> {
                               ),
                             ),
                             const SizedBox(height: 20),
-                            if (_selectedCustomers.isNotEmpty &&
-                                _selectedDriver != null)
+                            if (_selectedCustomers.isNotEmpty && _selectedDriver != null)
                               Expanded(
                                 child: ColumnCustomerList(
                                   key: UniqueKey(),

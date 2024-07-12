@@ -1,62 +1,79 @@
-import 'package:collection/collection.dart';
+import 'package:equatable/equatable.dart';
 
-class ListHistoryModel {
-  final String nama;
-  final String waktuPesanan;
-  final String status; // Add status field
+class HistoryPengantaranModel extends Equatable {
+  final String perjalananId;
+  final int shiftKe;
+  final String jamPengiriman;
+  final String jamKembali;
+  final String namaDriver;
+  final String tipeKendaraan;
+  final String nomorPolisiKendaraan;
+  final double minJarakPengiriman;
+  final double minDurasiPengiriman;
 
-  ListHistoryModel({
-    required this.nama,
-    required this.waktuPesanan,
-    required this.status, // Add status to the constructor
+  HistoryPengantaranModel({
+    required this.perjalananId,
+    required this.shiftKe,
+    required this.jamPengiriman,
+    required this.jamKembali,
+    required this.namaDriver,
+    required this.tipeKendaraan,
+    required this.nomorPolisiKendaraan,
+    required this.minJarakPengiriman,
+    required this.minDurasiPengiriman,
   });
 
-  factory ListHistoryModel.fromJson(Map<String, dynamic> json) {
-    return ListHistoryModel(
-      nama: json['nama'],
-      waktuPesanan: json['waktuPesanan'],
-      status: json['status'], // Parse status from JSON
+  factory HistoryPengantaranModel.fromJson(Map<String, dynamic> json) {
+    return HistoryPengantaranModel(
+      perjalananId: json['perjalanan_id'],
+      shiftKe: json['shift_ke'],
+      jamPengiriman: json['jam_pengiriman'],
+      jamKembali: json['jam_kembali'],
+      namaDriver: json['nama_driver'],
+      tipeKendaraan: json['tipe_kendaraan'],
+      nomorPolisiKendaraan: json['nomor_polisi_kendaraan'],
+      minJarakPengiriman: json['min_jarak_pengiriman'],
+      minDurasiPengiriman: json['min_durasi_pengiriman'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'nama': nama,
-      'waktuPesanan': waktuPesanan,
-      'status': status, // Include status in JSON
+      'perjalanan_id': perjalananId,
+      'shift_ke': shiftKe,
+      'jam_pengiriman': jamPengiriman,
+      'jam_kembali': jamKembali,
+      'nama_driver': namaDriver,
+      'tipe_kendaraan': tipeKendaraan,
+      'nomor_polisi_kendaraan': nomorPolisiKendaraan,
+      'min_jarak_pengiriman': minJarakPengiriman,
+      'min_durasi_pengiriman': minDurasiPengiriman,
     };
   }
 
   @override
-  String toString() {
-    return 'ListHistoryModel(nama: $nama, waktuPesanan: $waktuPesanan, status: $status)';
-  }
-
-  @override
-  bool operator ==(covariant ListHistoryModel other) {
-    if (identical(this, other)) return true;
-    return other.nama == nama &&
-        other.waktuPesanan == waktuPesanan &&
-        other.status == status;
-  }
-
-  @override
-  int get hashCode {
-    return nama.hashCode ^ waktuPesanan.hashCode ^ status.hashCode;
-  }
+  List<Object> get props => [
+        perjalananId,
+        shiftKe,
+        jamPengiriman,
+        jamKembali,
+        namaDriver,
+        tipeKendaraan,
+        nomorPolisiKendaraan,
+        minJarakPengiriman,
+        minDurasiPengiriman,
+      ];
 }
 
-class ListHistoryModelData {
-  final List<ListHistoryModel> data;
+class HistoryPengantaranModelData {
+  final List<HistoryPengantaranModel> data;
 
-  ListHistoryModelData({
-    required this.data,
-  });
+  HistoryPengantaranModelData({required this.data});
 
-  factory ListHistoryModelData.fromJson(Map<String, dynamic> json) {
-    return ListHistoryModelData(
+  factory HistoryPengantaranModelData.fromJson(Map<String, dynamic> json) {
+    return HistoryPengantaranModelData(
       data: (json['data'] as List)
-          .map((item) => ListHistoryModel.fromJson(item))
+          .map((item) => HistoryPengantaranModel.fromJson(item))
           .toList(),
     );
   }
@@ -65,22 +82,5 @@ class ListHistoryModelData {
     return {
       'data': data.map((item) => item.toJson()).toList(),
     };
-  }
-
-  @override
-  String toString() {
-    return 'ListHistoryModelData(data: $data)';
-  }
-
-  @override
-  bool operator ==(covariant ListHistoryModelData other) {
-    if (identical(this, other)) return true;
-    final listEquals = const DeepCollectionEquality().equals;
-    return listEquals(other.data, data);
-  }
-
-  @override
-  int get hashCode {
-    return data.hashCode;
   }
 }

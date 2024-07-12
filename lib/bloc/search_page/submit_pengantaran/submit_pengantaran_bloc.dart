@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
-import 'package:diantar_jarak/bloc/submit_pengantaran/submit_pengantaran_event.dart';
-import 'package:diantar_jarak/bloc/submit_pengantaran/submit_pengantaran_state.dart';
+import 'package:diantar_jarak/bloc/search_page/submit_pengantaran/submit_pengantaran_event.dart';
+import 'package:diantar_jarak/bloc/search_page/submit_pengantaran/submit_pengantaran_state.dart';
 import 'package:diantar_jarak/data/service/result_page_service.dart/detail_pengantaran_service.dart';
 
 class SubmitPengantaranBloc
