@@ -9,7 +9,8 @@ class HistoryPengantaranService {
 
   Future<HistoryPengantaranModelData> getAllHistories() async {
     try {
-      final response = await apiHelper.get(url: APIJarakLocal.historyPengantaran);
+      final response =
+          await apiHelper.get(url: APIJarakLocal.historyPengantaran);
       print('Response: ${response.data}');
       return HistoryPengantaranModelData.fromJson(response.data);
     } catch (e) {

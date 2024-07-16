@@ -5,7 +5,7 @@ import 'package:diantar_jarak/bloc/search_page/dropdown_customer_bloc/dropdown_c
 import 'package:diantar_jarak/bloc/search_page/dropdown_customer_bloc/dropdown_customer_event.dart';
 import 'package:diantar_jarak/bloc/search_page/dropdown_customer_bloc/dropdown_customer_state.dart';
 import 'package:diantar_jarak/data/models/model_page_search/dropdown_customer_model.dart';
-import 'package:diantar_jarak/theme/size.dart';
+import 'package:diantar_jarak/util/size.dart';
 import 'package:diantar_jarak/theme/theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 

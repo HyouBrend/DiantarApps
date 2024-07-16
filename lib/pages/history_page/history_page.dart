@@ -1,9 +1,9 @@
+import 'package:diantar_jarak/data/models/model_list_history_page/model_list_history_page.dart';
 import 'package:diantar_jarak/theme/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:diantar_jarak/data/models/model_list_history_page/model_list_history_page.dart';
 
 class HistoryPage extends StatelessWidget {
-  final ListHistoryModel historyItem;
+  final HistoryPengantaranModel historyItem;
 
   const HistoryPage({Key? key, required this.historyItem}) : super(key: key);
 
@@ -20,13 +20,8 @@ class HistoryPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Name: ${historyItem.nama}',
+              'Name: ${historyItem.namaDriver}',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'Order Time: ${historyItem.waktuPesanan}',
-              style: TextStyle(fontSize: 18),
             ),
           ],
         ),

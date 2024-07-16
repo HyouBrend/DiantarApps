@@ -23,4 +23,14 @@ class CustomColorPalette {
   static Color borderColor = Color(0xFFA2A1A1);
   static Color dividerColor = Color(0xFFE5E5E5);
   static Color BgBorder = Color(0xffcca8ef);
+
+// Color Clock
+  static Color pastelPink = Color(0xFFFFC1CC);
+  static Color pastelYellow = Color(0xFFFFFACD);
+  static Color pastelGreen = Color(0xFFB2F4B2);
+  static Color pastelBlue = Color(0xFFADD8E6);
+  static Color pastelOrange = Color(0xFFFFDAB9);
+  static Color pastelGray = Color(0xFFF8C8DC);
+  static Color mintCream = Color(0xFFB2DFDB);
+  static Color lavender = Color(0xFFE6E6FA);
 }

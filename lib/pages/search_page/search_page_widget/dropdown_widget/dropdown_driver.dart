@@ -2,7 +2,7 @@ import 'package:diantar_jarak/bloc/search_page/dropdown_driver_bloc/dropdown_dri
 import 'package:diantar_jarak/bloc/search_page/dropdown_driver_bloc/dropdown_driver_event.dart';
 import 'package:diantar_jarak/bloc/search_page/dropdown_driver_bloc/dropdown_driver_state.dart';
 import 'package:diantar_jarak/data/models/model_page_search/dropdown_drive_model.dart';
-import 'package:diantar_jarak/theme/size.dart';
+import 'package:diantar_jarak/util/size.dart';
 import 'package:diantar_jarak/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

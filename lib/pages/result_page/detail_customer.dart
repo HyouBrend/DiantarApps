@@ -5,9 +5,13 @@ import 'package:url_launcher/url_launcher.dart';
 
 class SubmitResultPage extends StatelessWidget {
   final DetailPengantaran detailPengantaran;
+  final DateTime waktuPesanan;
 
-  const SubmitResultPage({Key? key, required this.detailPengantaran})
-      : super(key: key);
+  const SubmitResultPage({
+    Key? key,
+    required this.detailPengantaran,
+    required this.waktuPesanan,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -132,6 +136,11 @@ class SubmitResultPage extends StatelessWidget {
                             },
                             child: const Text('Open in Google Maps'),
                           ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Waktu Pesanan: $waktuPesanan',
+                          style: const TextStyle(fontSize: 14),
                         ),
                       ],
                     ),
