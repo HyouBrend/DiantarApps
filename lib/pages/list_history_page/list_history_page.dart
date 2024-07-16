@@ -22,8 +22,15 @@ class ListHistoryPage extends StatelessWidget {
       )..add(FetchHistory(page: 1)),
       child: Scaffold(
         appBar: AppBar(
-          title: Text('List History'),
+            title: Text(
+            'List History',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+            ),
           backgroundColor: CustomColorPalette.backgroundColor,
+centerTitle: true,
+          
         ),
         body: BlocBuilder<ListHistoryBloc, ListHistoryState>(
           builder: (context, state) {

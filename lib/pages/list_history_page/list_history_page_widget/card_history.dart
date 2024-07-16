@@ -200,17 +200,19 @@ class CardHistory extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Implementasi tindakan ketika tombol diklik
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: CustomColorPalette.pastelGreen,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: CustomColorPalette.lavender,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: EdgeInsets.all(8),
+                      child: Text(
+                        historyItem.status,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: CustomColorPalette.textColor,
                         ),
                       ),
-                      child: Text('Dikirim'),
                     ),
                   ],
                 ),

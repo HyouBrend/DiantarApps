@@ -1,4 +1,5 @@
 import 'package:diantar_jarak/util/size.dart';
+import 'package:diantar_jarak/theme/theme.dart'; // Import your CustomColorPalette
 import 'package:flutter/material.dart';
 
 class FilterHistory extends StatelessWidget {
@@ -53,8 +54,9 @@ class _DropdownWidgetState extends State<DropdownWidget> {
       height: 30,
       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey, width: 1), // Memperkecil border
-        borderRadius: BorderRadius.circular(4), // Memperkecil radius
+        color: CustomColorPalette.surfaceColor, 
+        border: Border.all(color: Colors.grey, width: 1), 
+        borderRadius: BorderRadius.circular(4), 
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(

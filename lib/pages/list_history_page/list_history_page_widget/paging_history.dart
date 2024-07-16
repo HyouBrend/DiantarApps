@@ -1,3 +1,4 @@
+import 'package:diantar_jarak/theme/theme.dart';
 import 'package:flutter/material.dart';
 
 class PagingHistory extends StatelessWidget {
@@ -17,8 +18,8 @@ class PagingHistory extends StatelessWidget {
       child: ElevatedButton(
         onPressed: () => onPageChanged(page),
         style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.white,
-          backgroundColor: page == currentPage ? Colors.purple : Colors.black,
+          foregroundColor: CustomColorPalette.buttonTextColor,
+          backgroundColor: page == currentPage ? CustomColorPalette.buttonColor : CustomColorPalette.BgBorder,
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           minimumSize: Size(40, 40), // Set the minimum size
         ),
@@ -33,10 +34,10 @@ class PagingHistory extends StatelessWidget {
       child: ElevatedButton(
         onPressed: page != null ? () => onPageChanged(page) : null,
         style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.white,
-          backgroundColor: Colors.black,
+          foregroundColor: CustomColorPalette.buttonTextColor,
+          backgroundColor: CustomColorPalette.buttonColor,
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          minimumSize: Size(60, 40), // Set the minimum size
+          minimumSize: Size(60, 40), 
         ),
         child: Text(text),
       ),

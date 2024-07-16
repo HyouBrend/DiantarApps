@@ -1,77 +1,66 @@
-import 'package:equatable/equatable.dart';
 
-class HistoryPengantaranModel extends Equatable {
-  final String perjalananId;
-  final int shiftKe;
+class HistoryPengantaranModel {
+  final String createdBy;
   final String? jamPengiriman;
   final String? jamKembali;
-  final String namaDriver;
-  final String tipeKendaraan;
-  final String nomorPolisiKendaraan;
-  final double minJarakPengiriman;
   final double minDurasiPengiriman;
-  final String createdBy;
+  final double minJarakPengiriman;
+  final String namaDriver;
+  final String nomorPolisiKendaraan;
+  final String perjalananId;
+  final int shiftKe;
+  final String status;
+  final String tipeKendaraan;
 
   HistoryPengantaranModel({
+    required this.createdBy,
+     this.jamKembali,
+     this.jamPengiriman,
+    required this.minDurasiPengiriman,
+    required this.minJarakPengiriman,
+    required this.namaDriver,
+    required this.nomorPolisiKendaraan,
     required this.perjalananId,
     required this.shiftKe,
-    this.jamPengiriman,
-    this.jamKembali,
-    required this.namaDriver,
+    required this.status,
     required this.tipeKendaraan,
-    required this.nomorPolisiKendaraan,
-    required this.minJarakPengiriman,
-    required this.minDurasiPengiriman,
-    required this.createdBy,
   });
 
   factory HistoryPengantaranModel.fromJson(Map<String, dynamic> json) {
     return HistoryPengantaranModel(
-      perjalananId: json['perjalanan_id'] ?? '',
-      shiftKe: json['shift_ke'] ?? 0,
-      jamPengiriman: json['jam_pengiriman'],
+      createdBy: json['createdBy'],
+       jamPengiriman: json['jam_pengiriman'],
       jamKembali: json['jam_kembali'],
-      namaDriver: json['nama_driver'] ?? '',
-      tipeKendaraan: json['tipe_kendaraan'] ?? '',
-      nomorPolisiKendaraan: json['nomor_polisi_kendaraan'] ?? '',
-      minJarakPengiriman: (json['min_jarak_pengiriman'] is String)
+       minJarakPengiriman: (json['min_jarak_pengiriman'] is String)
           ? double.parse(json['min_jarak_pengiriman'])
           : json['min_jarak_pengiriman'] ?? 0.0,
       minDurasiPengiriman: (json['min_durasi_pengiriman'] is String)
           ? double.parse(json['min_durasi_pengiriman'])
           : json['min_durasi_pengiriman'] ?? 0.0,
-      createdBy: json['createdBy'] ?? '',
+      namaDriver: json['nama_driver'],
+      nomorPolisiKendaraan: json['nomor_polisi_kendaraan'],
+      perjalananId: json['perjalanan_id'],
+      shiftKe: json['shift_ke'],
+      status: json['status'],
+      tipeKendaraan: json['tipe_kendaraan'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      'createdBy': createdBy,
+      'jam_kembali': jamKembali,
+      'jam_pengiriman': jamPengiriman,
+      'min_durasi_pengiriman': minDurasiPengiriman.toString(),
+      'min_jarak_pengiriman': minJarakPengiriman.toString(),
+      'nama_driver': namaDriver,
+      'nomor_polisi_kendaraan': nomorPolisiKendaraan,
       'perjalanan_id': perjalananId,
       'shift_ke': shiftKe,
-      'jam_pengiriman': jamPengiriman,
-      'jam_kembali': jamKembali,
-      'nama_driver': namaDriver,
+      'status': status,
       'tipe_kendaraan': tipeKendaraan,
-      'nomor_polisi_kendaraan': nomorPolisiKendaraan,
-      'min_jarak_pengiriman': minJarakPengiriman,
-      'min_durasi_pengiriman': minDurasiPengiriman,
-      'createdBy': createdBy,
     };
   }
-
-  @override
-  List<Object?> get props => [
-        perjalananId,
-        shiftKe,
-        jamPengiriman,
-        jamKembali,
-        namaDriver,
-        tipeKendaraan,
-        nomorPolisiKendaraan,
-        minJarakPengiriman,
-        minDurasiPengiriman,
-        createdBy,
-      ];
 }
 
 class HistoryPengantaranModelData {
