@@ -3,6 +3,7 @@ import 'package:diantar_jarak/pages/history_page/history_page.dart';
 import 'package:diantar_jarak/util/capitalize_word.dart';
 import 'package:diantar_jarak/util/format_date.dart';
 import 'package:diantar_jarak/theme/theme.dart';
+import 'package:diantar_jarak/util/size.dart';
 import 'package:flutter/material.dart';
 
 class CardHistory extends StatelessWidget {
@@ -42,29 +43,35 @@ class CardHistory extends StatelessWidget {
                     Container(
                       decoration: BoxDecoration(
                         color: CustomColorPalette.pastelPink,
+                        border: Border.all(
+                            color: Colors.black), // Border hitam tipis
                         borderRadius: BorderRadius.circular(8),
                       ),
                       padding: EdgeInsets.all(8),
                       child: Text(
                         capitalizeWords(historyItem.namaDriver),
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 24,
                           fontWeight: FontWeight.bold,
                           color: CustomColorPalette.textColor,
                         ),
                       ),
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(
+                      height: Sizes.dp8(context),
+                    ),
                     Container(
                       decoration: BoxDecoration(
                         color: CustomColorPalette.pastelBlue,
+                        border: Border.all(
+                            color: Colors.black), // Border hitam tipis
                         borderRadius: BorderRadius.circular(8),
                       ),
                       padding: EdgeInsets.all(8),
                       child: Text(
-                        historyItem.createdBy,
+                        'Create By: ' + historyItem.createdBy,
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 20,
                           color: CustomColorPalette.textColor,
                         ),
                       ),
@@ -80,6 +87,8 @@ class CardHistory extends StatelessWidget {
                     Container(
                       decoration: BoxDecoration(
                         color: CustomColorPalette.pastelYellow,
+                        border: Border.all(
+                            color: Colors.black), // Border hitam tipis
                         borderRadius: BorderRadius.circular(8),
                       ),
                       padding: EdgeInsets.all(8),
@@ -88,7 +97,7 @@ class CardHistory extends StatelessWidget {
                             ? formatDate(historyItem.jamPengiriman!)
                             : '',
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 18,
                           color: CustomColorPalette.textColor,
                         ),
                       ),
@@ -104,7 +113,7 @@ class CardHistory extends StatelessWidget {
                     Text(
                       '',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 18,
                         color: CustomColorPalette.textColor,
                       ),
                     ),
@@ -112,6 +121,8 @@ class CardHistory extends StatelessWidget {
                     Container(
                       decoration: BoxDecoration(
                         color: CustomColorPalette.pastelOrange,
+                        border: Border.all(
+                            color: Colors.black), // Border hitam tipis
                         borderRadius: BorderRadius.circular(8),
                       ),
                       padding: EdgeInsets.all(8),
@@ -122,7 +133,7 @@ class CardHistory extends StatelessWidget {
                             historyItem.minDurasiPengiriman.toString() +
                                 ' menit',
                             style: TextStyle(
-                              fontSize: 14,
+                              fontSize: 18,
                               color: CustomColorPalette.textColor,
                             ),
                           ),
@@ -130,7 +141,7 @@ class CardHistory extends StatelessWidget {
                           Text(
                             historyItem.minJarakPengiriman.toString() + ' km',
                             style: TextStyle(
-                              fontSize: 14,
+                              fontSize: 18,
                               color: CustomColorPalette.textColor,
                             ),
                           ),
@@ -148,6 +159,8 @@ class CardHistory extends StatelessWidget {
                     Container(
                       decoration: BoxDecoration(
                         color: CustomColorPalette.mintCream,
+                        border: Border.all(
+                            color: Colors.black), // Border hitam tipis
                         borderRadius: BorderRadius.circular(8),
                       ),
                       padding: EdgeInsets.all(8),
@@ -156,7 +169,7 @@ class CardHistory extends StatelessWidget {
                             ? formatDate(historyItem.jamKembali!)
                             : '',
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 18,
                           color: CustomColorPalette.textColor,
                         ),
                       ),
@@ -173,13 +186,15 @@ class CardHistory extends StatelessWidget {
                     Container(
                       decoration: BoxDecoration(
                         color: CustomColorPalette.pastelGray,
+                        border: Border.all(
+                            color: Colors.black), // Border hitam tipis
                         borderRadius: BorderRadius.circular(8),
                       ),
                       padding: EdgeInsets.all(8),
                       child: Text(
                         historyItem.tipeKendaraan,
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 18,
                           color: CustomColorPalette.textColor,
                         ),
                       ),
@@ -188,13 +203,15 @@ class CardHistory extends StatelessWidget {
                     Container(
                       decoration: BoxDecoration(
                         color: CustomColorPalette.lavender,
+                        border: Border.all(
+                            color: Colors.black), // Border hitam tipis
                         borderRadius: BorderRadius.circular(8),
                       ),
                       padding: EdgeInsets.all(8),
                       child: Text(
                         'Shift ke-${historyItem.shiftKe}',
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 18,
                           color: CustomColorPalette.textColor,
                         ),
                       ),
@@ -202,14 +219,16 @@ class CardHistory extends StatelessWidget {
                     SizedBox(height: 16),
                     Container(
                       decoration: BoxDecoration(
-                        color: CustomColorPalette.lavender,
+                        color: getStatusColor(historyItem.status),
+                        border: Border.all(
+                            color: Colors.black), // Border hitam tipis
                         borderRadius: BorderRadius.circular(8),
                       ),
                       padding: EdgeInsets.all(8),
                       child: Text(
-                        historyItem.status,
+                        getStatusLabel(historyItem.status),
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 18,
                           color: CustomColorPalette.textColor,
                         ),
                       ),
@@ -222,5 +241,35 @@ class CardHistory extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Color getStatusColor(String status) {
+    switch (status) {
+      case 'Sudah Dikirim':
+        return CustomColorPalette.SudahDikirimStats;
+      case 'Belum Dikirim':
+        return CustomColorPalette.BelumDikirimStats;
+      case 'Tidak Dikirim':
+        return CustomColorPalette.TidakDikirimStats;
+      case 'Salah Input':
+        return CustomColorPalette.SalahInputStats;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  String getStatusLabel(String status) {
+    switch (status) {
+      case 'Sudah Dikirim':
+        return 'Sudah Dikirim';
+      case 'Belum Dikirim':
+        return 'Belum Dikirim';
+      case 'Tidak Dikirim':
+        return 'Tidak Dikirim';
+      case 'Salah Input':
+        return 'Salah Input';
+      default:
+        return 'Unknown';
+    }
   }
 }

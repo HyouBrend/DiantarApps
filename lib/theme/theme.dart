@@ -6,11 +6,10 @@ class CustomColorPalette {
   static Color brightPurple = Color(0xFF8A2BE2);
 
   // Color Status
-  static Color SudahDikirimStats = Color(0xFF85ffac);
-  static Color TidakDikirimStats = Color(0xFFff85a4);
-  static Color BelumDikirimStats = Color(0xFFffe799);
-  static Color SalahInputStats = Color(0xFFc17dff);
-
+  static Color SudahDikirimStats = Color(0xFFB0E57C); // Pastel Hijau
+  static Color TidakDikirimStats = Color(0xFFFFB6C1); // Pastel Merah Muda
+  static Color BelumDikirimStats = Color(0xFFFFD700); // Pastel Kuning
+  static Color SalahInputStats = Color(0xFFB19CD9); // Pastel Ungu Lembut
   // Color Button
   static Color buttonColor = brightPurple;
   static Color buttonTextColor = Color(0xFFFFFFFF);

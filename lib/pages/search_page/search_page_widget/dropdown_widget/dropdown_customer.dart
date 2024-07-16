@@ -147,6 +147,7 @@ class _DropdownCustomerState extends State<DropdownCustomer> {
                       borderRadius: BorderRadius.all(Radius.circular(10.0)),
                     ),
                     filled: true,
+                    fillColor: Color(0xFFF2F2F2),
                     contentPadding:
                         EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                     isDense: true, // Mengurangi tinggi TextField
@@ -167,6 +168,8 @@ class _DropdownCustomerState extends State<DropdownCustomer> {
                       borderRadius: BorderRadius.all(Radius.circular(10.0)),
                     ),
                     filled: true,
+                    fillColor: Color(0xFFF2F2F2),
+
                     contentPadding:
                         EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                     isDense: true, // Mengurangi tinggi TextField
@@ -176,8 +179,11 @@ class _DropdownCustomerState extends State<DropdownCustomer> {
               ),
               SizedBox(width: Sizes.dp4(context)),
               IconButton(
-                icon: Icon(Icons.location_on,
-                    color: CustomColorPalette.textColor),
+                icon: Icon(
+                  Icons.location_on,
+                  color: CustomColorPalette.buttonColor,
+                  size: 30,
+                ),
                 onPressed: () {
                   final lat = _latitudeController.text;
                   final lon = _longitudeController.text;
