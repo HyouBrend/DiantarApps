@@ -1,4 +1,5 @@
 // models/detail_pengantaran_model.dart
+import 'package:diantar_jarak/util/format_date.dart';
 import 'package:equatable/equatable.dart';
 
 class Kontak extends Equatable {
@@ -52,11 +53,11 @@ class Kontak extends Equatable {
   List<Object?> get props => [kontakID];
 }
 
-class DetailPengantaran extends Equatable {
+class SubmitPengantaranModel extends Equatable {
   final String googleMapsUrl;
   final int shiftKe;
-  final DateTime jamPengiriman;
-  final DateTime jamKembali;
+  final String? jamPengiriman;
+  final String? jamKembali;
   final int driverId;
   final String namaDriver;
   final String tipeKendaraan;
@@ -66,11 +67,11 @@ class DetailPengantaran extends Equatable {
   final double minDistance;
   final double minDuration;
 
-  DetailPengantaran({
+  SubmitPengantaranModel({
     required this.googleMapsUrl,
     required this.shiftKe,
-    required this.jamPengiriman,
-    required this.jamKembali,
+    this.jamPengiriman,
+    this.jamKembali,
     required this.driverId,
     required this.namaDriver,
     required this.tipeKendaraan,
@@ -81,16 +82,16 @@ class DetailPengantaran extends Equatable {
     required this.minDuration,
   });
 
-  factory DetailPengantaran.fromJson(Map<String, dynamic> json) {
+  factory SubmitPengantaranModel.fromJson(Map<String, dynamic> json) {
     var kontaksJson = json['kontaks'] as List;
     List<Kontak> kontaksList =
         kontaksJson.map((i) => Kontak.fromJson(i)).toList();
 
-    return DetailPengantaran(
+    return SubmitPengantaranModel(
       googleMapsUrl: json['google_maps_url'],
       shiftKe: json['shift_ke'],
-      jamPengiriman: DateTime.parse(json['jam_pengiriman']),
-      jamKembali: DateTime.parse(json['jam_kembali']),
+      jamKembali: formatDate(json['jam_kembali']),
+      jamPengiriman: formatDate(json['jam_pengiriman']),
       driverId: json['driver_id'],
       namaDriver: json['nama_driver'],
       tipeKendaraan: json['tipe_kendaraan'],
@@ -106,8 +107,8 @@ class DetailPengantaran extends Equatable {
     return {
       'google_maps_url': googleMapsUrl,
       'shift_ke': shiftKe,
-      'jam_pengiriman': jamPengiriman.toIso8601String(),
-      'jam_kembali': jamKembali.toIso8601String(),
+      'jam_pengiriman': jamPengiriman,
+      'jam_kembali': jamKembali,
       'driver_id': driverId,
       'nama_driver': namaDriver,
       'tipe_kendaraan': tipeKendaraan,

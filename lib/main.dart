@@ -1,3 +1,5 @@
+import 'package:diantar_jarak/bloc/history_page/detail_pengantaran/detail_pengantaran_bloc.dart';
+import 'package:diantar_jarak/data/service/history_page_service/detail_pengantaran_service.dart';
 import 'package:diantar_jarak/pages/page_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -6,7 +8,7 @@ import 'package:diantar_jarak/bloc/list_history_page/dropdown_filter/dropdown_fi
 import 'package:diantar_jarak/bloc/list_history_page/list_history/list_history_bloc.dart';
 import 'package:diantar_jarak/bloc/search_page/dropdown_customer_bloc/dropdown_customer_bloc.dart';
 import 'package:diantar_jarak/bloc/search_page/dropdown_driver_bloc/dropdown_driver_bloc.dart';
-import 'package:diantar_jarak/data/service/list_history_service/list_history_service.dart';
+import 'package:diantar_jarak/data/service/list_history_service/history_pengantaran_service.dart';
 import 'package:diantar_jarak/data/service/search_page_service/dropdown_customer_service.dart';
 import 'package:diantar_jarak/data/service/search_page_service/dropdown_driver_service.dart';
 import 'package:diantar_jarak/helpers/network/api_helper_dio.dart';
@@ -30,9 +32,16 @@ class MyApp extends StatelessWidget {
     final customerService = CustomerService(apiHelper: apiHelper);
     final historyPengantaranService =
         HistoryPengantaranService(apiHelper: apiHelper);
+    final detailPengantaranService =
+        DetailPengantaranService(apiHelper: apiHelper);
 
     return MultiBlocProvider(
       providers: [
+        BlocProvider(
+          create: (context) => DetailPengantaranBloc(
+            service: detailPengantaranService,
+          ),
+        ),
         BlocProvider(
           create: (context) => DriverBloc(dropdriveService: dropdriveService),
         ),

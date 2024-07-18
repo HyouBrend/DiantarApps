@@ -1,11 +1,11 @@
 import 'package:bloc/bloc.dart';
 import 'package:diantar_jarak/bloc/search_page/submit_pengantaran/submit_pengantaran_event.dart';
 import 'package:diantar_jarak/bloc/search_page/submit_pengantaran/submit_pengantaran_state.dart';
-import 'package:diantar_jarak/data/service/result_page_service.dart/detail_pengantaran_service.dart';
+import 'package:diantar_jarak/data/service/result_page_service.dart/submit_pengantaran_service.dart';
 
 class SubmitPengantaranBloc
     extends Bloc<SubmitPengantaranEvent, SubmitPengantaranState> {
-  final DetailPengantaranRepository repository;
+  final SubmitPengantaranService repository;
 
   SubmitPengantaranBloc({required this.repository})
       : super(SubmitPengantaranInitial());
@@ -17,9 +17,9 @@ class SubmitPengantaranBloc
     if (event is SubmitPengantaran) {
       yield PengantaranSubmitting();
       try {
-        await repository.submitPengantaran(event.detailPengantaran);
+        await repository.submitPengantaran(event.submitPengantaranModel);
         yield PengantaranSubmitted(
-          detailPengantaran: event.detailPengantaran,
+          detailPengantaran: event.submitPengantaranModel,
           waktuPesanan: event.waktuPesanan,
         );
       } catch (e) {

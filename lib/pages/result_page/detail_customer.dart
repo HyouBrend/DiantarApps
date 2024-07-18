@@ -1,15 +1,16 @@
+import 'package:diantar_jarak/pages/search_page/search_page.dart';
 import 'package:diantar_jarak/theme/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:diantar_jarak/data/models/model_page_result/detail_pengantaran_model.dart';
+import 'package:diantar_jarak/data/models/model_page_result/submit_pengantaran_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SubmitResultPage extends StatelessWidget {
-  final DetailPengantaran detailPengantaran;
+  final SubmitPengantaranModel submitPengantaranModel;
   final DateTime waktuPesanan;
 
   const SubmitResultPage({
     Key? key,
-    required this.detailPengantaran,
+    required this.submitPengantaranModel,
     required this.waktuPesanan,
   }) : super(key: key);
 
@@ -19,6 +20,15 @@ class SubmitResultPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Detail Pengiriman'),
         backgroundColor: CustomColorPalette.backgroundColor,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => SearchPage()),
+            );
+          },
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -45,17 +55,19 @@ class SubmitResultPage extends StatelessWidget {
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
-                        Text('Shift: ${detailPengantaran.shiftKe}'),
+                        Text('Shift: ${submitPengantaranModel.shiftKe}'),
                         Text(
-                            'Jam Pengiriman: ${detailPengantaran.jamPengiriman}'),
-                        Text('Jam Kembali: ${detailPengantaran.jamKembali}'),
-                        Text('Driver ID: ${detailPengantaran.driverId}'),
-                        Text('Nama Driver: ${detailPengantaran.namaDriver}'),
+                            'Jam Pengiriman: ${submitPengantaranModel.jamPengiriman ?? ''}'),
                         Text(
-                            'Tipe Kendaraan: ${detailPengantaran.tipeKendaraan}'),
+                            'Jam Kembali: ${submitPengantaranModel.jamKembali ?? ''}'),
+                        Text('Driver ID: ${submitPengantaranModel.driverId}'),
                         Text(
-                            'Nomor Polisi Kendaraan: ${detailPengantaran.nomorPolisiKendaraan}'),
-                        Text('Created By: ${detailPengantaran.createdBy}'),
+                            'Nama Driver: ${submitPengantaranModel.namaDriver}'),
+                        Text(
+                            'Tipe Kendaraan: ${submitPengantaranModel.tipeKendaraan}'),
+                        Text(
+                            'Nomor Polisi Kendaraan: ${submitPengantaranModel.nomorPolisiKendaraan}'),
+                        Text('Created By: ${submitPengantaranModel.createdBy}'),
                       ],
                     ),
                   ),
@@ -73,11 +85,11 @@ class SubmitResultPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Kontaks',
+                          'Customers',
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
-                        ...detailPengantaran.kontaks.map((kontak) {
+                        ...submitPengantaranModel.kontaks.map((kontak) {
                           return ListTile(
                             title: Text(kontak.displayName),
                             subtitle: Column(
@@ -112,16 +124,16 @@ class SubmitResultPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Summary',
+                          'Cek Google Maps',
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          'Min Distance: ${detailPengantaran.minDistance.toStringAsFixed(2)} km',
+                          'Min Distance: ${submitPengantaranModel.minDistance.toStringAsFixed(2)} km',
                           style: const TextStyle(fontSize: 14),
                         ),
                         Text(
-                          'Min Duration: ${detailPengantaran.minDuration.toStringAsFixed(2)} minutes',
+                          'Min Duration: ${submitPengantaranModel.minDuration.toStringAsFixed(2)} minutes',
                           style: const TextStyle(fontSize: 14),
                         ),
                         const SizedBox(height: 16),
@@ -130,8 +142,9 @@ class SubmitResultPage extends StatelessWidget {
                           child: ElevatedButton(
                             onPressed: () {
                               // Open Google Maps URL
-                              if (detailPengantaran.googleMapsUrl != null) {
-                                launch(detailPengantaran.googleMapsUrl!);
+                              if (submitPengantaranModel.googleMapsUrl !=
+                                  null) {
+                                launch(submitPengantaranModel.googleMapsUrl!);
                               }
                             },
                             child: const Text('Open in Google Maps'),

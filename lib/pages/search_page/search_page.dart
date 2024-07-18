@@ -1,8 +1,8 @@
 import 'package:diantar_jarak/bloc/search_page/submit_pengantaran/submit_pengantaran_bloc.dart';
 import 'package:diantar_jarak/bloc/search_page/submit_pengantaran/submit_pengantaran_event.dart';
 import 'package:diantar_jarak/bloc/search_page/submit_pengantaran/submit_pengantaran_state.dart';
-import 'package:diantar_jarak/data/models/model_page_result/detail_pengantaran_model.dart';
-import 'package:diantar_jarak/data/service/result_page_service.dart/detail_pengantaran_service.dart';
+import 'package:diantar_jarak/data/models/model_page_result/submit_pengantaran_model.dart';
+import 'package:diantar_jarak/data/service/result_page_service.dart/submit_pengantaran_service.dart';
 import 'package:diantar_jarak/pages/result_page/detail_customer.dart';
 import 'package:diantar_jarak/pages/search_page/search_page_widget/columnlistcustomer.dart';
 import 'package:diantar_jarak/util/size.dart';
@@ -52,7 +52,7 @@ class _SearchPageState extends State<SearchPage> {
     apiHelper = ApiHelperImpl(dio: Dio());
     cekGoogleService = CekGoogleService(apiHelper: apiHelper);
     submitPengantaranBloc = SubmitPengantaranBloc(
-        repository: DetailPengantaranRepository(apiHelper: apiHelper));
+        repository: SubmitPengantaranService(apiHelper: apiHelper));
   }
 
   void _showLoadingDialog(BuildContext context) {
@@ -147,7 +147,7 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  void _submitData() async {
+  void _submitData(BuildContext context) async {
     try {
       if (_selectedCustomers.isNotEmpty && _selectedDriver != null) {
         // Generate Google Maps URL
@@ -166,7 +166,7 @@ class _SearchPageState extends State<SearchPage> {
         final cekGoogleResult = await cekGoogleService.cekGoogle(
             _selectedCustomers, _selectedDriver!);
 
-        // Buat objek Kontak dari hasil cekGoogleResult.kontaks yang sudah diurutkan
+        // Create Kontak objects from API result
         final kontaks = cekGoogleResult.kontaks.map((customer) {
           return Kontak(
             displayName: customer.displayName,
@@ -180,20 +180,20 @@ class _SearchPageState extends State<SearchPage> {
           );
         }).toList();
 
-        // Create DetailPengantaran object with API response
-        final detailPengantaran = DetailPengantaran(
+        // Create SubmitPengantaranModel object with API response
+        final submitPengantaranModel = SubmitPengantaranModel(
           googleMapsUrl: googleMapsUrl,
           shiftKe: int.parse(_shiftController.text),
-          jamPengiriman: DateTime.now(),
-          jamKembali: DateTime.now().add(Duration(hours: 2)),
+          jamPengiriman: _jamPengirimanController.text,
+          jamKembali: _jamKembaliController.text,
           driverId: _selectedDriver!.karyawanID ?? 0,
           namaDriver: _selectedDriver!.nama ?? '',
           tipeKendaraan: _selectedVehicle!.tipe,
           nomorPolisiKendaraan: _selectedVehicle!.nomorPolisi,
           createdBy: _agentController.text,
           kontaks: kontaks,
-          minDistance: cekGoogleResult.minDistance, // Nilai dari API
-          minDuration: cekGoogleResult.minDuration, // Nilai dari API
+          minDistance: cekGoogleResult.minDistance,
+          minDuration: cekGoogleResult.minDuration,
         );
 
         // Close loading dialog
@@ -202,26 +202,13 @@ class _SearchPageState extends State<SearchPage> {
         // Submit detailPengantaran to Bloc with waktuPesanan
         final DateTime waktuPesanan = DateTime.now();
         submitPengantaranBloc.add(SubmitPengantaran(
-          detailPengantaran: detailPengantaran,
+          submitPengantaranModel: submitPengantaranModel,
           waktuPesanan: waktuPesanan,
         ));
-
-        // Navigate to SubmitResultPage
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => SubmitResultPage(
-              detailPengantaran: detailPengantaran,
-              waktuPesanan: waktuPesanan,
-            ),
-          ),
-        );
       } else {
         throw FormatException("Selected customers or driver is invalid");
       }
     } catch (e) {
-      // Handle format error
-      Navigator.of(context).pop(); // Close loading dialog if an error occurs
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: $e')),
       );
@@ -257,9 +244,8 @@ class _SearchPageState extends State<SearchPage> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => SubmitResultPage(
-                      detailPengantaran: state.detailPengantaran,
-                      waktuPesanan:
-                          state.waktuPesanan), // Pass waktuPesanan here
+                      submitPengantaranModel: state.detailPengantaran,
+                      waktuPesanan: state.waktuPesanan),
                 ),
               );
             } else if (state is SubmitPengantaranError) {
@@ -390,7 +376,7 @@ class _SearchPageState extends State<SearchPage> {
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed: _submitData,
+                  onPressed: () => _submitData(context),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: CustomColorPalette.buttonTextColor,
                     backgroundColor: CustomColorPalette.buttonColor,

@@ -6,7 +6,7 @@ import 'package:diantar_jarak/pages/list_history_page/list_history_page_widget/p
 import 'package:diantar_jarak/util/size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:diantar_jarak/data/service/list_history_service/list_history_service.dart';
+import 'package:diantar_jarak/data/service/list_history_service/history_pengantaran_service.dart';
 import 'package:diantar_jarak/helpers/network/api_helper_dio.dart';
 import 'package:diantar_jarak/pages/list_history_page/list_history_page_widget/card_history.dart';
 import 'package:diantar_jarak/theme/theme.dart';
@@ -22,15 +22,14 @@ class ListHistoryPage extends StatelessWidget {
       )..add(FetchHistory(page: 1)),
       child: Scaffold(
         appBar: AppBar(
-            title: Text(
+          title: Text(
             'List History',
             style: TextStyle(
               fontWeight: FontWeight.bold,
             ),
-            ),
+          ),
           backgroundColor: CustomColorPalette.backgroundColor,
-centerTitle: true,
-          
+          centerTitle: true,
         ),
         body: BlocBuilder<ListHistoryBloc, ListHistoryState>(
           builder: (context, state) {

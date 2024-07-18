@@ -1,8 +1,9 @@
+import 'package:diantar_jarak/util/format_date.dart';
 
 class HistoryPengantaranModel {
   final String createdBy;
-  final String? jamPengiriman;
-  final String? jamKembali;
+  final String jamPengiriman;
+  final String jamKembali;
   final double minDurasiPengiriman;
   final double minJarakPengiriman;
   final String namaDriver;
@@ -14,8 +15,8 @@ class HistoryPengantaranModel {
 
   HistoryPengantaranModel({
     required this.createdBy,
-     this.jamKembali,
-     this.jamPengiriman,
+    required this.jamKembali,
+    required this.jamPengiriman,
     required this.minDurasiPengiriman,
     required this.minJarakPengiriman,
     required this.namaDriver,
@@ -28,21 +29,21 @@ class HistoryPengantaranModel {
 
   factory HistoryPengantaranModel.fromJson(Map<String, dynamic> json) {
     return HistoryPengantaranModel(
-      createdBy: json['createdBy'],
-       jamPengiriman: json['jam_pengiriman'],
-      jamKembali: json['jam_kembali'],
-       minJarakPengiriman: (json['min_jarak_pengiriman'] is String)
+      createdBy: json['createdBy'] ?? '',
+      jamKembali: formatDate(json['jam_kembali']) ?? '',
+      jamPengiriman: formatDate(json['jam_pengiriman']) ?? '',
+      minJarakPengiriman: (json['min_jarak_pengiriman'] is String)
           ? double.parse(json['min_jarak_pengiriman'])
           : json['min_jarak_pengiriman'] ?? 0.0,
       minDurasiPengiriman: (json['min_durasi_pengiriman'] is String)
           ? double.parse(json['min_durasi_pengiriman'])
           : json['min_durasi_pengiriman'] ?? 0.0,
-      namaDriver: json['nama_driver'],
-      nomorPolisiKendaraan: json['nomor_polisi_kendaraan'],
-      perjalananId: json['perjalanan_id'],
-      shiftKe: json['shift_ke'],
-      status: json['status'],
-      tipeKendaraan: json['tipe_kendaraan'],
+      namaDriver: json['nama_driver'] ?? '',
+      nomorPolisiKendaraan: json['nomor_polisi_kendaraan'] ?? '',
+      perjalananId: json['perjalanan_id'] ?? '',
+      shiftKe: json['shift_ke'] ?? 0,
+      status: json['status'] ?? '',
+      tipeKendaraan: json['tipe_kendaraan'] ?? '',
     );
   }
 

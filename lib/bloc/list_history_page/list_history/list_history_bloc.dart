@@ -1,6 +1,6 @@
 import 'package:diantar_jarak/data/models/model_list_history_page/model_list_history_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:diantar_jarak/data/service/list_history_service/list_history_service.dart';
+import 'package:diantar_jarak/data/service/list_history_service/history_pengantaran_service.dart';
 import 'list_history_event.dart';
 import 'list_history_state.dart';
 

@@ -12,7 +12,20 @@ class HistoryPengantaranService {
       final response =
           await apiHelper.get(url: APIJarakLocal.historyPengantaran);
       print('Response: ${response.data}');
-      return HistoryPengantaranModelData.fromJson(response.data);
+
+      // Periksa dan ubah nilai default dalam response.data
+      Map<String, dynamic> data = response.data;
+      data['data'] = (data['data'] as List).map((item) {
+        if (item['jam_kembali'] == "Mon, 01 Jan 1900 00:00:00 GMT") {
+          item['jam_kembali'] = "Yok Di Update!!";
+        }
+        if (item['jam_pengiriman'] == "Mon, 01 Jan 1900 00:00:00 GMT") {
+          item['jam_pengiriman'] = "Yok Di Update!!";
+        }
+        return item;
+      }).toList();
+
+      return HistoryPengantaranModelData.fromJson(data);
     } catch (e) {
       print('Error fetching history pengantaran: $e');
       rethrow;

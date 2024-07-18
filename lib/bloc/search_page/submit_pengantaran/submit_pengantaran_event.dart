@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:diantar_jarak/data/models/model_page_result/detail_pengantaran_model.dart';
+import 'package:diantar_jarak/data/models/model_page_result/submit_pengantaran_model.dart';
 
 abstract class SubmitPengantaranEvent extends Equatable {
   const SubmitPengantaranEvent();
@@ -9,14 +9,14 @@ abstract class SubmitPengantaranEvent extends Equatable {
 }
 
 class SubmitPengantaran extends SubmitPengantaranEvent {
-  final DetailPengantaran detailPengantaran;
+  final SubmitPengantaranModel submitPengantaranModel;
   final DateTime waktuPesanan;
 
   SubmitPengantaran({
-    required this.detailPengantaran,
+    required this.submitPengantaranModel,
     required this.waktuPesanan,
   });
 
   @override
-  List<Object> get props => [detailPengantaran, waktuPesanan];
+  List<Object> get props => [submitPengantaranModel, waktuPesanan];
 }

@@ -20,7 +20,10 @@ class CardHistory extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => HistoryPage(historyItem: historyItem),
+              builder: (context) => DetailPengantaranPage(
+                perjalananID:
+                    historyItem.perjalananId, // Pass perjalananID here
+              ),
             ),
           );
         },
@@ -80,7 +83,7 @@ class CardHistory extends StatelessWidget {
                 ),
               ),
               Expanded(
-                flex: 1,
+                flex: 2,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
@@ -92,13 +95,25 @@ class CardHistory extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       padding: EdgeInsets.all(8),
-                      child: Text(
-                        historyItem.jamPengiriman != null
-                            ? formatDate(historyItem.jamPengiriman!)
-                            : '',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: CustomColorPalette.textColor,
+                      child: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Jam Pengiriman: ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                                color: CustomColorPalette.textColor,
+                              ),
+                            ),
+                            TextSpan(
+                              text: historyItem.jamPengiriman,
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: CustomColorPalette.textColor,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -106,7 +121,7 @@ class CardHistory extends StatelessWidget {
                 ),
               ),
               Expanded(
-                flex: 3,
+                flex: 2,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -130,8 +145,7 @@ class CardHistory extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            historyItem.minDurasiPengiriman.toString() +
-                                ' menit',
+                            '${historyItem.minDurasiPengiriman} menit',
                             style: TextStyle(
                               fontSize: 18,
                               color: CustomColorPalette.textColor,
@@ -139,7 +153,7 @@ class CardHistory extends StatelessWidget {
                           ),
                           SizedBox(height: 4),
                           Text(
-                            historyItem.minJarakPengiriman.toString() + ' km',
+                            '${historyItem.minJarakPengiriman} km',
                             style: TextStyle(
                               fontSize: 18,
                               color: CustomColorPalette.textColor,
@@ -152,7 +166,7 @@ class CardHistory extends StatelessWidget {
                 ),
               ),
               Expanded(
-                flex: 1,
+                flex: 2,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
@@ -164,13 +178,25 @@ class CardHistory extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       padding: EdgeInsets.all(8),
-                      child: Text(
-                        historyItem.jamKembali != null
-                            ? formatDate(historyItem.jamKembali!)
-                            : '',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: CustomColorPalette.textColor,
+                      child: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Jam Kembali: ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                                color: CustomColorPalette.textColor,
+                              ),
+                            ),
+                            TextSpan(
+                              text: historyItem.jamKembali,
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: CustomColorPalette.textColor,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
