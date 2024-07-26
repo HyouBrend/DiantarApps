@@ -1,33 +1,47 @@
 import 'package:equatable/equatable.dart';
-import 'package:diantar_jarak/data/models/model_page_search/dropdown_drive_model.dart';
 
-abstract class DropdownFilterState extends Equatable {
-  const DropdownFilterState();
+class FilterState extends Equatable {
+  final String driver;
+  final String checker;
+  final String status;
+  final String time; // Add time property
+  final List<String> drivers;
+  final bool isLoading;
+  final String? error;
+
+  const FilterState({
+    this.driver = '',
+    this.checker = '',
+    this.status = '',
+    this.time = '', // Initialize time
+    this.drivers = const [],
+    this.isLoading = false,
+    this.error,
+  });
+
+  FilterState copyWith({
+    String? driver,
+    String? checker,
+    String? status,
+    String? time, // Add time to copyWith
+    List<String>? drivers,
+    bool? isLoading,
+    String? error,
+  }) {
+    return FilterState(
+      driver: driver ?? this.driver,
+      checker: checker ?? this.checker,
+      status: status ?? this.status,
+      time: time ?? this.time, // Add time to copyWith
+      drivers: drivers ?? this.drivers,
+      isLoading: isLoading ?? this.isLoading,
+      error: error,
+    );
+  }
 
   @override
-  List<Object> get props => [];
-}
-
-class DropdownFilterInitial extends DropdownFilterState {}
-
-class DropdownFilterLoading extends DropdownFilterState {}
-
-class DropdownFilterError extends DropdownFilterState {
-  final String message;
-
-  const DropdownFilterError(this.message);
+  List<Object> get props => [driver, checker, status, time, drivers, isLoading];
 
   @override
-  List<Object> get props => [message];
+  bool get stringify => true;
 }
-
-class DropdownFilterHasData extends DropdownFilterState {
-  final List<DropdownDriveModel> drivers;
-
-  const DropdownFilterHasData(this.drivers);
-
-  @override
-  List<Object> get props => [drivers];
-}
-
-class DropdownFilterEmpty extends DropdownFilterState {}

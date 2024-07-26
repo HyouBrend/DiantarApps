@@ -1,5 +1,5 @@
-import 'package:diantar_jarak/helpers/network/api_helper.dart';
 import 'package:dio/dio.dart';
+import 'package:diantar_jarak/helpers/network/api_helper.dart';
 
 class ApiHelperImpl implements ApiHelper {
   final Dio dio;
@@ -44,16 +44,7 @@ class ApiHelperImpl implements ApiHelper {
       Response response = await dio.post(
         url,
         data: body,
-        options: options?.copyWith(
-              validateStatus: (status) {
-                return status != null && status >= 200 && status < 500;
-              },
-            ) ??
-            Options(
-              validateStatus: (status) {
-                return status != null && status >= 200 && status < 500;
-              },
-            ),
+        options: options,
         queryParameters: queryParameters,
       );
       print('Response received: ${response.data}');

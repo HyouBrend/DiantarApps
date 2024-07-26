@@ -90,8 +90,8 @@ class SubmitPengantaranModel extends Equatable {
     return SubmitPengantaranModel(
       googleMapsUrl: json['google_maps_url'],
       shiftKe: json['shift_ke'],
-      jamKembali: formatDate(json['jam_kembali']),
-      jamPengiriman: formatDate(json['jam_pengiriman']),
+      jamKembali: formatDisplayDate(json['jam_kembali']),
+      jamPengiriman: formatDisplayDate(json['jam_pengiriman']),
       driverId: json['driver_id'],
       namaDriver: json['nama_driver'],
       tipeKendaraan: json['tipe_kendaraan'],

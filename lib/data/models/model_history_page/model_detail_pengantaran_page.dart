@@ -9,8 +9,8 @@ class DetailPengantaran {
   final String createdDate;
   final String displayName;
   final int driverID;
-  final String jamKembali;
-  final String jamPengiriman;
+  final String? jamKembali;
+  final String? jamPengiriman;
   final String lokasi;
   final double minDurasiPengiriman;
   final double minJarakPengiriman;
@@ -36,8 +36,8 @@ class DetailPengantaran {
     required this.createdDate,
     required this.displayName,
     required this.driverID,
-    required this.jamKembali,
-    required this.jamPengiriman,
+    this.jamKembali,
+    this.jamPengiriman,
     required this.lokasi,
     required this.minDurasiPengiriman,
     required this.minJarakPengiriman,
@@ -62,14 +62,16 @@ class DetailPengantaran {
       inputLongitude: json['Input_longitude'],
       kontakID: json['KontakID'],
       createdBy: json['created_by'],
-      createdDate: formatDate(json['created_date']) ?? '',
+      createdDate: formatDisplayDate(json['created_date']) ?? '',
       displayName: json['display_name'],
       driverID: json['driver_id'],
-      jamKembali: formatDate(json['jam_kembali']) ?? '',
-      jamPengiriman: formatDate(json['jam_pengiriman']) ?? '',
+      jamKembali: formatDisplayDate(json['jam_kembali']),
+      jamPengiriman: formatDisplayDate(json['jam_pengiriman']),
       lokasi: json['lokasi'],
-      minDurasiPengiriman: double.parse(json['min_durasi_pengiriman']),
-      minJarakPengiriman: double.parse(json['min_jarak_pengiriman']),
+      minDurasiPengiriman:
+          double.tryParse(json['min_durasi_pengiriman'].toString()) ?? 0.0,
+      minJarakPengiriman:
+          double.tryParse(json['min_jarak_pengiriman'].toString()) ?? 0.0,
       namaDriver: json['nama_driver'],
       noHp: json['no_hp'],
       nomorFaktur: json['nomor_faktur'],
@@ -79,39 +81,9 @@ class DetailPengantaran {
       posisi: json['posisi'],
       shiftKe: json['shift_ke'],
       tipeKendaraan: json['tipe_kendaraan'],
-      updateAt: formatDate(json['update_at']) ?? '',
+      updateAt: formatDisplayDate(json['update_at']) ?? '',
       updateBy: json['update_by'],
       urutanPengiriman: json['urutan_pengiriman'],
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'GoogleMapsURL': googleMapsURL,
-      'Input_latitude': inputLatitude,
-      'Input_longitude': inputLongitude,
-      'KontakID': kontakID,
-      'created_by': createdBy,
-      'created_date': createdDate,
-      'display_name': displayName,
-      'driver_id': driverID,
-      'jam_kembali': jamKembali,
-      'jam_pengiriman': jamPengiriman,
-      'lokasi': lokasi,
-      'min_durasi_pengiriman': minDurasiPengiriman.toString(),
-      'min_jarak_pengiriman': minJarakPengiriman.toString(),
-      'nama_driver': namaDriver,
-      'no_hp': noHp,
-      'nomor_faktur': nomorFaktur,
-      'nomor_polisi_kendaraan': nomorPolisiKendaraan,
-      'pengantaran_id': pengantaranID,
-      'perjalanan_id': perjalananID,
-      'posisi': posisi,
-      'shift_ke': shiftKe,
-      'tipe_kendaraan': tipeKendaraan,
-      'update_at': updateAt,
-      'update_by': updateBy,
-      'urutan_pengiriman': urutanPengiriman,
-    };
   }
 }

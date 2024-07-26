@@ -16,10 +16,15 @@ class PagingHistory extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
       child: ElevatedButton(
-        onPressed: () => onPageChanged(page),
+        onPressed: () {
+          print('Navigating to page: $page'); // Debugging line
+          onPageChanged(page);
+        },
         style: ElevatedButton.styleFrom(
           foregroundColor: CustomColorPalette.buttonTextColor,
-          backgroundColor: page == currentPage ? CustomColorPalette.buttonColor : CustomColorPalette.BgBorder,
+          backgroundColor: page == currentPage
+              ? CustomColorPalette.buttonColor
+              : CustomColorPalette.BgBorder,
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           minimumSize: Size(40, 40), // Set the minimum size
         ),
@@ -32,12 +37,17 @@ class PagingHistory extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
       child: ElevatedButton(
-        onPressed: page != null ? () => onPageChanged(page) : null,
+        onPressed: page != null
+            ? () {
+                print('Navigating to page: $page'); // Debugging line
+                onPageChanged(page);
+              }
+            : null,
         style: ElevatedButton.styleFrom(
           foregroundColor: CustomColorPalette.buttonTextColor,
           backgroundColor: CustomColorPalette.buttonColor,
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          minimumSize: Size(60, 40), 
+          minimumSize: Size(60, 40),
         ),
         child: Text(text),
       ),
@@ -67,11 +77,6 @@ class PagingHistory extends StatelessWidget {
     if (currentPage < totalPages - 1) {
       pageButtons.add(_buildPageButton(currentPage + 1));
     }
-
-    if (currentPage < totalPages - 2) {
-      pageButtons.add(Text("..."));
-    }
-    pageButtons.add(_buildPageButton(totalPages));
 
     if (currentPage < totalPages) {
       pageButtons

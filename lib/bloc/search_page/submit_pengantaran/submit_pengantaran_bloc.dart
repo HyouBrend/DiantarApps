@@ -20,7 +20,6 @@ class SubmitPengantaranBloc
         await repository.submitPengantaran(event.submitPengantaranModel);
         yield PengantaranSubmitted(
           detailPengantaran: event.submitPengantaranModel,
-          waktuPesanan: event.waktuPesanan,
         );
       } catch (e) {
         yield SubmitPengantaranError(message: e.toString());

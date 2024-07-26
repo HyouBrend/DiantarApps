@@ -1,3 +1,5 @@
+import 'package:diantar_jarak/util/capitalize_word.dart';
+import 'package:diantar_jarak/util/size.dart';
 import 'package:flutter/material.dart';
 import 'package:diantar_jarak/data/models/model_page_search/dropdown_drive_model.dart';
 import 'package:diantar_jarak/theme/theme.dart';
@@ -34,6 +36,49 @@ class _DropdownTipeKendaraanState extends State<DropdownTipeKendaraan> {
     'Roda 3': ['B6372JYA', 'B4997KYE'],
     'Truck': ['B9434BCQ']
   };
+
+  Widget buildRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2.0),
+      child: Row(
+        children: [
+          Container(
+            width: 100, // Set width as per your need
+            child: Text(
+              label,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: CustomColorPalette.textColor,
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 8,
+          ),
+          Container(
+            child: Text(
+              ":",
+              style: TextStyle(
+                fontSize: 16,
+                color: CustomColorPalette.textColor,
+              ),
+            ),
+          ),
+          SizedBox(width: 8), // Space between label and value
+          Flexible(
+            child: Text(
+              value,
+              style: TextStyle(
+                fontSize: 16,
+                color: CustomColorPalette.textColor,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -153,24 +198,49 @@ class _DropdownTipeKendaraanState extends State<DropdownTipeKendaraan> {
         ),
         SizedBox(height: 12),
         if (widget.selectedDriver != null)
-          Container(
-            decoration: BoxDecoration(
-              color: CustomColorPalette.BgBorder,
-              border: Border.all(color: CustomColorPalette.textColor),
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            padding: EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Image.asset(
-                  'assets/${widget.selectedDriver!.nama}.jpeg',
-                  height: 600,
+          IntrinsicHeight(
+            child: IntrinsicWidth(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: CustomColorPalette.BgBorder,
+                  border: Border.all(color: CustomColorPalette.textColor),
+                  borderRadius: BorderRadius.circular(10.0),
                 ),
-                SizedBox(height: 8),
-                Text('Nama: ${widget.selectedDriver!.nama ?? ''}',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-                Text('No. Telepon: ${widget.selectedDriver!.noHP ?? ''}'),
-              ],
+                padding: EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                            color: CustomColorPalette.textColor, width: 1),
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10.0),
+                        child: Image.asset(
+                          'assets/${widget.selectedDriver?.nama}.jpeg',
+                          height: 600,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Column(
+                      children: [
+                        buildRow(
+                            'Nama',
+                            widget.selectedDriver?.nama != null
+                                ? capitalizeWords(widget.selectedDriver!.nama!)
+                                : ''),
+                        buildRow(
+                            'No. Telepon', widget.selectedDriver?.noHP ?? ''),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
       ],

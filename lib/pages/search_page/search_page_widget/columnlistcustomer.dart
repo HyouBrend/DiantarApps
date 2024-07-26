@@ -1,4 +1,5 @@
 import 'package:diantar_jarak/theme/theme.dart';
+import 'package:diantar_jarak/util/capitalize_word.dart';
 import 'package:flutter/material.dart';
 import 'package:diantar_jarak/data/models/model_page_search/dropdown_drive_model.dart';
 import 'package:diantar_jarak/data/models/model_page_search/dropdown_customer_model.dart';
@@ -43,6 +44,44 @@ class ColumnCustomerList extends StatelessWidget {
     }
   }
 
+  Widget buildRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2.0),
+      child: Row(
+        children: [
+          Container(
+            width: 150, // Set width as per your need
+            child: Text(
+              label,
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: CustomColorPalette.textColor),
+            ),
+          ),
+          SizedBox(
+            width: 8,
+          ),
+          Container(
+            child: Text(
+              ":",
+              style:
+                  TextStyle(fontSize: 16, color: CustomColorPalette.textColor),
+            ),
+          ),
+          SizedBox(width: 8), // Space between label and value
+          Flexible(
+            child: Text(
+              value,
+              style:
+                  TextStyle(fontSize: 16, color: CustomColorPalette.textColor),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -71,32 +110,20 @@ class ColumnCustomerList extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Driver:',
+                    'Driver',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: 28,
                     ),
                   ),
                   const SizedBox(height: 8),
+                  buildRow('Nama', capitalizeWords(selectedDriver.nama!)),
+                  const SizedBox(height: 20),
                   Text(
-                    'Nama: ${selectedDriver.nama}',
-                    style: TextStyle(fontSize: 14),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Min Distance: ${result.minDistance.toStringAsFixed(2)} km',
-                    style: TextStyle(fontSize: 14),
-                  ),
-                  Text(
-                    'Min Duration: ${result.minDuration.toStringAsFixed(2)} minutes',
-                    style: TextStyle(fontSize: 14),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'List Customer:',
+                    'List Customer',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: 28,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -105,22 +132,19 @@ class ColumnCustomerList extends StatelessWidget {
                       key: ValueKey(customer.kontakID), // Ensure unique key
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Nama: ${customer.displayName}',
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        Text(
-                          'Alamat: ${customer.lokasi}',
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        Text(
-                          'Urutan Pengiriman: ${customer.urutanPengiriman}',
-                          style: TextStyle(fontSize: 14),
-                        ),
+                        buildRow('Nama', customer.displayName),
+                        buildRow('Alamat', customer.lokasi),
+                        buildRow('Urutan Pengiriman',
+                            customer.urutanPengiriman.toString()),
                         const Divider(color: Colors.purple),
                       ],
                     );
                   }).toList(),
+                  const SizedBox(height: 8),
+                  buildRow('Min Distance',
+                      '${result.minDistance.toStringAsFixed(2)} km'),
+                  buildRow('Min Duration',
+                      '${result.minDuration.toStringAsFixed(2)} minutes'),
                   const SizedBox(height: 16),
                   Center(
                     child: ElevatedButton(

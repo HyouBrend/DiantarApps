@@ -13,3 +13,22 @@ class FetchHistory extends ListHistoryEvent {
   @override
   List<Object> get props => [page];
 }
+
+class ChangeHistoryStatusEvent extends ListHistoryEvent {
+  final String perjalananID;
+  final String newStatus;
+
+  ChangeHistoryStatusEvent(this.perjalananID, this.newStatus);
+
+  @override
+  List<Object> get props => [perjalananID, newStatus];
+}
+
+class UpdateHistoryEvent extends ListHistoryEvent {
+  final String perjalananID;
+
+  UpdateHistoryEvent(this.perjalananID);
+
+  @override
+  List<Object> get props => [perjalananID];
+}

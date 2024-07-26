@@ -14,15 +14,13 @@ class PengantaranSubmitting extends SubmitPengantaranState {}
 
 class PengantaranSubmitted extends SubmitPengantaranState {
   final SubmitPengantaranModel detailPengantaran;
-  final DateTime waktuPesanan;
 
   const PengantaranSubmitted({
     required this.detailPengantaran,
-    required this.waktuPesanan,
   });
 
   @override
-  List<Object> get props => [detailPengantaran, waktuPesanan];
+  List<Object> get props => [detailPengantaran];
 }
 
 class SubmitPengantaranError extends SubmitPengantaranState {

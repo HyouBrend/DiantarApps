@@ -10,13 +10,11 @@ abstract class SubmitPengantaranEvent extends Equatable {
 
 class SubmitPengantaran extends SubmitPengantaranEvent {
   final SubmitPengantaranModel submitPengantaranModel;
-  final DateTime waktuPesanan;
 
   SubmitPengantaran({
     required this.submitPengantaranModel,
-    required this.waktuPesanan,
   });
 
   @override
-  List<Object> get props => [submitPengantaranModel, waktuPesanan];
+  List<Object> get props => [submitPengantaranModel];
 }

@@ -30,8 +30,8 @@ class HistoryPengantaranModel {
   factory HistoryPengantaranModel.fromJson(Map<String, dynamic> json) {
     return HistoryPengantaranModel(
       createdBy: json['createdBy'] ?? '',
-      jamKembali: formatDate(json['jam_kembali']) ?? '',
-      jamPengiriman: formatDate(json['jam_pengiriman']) ?? '',
+      jamKembali: formatDisplayDate(json['jam_kembali']) ?? '',
+      jamPengiriman: formatDisplayDate(json['jam_pengiriman']) ?? '',
       minJarakPengiriman: (json['min_jarak_pengiriman'] is String)
           ? double.parse(json['min_jarak_pengiriman'])
           : json['min_jarak_pengiriman'] ?? 0.0,

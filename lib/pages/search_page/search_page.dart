@@ -3,7 +3,7 @@ import 'package:diantar_jarak/bloc/search_page/submit_pengantaran/submit_pengant
 import 'package:diantar_jarak/bloc/search_page/submit_pengantaran/submit_pengantaran_state.dart';
 import 'package:diantar_jarak/data/models/model_page_result/submit_pengantaran_model.dart';
 import 'package:diantar_jarak/data/service/result_page_service.dart/submit_pengantaran_service.dart';
-import 'package:diantar_jarak/pages/result_page/detail_customer.dart';
+import 'package:diantar_jarak/pages/result_page/submit_pengantaran.dart';
 import 'package:diantar_jarak/pages/search_page/search_page_widget/columnlistcustomer.dart';
 import 'package:diantar_jarak/util/size.dart';
 import 'package:diantar_jarak/theme/theme.dart';
@@ -200,10 +200,8 @@ class _SearchPageState extends State<SearchPage> {
         Navigator.of(context).pop();
 
         // Submit detailPengantaran to Bloc with waktuPesanan
-        final DateTime waktuPesanan = DateTime.now();
         submitPengantaranBloc.add(SubmitPengantaran(
           submitPengantaranModel: submitPengantaranModel,
-          waktuPesanan: waktuPesanan,
         ));
       } else {
         throw FormatException("Selected customers or driver is invalid");
@@ -221,13 +219,20 @@ class _SearchPageState extends State<SearchPage> {
       create: (context) => submitPengantaranBloc,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Diantar Jarak',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          title: const Text(
+            'Diantar Jarak',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF363535),
+            ),
+          ),
           centerTitle: true,
           backgroundColor: CustomColorPalette.backgroundColor,
           actions: [
             IconButton(
-              icon: Icon(Icons.history, color: CustomColorPalette.buttonColor),
+              icon: Icon(Icons.history,
+                  color: CustomColorPalette.buttonColor, size: 30),
               onPressed: () {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => ListHistoryPage()));
@@ -244,8 +249,8 @@ class _SearchPageState extends State<SearchPage> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => SubmitResultPage(
-                      submitPengantaranModel: state.detailPengantaran,
-                      waktuPesanan: state.waktuPesanan),
+                    submitPengantaranModel: state.detailPengantaran,
+                  ),
                 ),
               );
             } else if (state is SubmitPengantaranError) {

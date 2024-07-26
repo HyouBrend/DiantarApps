@@ -1,13 +1,16 @@
 import 'package:diantar_jarak/bloc/history_page/detail_pengantaran/detail_pengantaran_bloc.dart';
+import 'package:diantar_jarak/bloc/history_page/update_detail_pengantaran/update_detail_pengantaran_bloc.dart';
+import 'package:diantar_jarak/bloc/list_history_page/dropdown_filter/dropdown_filter_bloc.dart';
+import 'package:diantar_jarak/bloc/search_page/dropdown_customer_bloc/dropdown_customer_bloc.dart';
+import 'package:diantar_jarak/bloc/search_page/dropdown_driver_bloc/dropdown_driver_bloc.dart';
 import 'package:diantar_jarak/data/service/history_page_service/detail_pengantaran_service.dart';
+import 'package:diantar_jarak/data/service/history_page_service/update_detail_pengantaran_service.dart';
+import 'package:diantar_jarak/helpers/network/api_helper.dart';
 import 'package:diantar_jarak/pages/page_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:diantar_jarak/theme/theme.dart';
-import 'package:diantar_jarak/bloc/list_history_page/dropdown_filter/dropdown_filter_bloc.dart';
 import 'package:diantar_jarak/bloc/list_history_page/list_history/list_history_bloc.dart';
-import 'package:diantar_jarak/bloc/search_page/dropdown_customer_bloc/dropdown_customer_bloc.dart';
-import 'package:diantar_jarak/bloc/search_page/dropdown_driver_bloc/dropdown_driver_bloc.dart';
 import 'package:diantar_jarak/data/service/list_history_service/history_pengantaran_service.dart';
 import 'package:diantar_jarak/data/service/search_page_service/dropdown_customer_service.dart';
 import 'package:diantar_jarak/data/service/search_page_service/dropdown_driver_service.dart';
@@ -16,7 +19,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
-  // Inisialisasi data lokal untuk format tanggal
   initializeDateFormatting('id_ID', null).then((_) {
     runApp(const MyApp());
   });
@@ -28,46 +30,74 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final apiHelper = ApiHelperImpl(dio: Dio());
-    final dropdriveService = DropdriveService(apiHelper: apiHelper);
-    final customerService = CustomerService(apiHelper: apiHelper);
-    final historyPengantaranService =
-        HistoryPengantaranService(apiHelper: apiHelper);
-    final detailPengantaranService =
-        DetailPengantaranService(apiHelper: apiHelper);
 
-    return MultiBlocProvider(
+    return MultiRepositoryProvider(
       providers: [
-        BlocProvider(
-          create: (context) => DetailPengantaranBloc(
-            service: detailPengantaranService,
-          ),
+        RepositoryProvider<ApiHelper>(
+          create: (context) => apiHelper,
         ),
-        BlocProvider(
-          create: (context) => DriverBloc(dropdriveService: dropdriveService),
+        RepositoryProvider<DetailPengantaranService>(
+          create: (context) => DetailPengantaranService(apiHelper: apiHelper),
         ),
-        BlocProvider(
-          create: (context) => CustomerBloc(customerService: customerService),
+        RepositoryProvider<DropdriveService>(
+          create: (context) => DropdriveService(apiHelper: apiHelper),
         ),
-        BlocProvider(
-          create: (context) => DropdownFilterBloc(
-            dropdriveService: dropdriveService,
-          ),
+        RepositoryProvider<CustomerService>(
+          create: (context) => CustomerService(apiHelper: apiHelper),
         ),
-        BlocProvider(
-          create: (context) => ListHistoryBloc(
-            historyPengantaranService: historyPengantaranService,
-          ),
+        RepositoryProvider<HistoryPengantaranService>(
+          create: (context) => HistoryPengantaranService(apiHelper: apiHelper),
+        ),
+        RepositoryProvider<UpdateDetailPengantaranService>(
+          create: (context) =>
+              UpdateDetailPengantaranService(apiHelper: apiHelper),
         ),
       ],
-      child: MaterialApp(
-        title: 'Diantar Jarak',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-          scaffoldBackgroundColor: CustomColorPalette.backgroundColor,
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => DetailPengantaranBloc(
+              context.read<DetailPengantaranService>(),
+            ),
+          ),
+          BlocProvider(
+            create: (context) => DriverBloc(
+              dropdriveService: context.read<DropdriveService>(),
+            ),
+          ),
+          BlocProvider(
+            create: (context) => CustomerBloc(
+              customerService: context.read<CustomerService>(),
+            ),
+          ),
+          BlocProvider(
+            create: (context) => FilterBloc(
+              dropdriveService: context.read<DropdriveService>(),
+            ),
+          ),
+          BlocProvider(
+            create: (context) => ListHistoryBloc(
+              historyPengantaranService:
+                  context.read<HistoryPengantaranService>(),
+              filterBloc: context.read<FilterBloc>(),
+            ),
+          ),
+          BlocProvider(
+            create: (context) => UpdateDetailPengantaranBloc(
+              context.read<UpdateDetailPengantaranService>(),
+            ),
+          ),
+        ],
+        child: MaterialApp(
+          title: 'Diantar Jarak',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+            useMaterial3: true,
+            scaffoldBackgroundColor: CustomColorPalette.backgroundColor,
+          ),
+          home: const PageScreen(),
         ),
-        home: const PageScreen(),
       ),
     );
   }

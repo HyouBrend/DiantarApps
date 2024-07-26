@@ -1,19 +1,48 @@
 import 'package:equatable/equatable.dart';
 
-abstract class DropdownFilterEvent extends Equatable {
-  const DropdownFilterEvent();
+abstract class FilterEvent extends Equatable {
+  const FilterEvent();
 }
 
-class FetchDropdownFilterData extends DropdownFilterEvent {
-  final String query;
+class DriverFilterChanged extends FilterEvent {
+  final String driver;
 
-  const FetchDropdownFilterData({this.query = ''});
+  const DriverFilterChanged(this.driver);
 
   @override
-  List<Object?> get props => [query];
+  List<Object> get props => [driver];
 }
 
-class LoadDropdownFilterData extends DropdownFilterEvent {
+class CheckerFilterChanged extends FilterEvent {
+  final String checker;
+
+  const CheckerFilterChanged(this.checker);
+
   @override
-  List<Object?> get props => [];
+  List<Object> get props => [checker];
+}
+
+class StatusFilterChanged extends FilterEvent {
+  final String status;
+
+  const StatusFilterChanged(this.status);
+
+  @override
+  List<Object> get props => [status];
+}
+
+class TimeFilterChanged extends FilterEvent {
+  final String time;
+
+  const TimeFilterChanged(this.time);
+
+  @override
+  List<Object> get props => [time];
+}
+
+class FetchDrivers extends FilterEvent {
+  const FetchDrivers();
+
+  @override
+  List<Object> get props => [];
 }

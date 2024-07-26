@@ -1,6 +1,5 @@
+import 'package:diantar_jarak/data/models/model_history_page/model_detail_pengantaran_page.dart';
 import 'package:equatable/equatable.dart';
-
-import '../../../data/models/model_history_page/model_detail_pengantaran_page.dart';
 
 abstract class DetailPengantaranState extends Equatable {
   const DetailPengantaranState();
@@ -16,7 +15,7 @@ class DetailPengantaranLoading extends DetailPengantaranState {}
 class DetailPengantaranLoaded extends DetailPengantaranState {
   final List<DetailPengantaran> detailPengantaran;
 
-  const DetailPengantaranLoaded({required this.detailPengantaran});
+  const DetailPengantaranLoaded(this.detailPengantaran);
 
   @override
   List<Object> get props => [detailPengantaran];
@@ -25,7 +24,7 @@ class DetailPengantaranLoaded extends DetailPengantaranState {
 class DetailPengantaranError extends DetailPengantaranState {
   final String message;
 
-  const DetailPengantaranError({required this.message});
+  const DetailPengantaranError(this.message);
 
   @override
   List<Object> get props => [message];

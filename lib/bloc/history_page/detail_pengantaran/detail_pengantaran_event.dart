@@ -10,7 +10,7 @@ abstract class DetailPengantaranEvent extends Equatable {
 class FetchDetailPengantaran extends DetailPengantaranEvent {
   final String perjalananID;
 
-  FetchDetailPengantaran({required this.perjalananID});
+  const FetchDetailPengantaran(this.perjalananID);
 
   @override
   List<Object> get props => [perjalananID];

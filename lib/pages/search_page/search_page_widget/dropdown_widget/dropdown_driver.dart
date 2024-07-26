@@ -4,6 +4,7 @@ import 'package:diantar_jarak/bloc/search_page/dropdown_driver_bloc/dropdown_dri
 import 'package:diantar_jarak/data/models/model_page_search/dropdown_drive_model.dart';
 import 'package:diantar_jarak/util/size.dart';
 import 'package:diantar_jarak/theme/theme.dart';
+import 'package:diantar_jarak/util/capitalize_word.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -82,13 +83,14 @@ class _DropdownDriverState extends State<DropdownDriver> {
               },
               itemBuilder: (context, DropdownDriveModel suggestion) {
                 return ListTile(
-                  title: Text(suggestion.nama ?? '',
+                  title: Text(capitalizeWords(suggestion.nama ?? ''),
                       style: TextStyle(fontSize: 14)),
                 );
               },
               onSuggestionSelected: (DropdownDriveModel suggestion) {
                 setState(() {
-                  widget.controller.text = suggestion.nama ?? '';
+                  widget.controller.text =
+                      capitalizeWords(suggestion.nama ?? '');
                   widget.onPositionSelected(suggestion.posisi ?? '');
                   selectedDriver = suggestion;
                   widget.onDriverSelected(suggestion);

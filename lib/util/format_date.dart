@@ -1,23 +1,35 @@
 import 'package:intl/intl.dart';
 
-String? formatDate(String? dateStr) {
+String? formatDisplayDate(String? dateStr) {
   if (dateStr == null || dateStr.isEmpty) {
-    return null; // Mengembalikan null jika dateStr null atau kosong
+    return null;
   }
 
   try {
-    // Definisikan format input dari string tanggal
     DateFormat inputFormat =
         DateFormat('EEE, dd MMM yyyy HH:mm:ss zzz', 'en_US');
     DateTime dateTime = inputFormat.parse(dateStr);
 
-    // Formatting tanggal dan waktu dalam format bahasa Indonesia
-    DateFormat outputFormat = DateFormat('EEEE, d MMMM yyyy HH:mm', 'id_ID');
-    String formattedDate = outputFormat.format(dateTime);
-
-    return '$formattedDate WIB';
+    DateFormat outputFormat = DateFormat('EEEE, dd MMMM yyyy HH:mm', 'id_ID');
+    return outputFormat.format(dateTime) + ' WIB';
   } catch (e) {
-    // Mengembalikan null jika terjadi kesalahan parsing
+    return null;
+  }
+}
+
+String? formatBackendDate(String? dateStr) {
+  if (dateStr == null || dateStr.isEmpty) {
+    return null;
+  }
+
+  try {
+    DateFormat inputFormat =
+        DateFormat('EEEE, dd MMMM yyyy HH:mm WIB', 'id_ID');
+    DateTime dateTime = inputFormat.parse(dateStr);
+
+    DateFormat outputFormat = DateFormat('yyyy-MM-ddTHH:mm:ss', 'en_US');
+    return outputFormat.format(dateTime);
+  } catch (e) {
     return null;
   }
 }
