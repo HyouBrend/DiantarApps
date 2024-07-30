@@ -6,7 +6,7 @@ import 'package:diantar_jarak/bloc/search_page/dropdown_driver_bloc/dropdown_dri
 import 'package:diantar_jarak/data/service/history_page_service/detail_pengantaran_service.dart';
 import 'package:diantar_jarak/data/service/history_page_service/update_detail_pengantaran_service.dart';
 import 'package:diantar_jarak/helpers/network/api_helper.dart';
-import 'package:diantar_jarak/pages/page_screen.dart';
+import 'package:diantar_jarak/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:diantar_jarak/theme/theme.dart';
@@ -96,7 +96,7 @@ class MyApp extends StatelessWidget {
             useMaterial3: true,
             scaffoldBackgroundColor: CustomColorPalette.backgroundColor,
           ),
-          home: const PageScreen(),
+          home: SplashScreen(),
         ),
       ),
     );

@@ -1,4 +1,3 @@
-// models/detail_pengantaran_model.dart
 import 'package:diantar_jarak/util/format_date.dart';
 import 'package:equatable/equatable.dart';
 

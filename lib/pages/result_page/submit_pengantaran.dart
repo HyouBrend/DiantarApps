@@ -31,13 +31,11 @@ class SubmitResultPage extends StatelessWidget {
             ),
           ),
           SizedBox(width: 8),
-          Container(
-            child: Text(
-              ":",
-              style: TextStyle(
-                fontSize: 18,
-                color: CustomColorPalette.textColor,
-              ),
+          Text(
+            ":",
+            style: TextStyle(
+              fontSize: 18,
+              color: CustomColorPalette.textColor,
             ),
           ),
           SizedBox(width: 8), // Space between label and value
@@ -96,17 +94,22 @@ class SubmitResultPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                     padding: const EdgeInsets.all(8.0),
-                    margin: const EdgeInsets.only(bottom: 16.0),
+                    margin: const EdgeInsets.only(
+                      left: 300,
+                      right: 300,
+                      bottom: 10,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
                           'Detail Pengiriman',
                           style: TextStyle(
-                              fontSize: 20,
+                              fontSize: 24,
                               fontWeight: FontWeight.bold,
                               color: Color(0xFF363535)),
                         ),
+                        SizedBox(height: 16),
                         ListTile(
                           title: Text(
                               capitalizeWords(
@@ -118,6 +121,7 @@ class SubmitResultPage extends StatelessWidget {
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              SizedBox(height: 16),
                               buildRow('Shift',
                                   submitPengantaranModel.shiftKe.toString()),
                               buildRow('Jam Pengiriman',
@@ -145,14 +149,18 @@ class SubmitResultPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                     padding: const EdgeInsets.all(8.0),
-                    margin: const EdgeInsets.only(bottom: 16.0),
+                    margin: const EdgeInsets.only(
+                      left: 300,
+                      right: 300,
+                      bottom: 10,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
                           'Detail Customers',
                           style: TextStyle(
-                              fontSize: 20,
+                              fontSize: 24,
                               fontWeight: FontWeight.bold,
                               color: Color(0xFF363535)),
                         ),
@@ -165,44 +173,72 @@ class SubmitResultPage extends StatelessWidget {
                                   fontWeight: FontWeight.bold,
                                   color: Color(0xFF363535)),
                             ),
-                            subtitle: Row(
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    buildRow('Urutan Pengiriman',
-                                        kontak.urutanPengiriman.toString()),
-                                    buildRow(
-                                        'Latitude', kontak.latitude.toString()),
-                                    buildRow('Longitude',
-                                        kontak.longitude.toString()),
-                                    buildRow('Lokasi', kontak.lokasi),
-                                    buildRow(
-                                      'Nomor Faktur',
-                                      kontak.nomorFaktur.toString(),
-                                    ),
-                                    const Divider(color: Colors.purple),
-                                  ],
-                                ),
-                                Spacer(),
-                                Column(
-                                  children: [
-                                    IconButton(
-                                      icon: const Icon(
-                                        Icons.location_on,
-                                        size: 40,
-                                        color: Color(0xFF8A2BE2),
+                                buildRow('Urutan Pengiriman',
+                                    kontak.urutanPengiriman.toString()),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 2.0),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment
+                                        .center, // Mengatur ke tengah
+                                    children: [
+                                      SizedBox(
+                                        width: 250,
+                                        child: Text(
+                                          'Latitude',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18,
+                                            color: CustomColorPalette.textColor,
+                                          ),
+                                        ),
                                       ),
-                                      onPressed: () {
-                                        if (kontak.latitude != null &&
-                                            kontak.longitude != null) {
-                                          launch(
-                                              'https://www.google.com/maps/search/?api=1&query=${kontak.latitude},${kontak.longitude}');
-                                        }
-                                      },
-                                    ),
-                                  ],
+                                      SizedBox(width: 8),
+                                      Text(
+                                        ":",
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          color: CustomColorPalette.textColor,
+                                        ),
+                                      ),
+                                      SizedBox(width: 8),
+                                      Flexible(
+                                        child: Text(
+                                          kontak.latitude.toString(),
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            color: CustomColorPalette.textColor,
+                                          ),
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(
+                                          Icons.location_on_rounded,
+                                          size: 20,
+                                          color: Color(0xFF8A2BE2),
+                                        ),
+                                        onPressed: () {
+                                          if (kontak.latitude != null &&
+                                              kontak.longitude != null) {
+                                            launch(
+                                                'https://www.google.com/maps/search/?api=1&query=${kontak.latitude},${kontak.longitude}');
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ),
                                 ),
+                                buildRow(
+                                    'Longitude', kontak.longitude.toString()),
+                                buildRow('Lokasi', kontak.lokasi),
+                                buildRow(
+                                  'Nomor Faktur',
+                                  kontak.nomorFaktur.toString(),
+                                ),
+                                const Divider(color: Colors.purple),
                               ],
                             ),
                           );
@@ -218,17 +254,39 @@ class SubmitResultPage extends StatelessWidget {
                       ),
                       borderRadius: BorderRadius.circular(8.0),
                     ),
-                    padding: const EdgeInsets.all(8.0),
-                    margin: const EdgeInsets.only(bottom: 16.0),
+                    padding: const EdgeInsets.all(16.0),
+                    margin: const EdgeInsets.only(
+                      left: 300,
+                      right: 300,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Google Maps',
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF363535)),
+                        Row(
+                          crossAxisAlignment:
+                              CrossAxisAlignment.center, // Mengatur ke tengah
+                          children: [
+                            const Text(
+                              'Google Maps',
+                              style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF363535)),
+                            ),
+                            IconButton(
+                              icon: const Icon(
+                                Icons.map_rounded,
+                                size: 30,
+                                color: Color(0xFF8A2BE2),
+                              ),
+                              onPressed: () {
+                                if (submitPengantaranModel.googleMapsUrl !=
+                                    null) {
+                                  launch(submitPengantaranModel.googleMapsUrl!);
+                                }
+                              },
+                            ),
+                          ],
                         ),
                         Row(
                           children: [
@@ -243,30 +301,11 @@ class SubmitResultPage extends StatelessWidget {
                                     '${submitPengantaranModel.minDuration.toStringAsFixed(2)} minutes'),
                               ],
                             ),
-                            Spacer(),
-                            Column(
-                              children: [
-                                IconButton(
-                                  icon: const Icon(
-                                    Icons.map,
-                                    size: 40,
-                                    color: Color(0xFF8A2BE2),
-                                  ),
-                                  onPressed: () {
-                                    if (submitPengantaranModel.googleMapsUrl !=
-                                        null) {
-                                      launch(submitPengantaranModel
-                                          .googleMapsUrl!);
-                                    }
-                                  },
-                                ),
-                              ],
-                            ),
                           ],
                         ),
                       ],
                     ),
-                  ),
+                  )
                 ],
               ),
             ),

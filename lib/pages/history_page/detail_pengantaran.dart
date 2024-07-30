@@ -3,6 +3,7 @@ import 'package:diantar_jarak/bloc/history_page/detail_pengantaran/detail_pengan
 import 'package:diantar_jarak/bloc/history_page/detail_pengantaran/detail_pengantaran_state.dart';
 import 'package:diantar_jarak/theme/theme.dart';
 import 'package:diantar_jarak/util/capitalize_word.dart';
+import 'package:diantar_jarak/util/size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -20,7 +21,7 @@ class DetailPengantaranPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(
-            width: 150, // Set width as per your need
+            width: 250,
             child: Text(
               label,
               style: TextStyle(
@@ -37,7 +38,7 @@ class DetailPengantaranPage extends StatelessWidget {
               color: CustomColorPalette.textColor,
             ),
           ),
-          SizedBox(width: 8), // Space between label and value
+          SizedBox(width: 8),
           Expanded(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -51,7 +52,6 @@ class DetailPengantaranPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (trailing != null) trailing,
               ],
             ),
           ),
@@ -92,6 +92,11 @@ class DetailPengantaranPage extends StatelessWidget {
               child: ListView(
                 children: [
                   Container(
+                    margin: const EdgeInsets.only(
+                      left: 300,
+                      right: 300,
+                      bottom: 10,
+                    ), // Add margin here
                     decoration: BoxDecoration(
                       color: CustomColorPalette.BgBorder,
                       border: Border.all(
@@ -100,12 +105,11 @@ class DetailPengantaranPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                     padding: const EdgeInsets.all(8.0),
-                    margin: const EdgeInsets.only(bottom: 16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             const Text(
                               'Detail Pengiriman',
@@ -114,6 +118,9 @@ class DetailPengantaranPage extends StatelessWidget {
                                 fontWeight: FontWeight.bold,
                                 color: Color(0xFF363535),
                               ),
+                            ),
+                            SizedBox(
+                              width: Sizes.dp1(context),
                             ),
                             ElevatedButton(
                               onPressed: () {},
@@ -161,6 +168,11 @@ class DetailPengantaranPage extends StatelessWidget {
                     ),
                   ),
                   Container(
+                    margin: const EdgeInsets.only(
+                      left: 300,
+                      right: 300,
+                      bottom: 10,
+                    ), // Add margin here
                     decoration: BoxDecoration(
                       color: CustomColorPalette.BgBorder,
                       border: Border.all(
@@ -169,28 +181,16 @@ class DetailPengantaranPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                     padding: const EdgeInsets.all(8.0),
-                    margin: const EdgeInsets.only(bottom: 16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Detail Customers',
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF363535),
-                              ),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                // Implementasi logika untuk update
-                              },
-                              child: const Text('Update'),
-                            ),
-                          ],
+                        Text(
+                          'Detail Customers',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF363535),
+                          ),
                         ),
                         SizedBox(height: 16),
                         Column(
@@ -199,13 +199,24 @@ class DetailPengantaranPage extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 ListTile(
-                                  title: Text(
-                                    detail.displayName ?? 'N/A',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: CustomColorPalette.textColor,
-                                    ),
+                                  title: Row(
+                                    children: [
+                                      Text(
+                                        detail.displayName ?? 'N/A',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: CustomColorPalette.textColor,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: Sizes.dp1(context),
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () {},
+                                        child: const Text('Update'),
+                                      ),
+                                    ],
                                   ),
                                   subtitle: Column(
                                     crossAxisAlignment:
@@ -215,25 +226,63 @@ class DetailPengantaranPage extends StatelessWidget {
                                       buildRow('Type', detail.posisi),
                                       buildRow('Urutan Pengiriman',
                                           detail.urutanPengiriman.toString()),
-                                      buildRow('Latitude',
-                                          detail.inputLatitude.toString(),
-                                          trailing: IconButton(
-                                            icon: Icon(
-                                              Icons.location_on,
-                                              size: 30,
-                                              color: Color(0xFF8A2BE2),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 2.0),
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment
+                                              .center, // Mengatur ke tengah
+                                          children: [
+                                            SizedBox(
+                                              width: 250,
+                                              child: Text(
+                                                'Latitude',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 18,
+                                                  color: CustomColorPalette
+                                                      .textColor,
+                                                ),
+                                              ),
                                             ),
-                                            onPressed: () {
-                                              // Open Google Maps URL
-                                              if (detail.inputLatitude !=
-                                                      null &&
-                                                  detail.inputLongitude !=
-                                                      null) {
-                                                launch(
-                                                    'https://www.google.com/maps/search/?api=1&query=${detail.inputLatitude},${detail.inputLongitude}');
-                                              }
-                                            },
-                                          )),
+                                            Text(
+                                              ":",
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                color: CustomColorPalette
+                                                    .textColor,
+                                              ),
+                                            ),
+                                            SizedBox(width: 8),
+                                            Flexible(
+                                              child: Text(
+                                                detail.inputLatitude.toString(),
+                                                style: TextStyle(
+                                                  fontSize: 18,
+                                                  color: CustomColorPalette
+                                                      .textColor,
+                                                ),
+                                              ),
+                                            ),
+                                            IconButton(
+                                              icon: const Icon(
+                                                Icons.location_on_rounded,
+                                                size: 36,
+                                                color: Color(0xFF8A2BE2),
+                                              ),
+                                              onPressed: () {
+                                                if (detail.inputLatitude !=
+                                                        null &&
+                                                    detail.inputLongitude !=
+                                                        null) {
+                                                  launch(
+                                                      'https://www.google.com/maps/search/?api=1&query=${detail.inputLatitude},${detail.inputLongitude}');
+                                                }
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                       buildRow('Longitude',
                                           detail.inputLongitude.toString()),
                                       buildRow('Lokasi', detail.lokasi),
@@ -242,7 +291,7 @@ class DetailPengantaranPage extends StatelessWidget {
                                       const Divider(color: Colors.purple),
                                     ],
                                   ),
-                                ),
+                                )
                               ],
                             );
                           }).toList(),
@@ -251,41 +300,30 @@ class DetailPengantaranPage extends StatelessWidget {
                     ),
                   ),
                   Container(
+                    margin: const EdgeInsets.only(
+                      left: 300,
+                      right: 300,
+                    ), // Add margin here
                     decoration: BoxDecoration(
                       color: CustomColorPalette.BgBorder,
                       border: Border.all(
                         color: CustomColorPalette.textColor,
                       ),
-                      borderRadius: BorderRadius.circular(20.0),
+                      borderRadius: BorderRadius.circular(8.0),
                     ),
                     padding: const EdgeInsets.all(16.0),
-                    margin: const EdgeInsets.only(bottom: 16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Google Maps',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF363535),
-                          ),
-                        ),
                         Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(height: 16),
-                                  buildRow('Min Distance',
-                                      '${state.detailPengantaran[0].minJarakPengiriman?.toStringAsFixed(2)} km'),
-                                  buildRow('Min Duration',
-                                      '${state.detailPengantaran[0].minDurasiPengiriman?.toStringAsFixed(2)} minutes'),
-                                  buildRow('Update By',
-                                      '${state.detailPengantaran[0].updateBy} (${state.detailPengantaran[0].updateAt})'),
-                                ],
+                            const Text(
+                              'Google Maps',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF363535),
                               ),
                             ),
                             IconButton(
@@ -304,6 +342,25 @@ class DetailPengantaranPage extends StatelessWidget {
                                       .detailPengantaran[0].googleMapsURL!);
                                 }
                               },
+                            ),
+                          ],
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 16),
+                                  buildRow('Min Distance',
+                                      '${state.detailPengantaran[0].minJarakPengiriman?.toStringAsFixed(2)} km'),
+                                  buildRow('Min Duration',
+                                      '${state.detailPengantaran[0].minDurasiPengiriman?.toStringAsFixed(2)} minutes'),
+                                  buildRow('Update By',
+                                      '${state.detailPengantaran[0].updateBy} (${state.detailPengantaran[0].updateAt})'),
+                                ],
+                              ),
                             ),
                           ],
                         ),
