@@ -9,6 +9,8 @@ String? formatDisplayDate(String? dateStr) {
     DateFormat inputFormat =
         DateFormat('EEE, dd MMM yyyy HH:mm:ss zzz', 'en_US');
     DateTime dateTime = inputFormat.parse(dateStr);
+    // Tambahkan 7 jam pada DateTime jika belum diubah ke GMT+7
+    dateTime = dateTime.add(Duration(hours: 7));
 
     DateFormat outputFormat = DateFormat('EEEE, dd MMMM yyyy HH:mm', 'id_ID');
     return outputFormat.format(dateTime) + ' WIB';
@@ -17,18 +19,18 @@ String? formatDisplayDate(String? dateStr) {
   }
 }
 
-String? formatBackendDate(String? dateStr) {
+String? formatTimeBakAndSend(String? dateStr) {
   if (dateStr == null || dateStr.isEmpty) {
     return null;
   }
 
   try {
     DateFormat inputFormat =
-        DateFormat('EEEE, dd MMMM yyyy HH:mm WIB', 'id_ID');
+        DateFormat('EEE, dd MMM yyyy HH:mm:ss zzz', 'en_US');
     DateTime dateTime = inputFormat.parse(dateStr);
 
-    DateFormat outputFormat = DateFormat('yyyy-MM-ddTHH:mm:ss', 'en_US');
-    return outputFormat.format(dateTime);
+    DateFormat outputFormat = DateFormat('EEEE, dd MMMM yyyy HH:mm', 'id_ID');
+    return outputFormat.format(dateTime) + ' WIB';
   } catch (e) {
     return null;
   }

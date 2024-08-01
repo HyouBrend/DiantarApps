@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 
 abstract class ApiHelper {
+  ApiHelper(Dio dio);
+
   Future<Response> get({
     required String url,
     Map<String, dynamic>? headers,

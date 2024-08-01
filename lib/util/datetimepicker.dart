@@ -41,16 +41,18 @@ class _DateTimePickerState extends State<DateTimePicker> {
 
   void _updateController() {
     if (selectedDate != null && selectedTime != null) {
+      // Kurangi 7 jam dari waktu yang dipilih
       final DateTime dateTime = DateTime(
         selectedDate!.year,
         selectedDate!.month,
         selectedDate!.day,
         selectedTime!.hour,
         selectedTime!.minute,
-      );
-      final DateFormat outputFormat =
-          DateFormat('EEEE, dd MMMM yyyy HH:mm', 'id_ID');
-      widget.controller.text = outputFormat.format(dateTime) + ' WIB';
+      ).subtract(Duration(hours: 7)); // Kurangi 7 jam untuk GMT+7
+
+      // Format output sesuai dengan yang dibutuhkan
+      final DateFormat outputFormat = DateFormat('yyyy-MM-dd HH:mm:ss.SSS');
+      widget.controller.text = outputFormat.format(dateTime);
     }
   }
 

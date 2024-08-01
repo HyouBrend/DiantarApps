@@ -1,6 +1,6 @@
 class APIJarakLocal {
   static const String apiToken = "";
-  static const String baseUrl = "http://192.168.18.7:5002";
+  static const String baseUrl = 'http://192.168.18.7:5002';
   static const String listCustomers = "$baseUrl/list_pelanggan";
   static const String getCustomer = "$baseUrl/get_pelanggan";
   static const String listDrivers = "$baseUrl/list_driver";
@@ -9,6 +9,8 @@ class APIJarakLocal {
   static const String submitPengantaran = "$baseUrl/submit_pengantaran";
   static const String historyPengantaran = "$baseUrl/history_pengantaran";
   static const String detailPengantaran = "$baseUrl/detail_pengantaran";
+  static const String updateDetailPerjalanan =
+      "$baseUrl/update_detail_perjalanan";
   static const String updateDetailPengantaran =
       "$baseUrl/update_detail_pengantaran";
 }

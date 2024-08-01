@@ -1,4 +1,4 @@
-import 'package:diantar_jarak/pages/search_page/search_page.dart';
+import 'package:diantar_jarak/pages/search_dropdown/search_dropdown.dart';
 import 'package:flutter/material.dart';
 
 class PageScreen extends StatelessWidget {
@@ -10,7 +10,7 @@ class PageScreen extends StatelessWidget {
       body: Row(
         children: [
           Expanded(
-            child: SearchPage(),
+            child: SearchDropdown(),
           ),
         ],
       ),
