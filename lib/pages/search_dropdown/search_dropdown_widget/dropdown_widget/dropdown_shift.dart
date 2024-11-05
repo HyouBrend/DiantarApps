@@ -7,10 +7,10 @@ class DropdownShift extends StatefulWidget {
   final Function(String) onShiftSelected;
 
   const DropdownShift({
-    Key? key,
+    super.key,
     required this.controller,
     required this.onShiftSelected,
-  }) : super(key: key);
+  });
 
   @override
   _DropdownShiftState createState() => _DropdownShiftState();
@@ -24,19 +24,20 @@ class _DropdownShiftState extends State<DropdownShift> {
         controller: widget.controller,
         decoration: InputDecoration(
           labelText: 'Shift',
-          labelStyle: TextStyle(fontSize: 14),
+          labelStyle: const TextStyle(fontSize: 14),
           hintText: 'Masukkan Shift',
           hintStyle:
               TextStyle(color: CustomColorPalette.hintTextColor, fontSize: 14),
-          border: OutlineInputBorder(
+          border: const OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(10.0)),
           ),
           filled: true,
           fillColor: CustomColorPalette.surfaceColor,
-          contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
           isDense: true,
         ),
-        style: TextStyle(fontSize: 14),
+        style: const TextStyle(fontSize: 14),
       ),
       suggestionsCallback: (pattern) async {
         await Future.delayed(const Duration(milliseconds: 500));
@@ -47,7 +48,7 @@ class _DropdownShiftState extends State<DropdownShift> {
       },
       itemBuilder: (context, String suggestion) {
         return ListTile(
-          title: Text(suggestion, style: TextStyle(fontSize: 14)),
+          title: Text(suggestion, style: const TextStyle(fontSize: 14)),
         );
       },
       onSuggestionSelected: (String suggestion) {
@@ -57,7 +58,7 @@ class _DropdownShiftState extends State<DropdownShift> {
         });
       },
       noItemsFoundBuilder: (context) => Padding(
-        padding: EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8.0),
         child: Text('Shift Tidak Ditemukan',
             style:
                 TextStyle(color: CustomColorPalette.textColor, fontSize: 14)),

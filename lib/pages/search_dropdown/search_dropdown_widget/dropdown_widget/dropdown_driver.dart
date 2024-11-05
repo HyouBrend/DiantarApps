@@ -53,19 +53,19 @@ class _DropdownDriverState extends State<DropdownDriver> {
                 decoration: InputDecoration(
                   labelText: 'Driver',
                   hintText: 'Masukkan nama driver',
-                  labelStyle: TextStyle(fontSize: 14),
+                  labelStyle: const TextStyle(fontSize: 14),
                   hintStyle: TextStyle(
                       color: CustomColorPalette.hintTextColor, fontSize: 14),
-                  border: OutlineInputBorder(
+                  border: const OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(10.0)),
                   ),
                   filled: true,
                   fillColor: CustomColorPalette.surfaceColor,
                   contentPadding:
-                      EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                   isDense: true, // Mengurangi tinggi TextField
                 ),
-                style: TextStyle(fontSize: 14),
+                style: const TextStyle(fontSize: 14),
               ),
               suggestionsCallback: (pattern) async {
                 context.read<DriverBloc>().add(FetchDrivers(query: pattern));
@@ -84,7 +84,7 @@ class _DropdownDriverState extends State<DropdownDriver> {
               itemBuilder: (context, DropdownDriveModel suggestion) {
                 return ListTile(
                   title: Text(capitalizeWords(suggestion.nama ?? ''),
-                      style: TextStyle(fontSize: 14)),
+                      style: const TextStyle(fontSize: 14)),
                 );
               },
               onSuggestionSelected: (DropdownDriveModel suggestion) {
@@ -97,17 +97,17 @@ class _DropdownDriverState extends State<DropdownDriver> {
                 });
               },
               noItemsFoundBuilder: (context) => Padding(
-                padding: EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8.0),
                 child: Text('Driver tidak ditemukan',
                     style: TextStyle(
                         color: CustomColorPalette.textColor, fontSize: 14)),
               ),
-              loadingBuilder: (context) => Center(
+              loadingBuilder: (context) => const Center(
                 child: CircularProgressIndicator(),
               ),
               hideOnLoading:
                   !_isLoading, // Mengontrol visibilitas indikator loading
-              suggestionsBoxDecoration: SuggestionsBoxDecoration(
+              suggestionsBoxDecoration: const SuggestionsBoxDecoration(
                 constraints: BoxConstraints(
                     maxHeight: 500), // Mengatur tinggi maksimal dropdown
               ),

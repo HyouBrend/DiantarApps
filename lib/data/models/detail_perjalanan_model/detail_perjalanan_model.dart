@@ -1,9 +1,9 @@
 import 'package:diantar_jarak/util/format_date.dart';
 
 class DetailPerjalananModel {
-  final String googleMapsURL;
-  final String inputLatitude;
-  final String inputLongitude;
+  final String? googleMapsURL;
+  final String? inputLatitude;
+  final String? inputLongitude;
   final String kontakID;
   final String createdBy;
   final String createdDate;
@@ -11,12 +11,12 @@ class DetailPerjalananModel {
   final int driverID;
   final String? jamKembali;
   final String? jamPengiriman;
-  final String lokasi;
-  final double minDurasiPengiriman;
-  final double minJarakPengiriman;
+  final String? lokasi;
+  final double? minDurasiPengiriman;
+  final double? minJarakPengiriman;
   final String namaDriver;
-  final String noHp;
-  final int nomorFaktur;
+  final String? noHp;
+  final int? nomorFaktur;
   final String nomorPolisiKendaraan;
   final int pengantaranID;
   final String perjalananID;

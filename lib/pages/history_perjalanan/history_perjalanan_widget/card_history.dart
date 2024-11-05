@@ -1,25 +1,44 @@
 import 'package:diantar_jarak/bloc/history_perjalanan_bloc/history_perjalanan/history_perjalanan_bloc.dart';
 import 'package:diantar_jarak/bloc/history_perjalanan_bloc/history_perjalanan/history_perjalanan_state.dart';
-import 'package:diantar_jarak/pages/detail_perjalanan/detail_pengantaran.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:diantar_jarak/data/models/history_perjalanan_model/history_perjalanan_model.dart';
+import 'package:diantar_jarak/pages/detail_perjalanan/detail_pengantaran.dart';
 import 'package:diantar_jarak/theme/theme.dart';
 import 'package:diantar_jarak/util/capitalize_word.dart';
 import 'package:diantar_jarak/util/size.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CardHistory extends StatelessWidget {
-  final HistoryPerjalananModel historyItem;
+  final HistoryPengantaranModel historyItem;
 
-  const CardHistory({Key? key, required this.historyItem}) : super(key: key);
+  const CardHistory({super.key, required this.historyItem});
+
+  // Fungsi untuk menentukan ukuran font yang responsif
+  double getFontSize(BuildContext context, double baseSize) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    if (screenWidth > 1024) {
+      return baseSize; // Ukuran font untuk desktop
+    } else if (screenWidth > 768 && screenWidth <= 1024) {
+      return baseSize - 4; // Ukuran font lebih kecil untuk tablet
+    } else {
+      return baseSize - 8; // Ukuran font lebih kecil untuk mobile
+    }
+  }
+
+  String _validateTime(String time) {
+    if (time == 'Mon, 01 Jan 1900 00:00:00 GMT') {
+      return 'Perlu di update';
+    }
+    return time;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<HistoryPerjalananBloc, HistoryPerjalananState>(
+    return BlocBuilder<HistoryPengantaranBloc, HistoryPengantaranState>(
       builder: (context, state) {
-        HistoryPerjalananModel currentHistoryItem = historyItem;
+        HistoryPengantaranModel currentHistoryItem = historyItem;
 
-        if (state is HistoryPerjalananLoaded) {
+        if (state is HistoryLoaded) {
           final updatedHistoryItem = state.histories.firstWhere(
               (history) => history.perjalananId == historyItem.perjalananId,
               orElse: () => historyItem);
@@ -34,13 +53,12 @@ class CardHistory extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) => DetailPengantaranPage(
-                    perjalananID: currentHistoryItem.perjalananId,
+                    perjalananID: historyItem.perjalananId,
                   ),
                 ),
               );
             },
             child: Container(
-              width: double.infinity,
               padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
                 color: CustomColorPalette.BgBorder,
@@ -51,42 +69,38 @@ class CardHistory extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    flex: 5,
+                    flex: 3,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
                           decoration: BoxDecoration(
                             color: CustomColorPalette.pastelPink,
-                            border: Border.all(
-                                color: Colors.black), // Border hitam tipis
+                            border: Border.all(color: Colors.black),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          padding: EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(8),
                           child: Text(
-                            capitalizeWords(currentHistoryItem.namaDriver),
+                            capitalizeWords(historyItem.namaDriver),
                             style: TextStyle(
-                              fontSize: 24,
+                              fontSize: getFontSize(context, 24),
                               fontWeight: FontWeight.bold,
                               color: CustomColorPalette.textColor,
                             ),
                           ),
                         ),
-                        SizedBox(
-                          height: Sizes.dp8(context),
-                        ),
+                        SizedBox(height: Sizes.dp8(context)),
                         Container(
                           decoration: BoxDecoration(
                             color: CustomColorPalette.pastelBlue,
-                            border: Border.all(
-                                color: Colors.black), // Border hitam tipis
+                            border: Border.all(color: Colors.black),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          padding: EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(8),
                           child: Text(
-                            'Create By: ' + currentHistoryItem.createdBy,
+                            'Create By: ${historyItem.createdBy}',
                             style: TextStyle(
-                              fontSize: 20,
+                              fontSize: getFontSize(context, 20),
                               color: CustomColorPalette.textColor,
                             ),
                           ),
@@ -102,11 +116,10 @@ class CardHistory extends StatelessWidget {
                         Container(
                           decoration: BoxDecoration(
                             color: CustomColorPalette.pastelYellow,
-                            border: Border.all(
-                                color: Colors.black), // Border hitam tipis
+                            border: Border.all(color: Colors.black),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          padding: EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(8),
                           child: RichText(
                             text: TextSpan(
                               children: [
@@ -114,14 +127,15 @@ class CardHistory extends StatelessWidget {
                                   text: 'Jam Pengiriman: ',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 18,
+                                    fontSize: getFontSize(context, 18),
                                     color: CustomColorPalette.textColor,
                                   ),
                                 ),
                                 TextSpan(
-                                  text: currentHistoryItem.jamPengiriman,
+                                  text: _validateTime(
+                                      currentHistoryItem.jamPengiriman),
                                   style: TextStyle(
-                                    fontSize: 18,
+                                    fontSize: getFontSize(context, 18),
                                     color: CustomColorPalette.textColor,
                                   ),
                                 ),
@@ -132,45 +146,33 @@ class CardHistory extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(
-                    width: Sizes.dp1(context),
-                  ),
                   Expanded(
                     flex: 3,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(
-                          '',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: CustomColorPalette.textColor,
-                          ),
-                        ),
-                        SizedBox(height: 40),
                         Container(
                           decoration: BoxDecoration(
                             color: CustomColorPalette.pastelOrange,
-                            border: Border.all(
-                                color: Colors.black), // Border hitam tipis
+                            border: Border.all(color: Colors.black),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          padding: EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(8),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '${currentHistoryItem.minDurasiPengiriman} menit',
+                                '${historyItem.minDurasiPengiriman} menit',
                                 style: TextStyle(
-                                  fontSize: 18,
+                                  fontSize: getFontSize(context, 18),
                                   color: CustomColorPalette.textColor,
                                 ),
                               ),
-                              SizedBox(height: 4),
+                              const SizedBox(height: 4),
                               Text(
-                                '${currentHistoryItem.minJarakPengiriman} km',
+                                '${historyItem.minJarakPengiriman} km',
                                 style: TextStyle(
-                                  fontSize: 18,
+                                  fontSize: getFontSize(context, 18),
                                   color: CustomColorPalette.textColor,
                                 ),
                               ),
@@ -180,9 +182,6 @@ class CardHistory extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(
-                    width: Sizes.dp1(context),
-                  ),
                   Expanded(
                     flex: 3,
                     child: Column(
@@ -191,11 +190,10 @@ class CardHistory extends StatelessWidget {
                         Container(
                           decoration: BoxDecoration(
                             color: CustomColorPalette.mintCream,
-                            border: Border.all(
-                                color: Colors.black), // Border hitam tipis
+                            border: Border.all(color: Colors.black),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          padding: EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(8),
                           child: RichText(
                             text: TextSpan(
                               children: [
@@ -203,14 +201,15 @@ class CardHistory extends StatelessWidget {
                                   text: 'Jam Kembali: ',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 18,
+                                    fontSize: getFontSize(context, 18),
                                     color: CustomColorPalette.textColor,
                                   ),
                                 ),
                                 TextSpan(
-                                  text: currentHistoryItem.jamKembali,
+                                  text:
+                                      "${_validateTime(currentHistoryItem.jamKembali)}",
                                   style: TextStyle(
-                                    fontSize: 18,
+                                    fontSize: getFontSize(context, 18),
                                     color: CustomColorPalette.textColor,
                                   ),
                                 ),
@@ -222,57 +221,54 @@ class CardHistory extends StatelessWidget {
                     ),
                   ),
                   Expanded(
-                    flex: 5,
+                    flex: 3,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Container(
                           decoration: BoxDecoration(
                             color: CustomColorPalette.pastelGray,
-                            border: Border.all(
-                                color: Colors.black), // Border hitam tipis
+                            border: Border.all(color: Colors.black),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          padding: EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(8),
                           child: Text(
-                            currentHistoryItem.tipeKendaraan,
+                            historyItem.tipeKendaraan,
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: getFontSize(context, 18),
                               color: CustomColorPalette.textColor,
                             ),
                           ),
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Container(
                           decoration: BoxDecoration(
                             color: CustomColorPalette.lavender,
-                            border: Border.all(
-                                color: Colors.black), // Border hitam tipis
+                            border: Border.all(color: Colors.black),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          padding: EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(8),
                           child: Text(
-                            'Shift ke-${currentHistoryItem.shiftKe}',
+                            'Shift ke-${historyItem.shiftKe}',
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: getFontSize(context, 18),
                               color: CustomColorPalette.textColor,
                             ),
                           ),
                         ),
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
                         Container(
                           decoration: BoxDecoration(
                             color: getStatusColor(currentHistoryItem.status),
-                            border: Border.all(
-                                color: Colors.black), // Border hitam tipis
+                            border: Border.all(color: Colors.black),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          padding: EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(8),
                           child: Text(
                             getStatusLabel(currentHistoryItem.status),
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: getFontSize(context, 18),
                               color: CustomColorPalette.textColor,
                             ),
                           ),
@@ -289,6 +285,7 @@ class CardHistory extends StatelessWidget {
     );
   }
 
+  // Fungsi untuk mendapatkan warna status
   Color getStatusColor(String status) {
     switch (status) {
       case 'Sudah Dikirim':
@@ -306,6 +303,7 @@ class CardHistory extends StatelessWidget {
     }
   }
 
+  // Fungsi untuk mendapatkan label status
   String getStatusLabel(String status) {
     switch (status) {
       case 'Sudah Dikirim':

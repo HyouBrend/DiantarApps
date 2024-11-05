@@ -9,42 +9,65 @@ class SubmitResultPage extends StatelessWidget {
   final SubmitPerjalananModel submitPengantaranModel;
 
   const SubmitResultPage({
-    Key? key,
+    super.key,
     required this.submitPengantaranModel,
-  }) : super(key: key);
+  });
 
-  Widget buildRow(String label, String? value) {
+  // Fungsi buildRow yang responsif
+  Widget buildRow(String label, String? value, BuildContext context) {
+    double getLabelWidth(BuildContext context) {
+      double screenWidth = MediaQuery.of(context).size.width;
+      if (screenWidth > 1024) {
+        return 200; // Lebar kolom label untuk desktop
+      } else if (screenWidth > 768 && screenWidth <= 1024) {
+        return 150; // Lebar kolom label untuk tablet
+      } else {
+        return 120; // Lebar kolom label lebih kecil untuk mobile
+      }
+    }
+
+    double getFontSize(BuildContext context) {
+      double screenWidth = MediaQuery.of(context).size.width;
+      if (screenWidth > 1024) {
+        return 18; // Ukuran font lebih besar untuk desktop
+      } else if (screenWidth > 768 && screenWidth <= 1024) {
+        return 16; // Ukuran font sedang untuk tablet
+      } else {
+        return 14; // Ukuran font lebih kecil untuk mobile
+      }
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2.0),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: 250, // Set width as per your need
+          SizedBox(
+            width: getLabelWidth(context), // Lebar kolom label responsif
             child: Text(
               label,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 18,
+                fontSize: getFontSize(context), // Ukuran font responsif
                 color: CustomColorPalette.textColor,
               ),
             ),
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Text(
             ":",
             style: TextStyle(
-              fontSize: 18,
+              fontSize: getFontSize(context), // Ukuran font responsif
               color: CustomColorPalette.textColor,
             ),
           ),
-          SizedBox(width: 8), // Space between label and value
+          const SizedBox(width: 8), // Space antara label dan value
           Flexible(
             fit: FlexFit.loose,
             child: Text(
               value ?? '',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: getFontSize(context), // Ukuran font responsif
                 color: CustomColorPalette.textColor,
               ),
             ),
@@ -54,8 +77,67 @@ class SubmitResultPage extends StatelessWidget {
     );
   }
 
+  double _getResponsiveMargin(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    if (screenWidth > 1024) {
+      return 200; // Margin lebih besar untuk desktop
+    } else if (screenWidth > 768 && screenWidth <= 1024) {
+      return 150; // Margin menengah untuk tablet
+    } else {
+      return 30; // Margin lebih kecil untuk mobile
+    }
+  }
+
+  double getFontSize(BuildContext context, double baseSize) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    if (screenWidth > 1024) {
+      return baseSize; // Ukuran font untuk desktop tetap
+    } else if (screenWidth > 768 && screenWidth <= 1024) {
+      return baseSize - 2; // Ukuran font lebih kecil untuk tablet
+    } else {
+      return baseSize - 4; // Ukuran font lebih kecil untuk mobile
+    }
+  }
+
+  double getLabelWidth(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    if (screenWidth > 1024) {
+      return 200; // Lebar kolom label untuk desktop
+    } else if (screenWidth > 768 && screenWidth <= 1024) {
+      return 150; // Lebar kolom label untuk tablet
+    } else {
+      return 120; // Lebar kolom label lebih kecil untuk mobile
+    }
+  }
+
+  double getIconSize(BuildContext context, double baseSize) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    if (screenWidth > 1024) {
+      return baseSize; // Ukuran ikon untuk desktop tetap
+    } else if (screenWidth > 768 && screenWidth <= 1024) {
+      return baseSize - 5; // Ukuran ikon lebih kecil untuk tablet
+    } else {
+      return baseSize - 10; // Ukuran ikon lebih kecil untuk mobile
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    double marginSize =
+        _getResponsiveMargin(context); // Mendapatkan margin responsif
+
+    // Memisahkan pelanggan yang memiliki dan tidak memiliki latitude/longitude
+    List kontakWithLatLong = submitPengantaranModel.kontaks
+        .where((kontak) =>
+            kontak.latitude.isNotEmpty && kontak.longitude.isNotEmpty)
+        .toList();
+    List kontakWithoutLatLong = submitPengantaranModel.kontaks
+        .where((kontak) => kontak.latitude.isEmpty || kontak.longitude.isEmpty)
+        .toList();
+
+    // Gabungkan, dengan kontak tanpa lat/long di bagian akhir
+    List allKontaks = [...kontakWithLatLong, ...kontakWithoutLatLong];
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -68,11 +150,11 @@ class SubmitResultPage extends StatelessWidget {
         ),
         backgroundColor: CustomColorPalette.backgroundColor,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => SearchDropdown()),
+              MaterialPageRoute(builder: (context) => const SearchDropdown()),
             );
           },
         ),
@@ -94,46 +176,60 @@ class SubmitResultPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                     padding: const EdgeInsets.all(8.0),
-                    margin: const EdgeInsets.only(
-                      left: 300,
-                      right: 300,
-                      bottom: 10,
-                    ),
+                    margin: EdgeInsets.only(
+                      left: marginSize,
+                      right: marginSize,
+                      bottom: 20,
+                    ), // Margin bottom added
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'Detail Pengiriman',
                           style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF363535)),
+                            fontSize:
+                                getFontSize(context, 24), // Responsif font size
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF363535),
+                          ),
                         ),
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
                         ListTile(
                           title: Text(
-                              capitalizeWords(
-                                  submitPengantaranModel.namaDriver),
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF363535))),
+                            capitalizeWords(submitPengantaranModel.namaDriver),
+                            style: TextStyle(
+                              fontSize: getFontSize(
+                                  context, 20), // Responsif font size
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF363535),
+                            ),
+                          ),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SizedBox(height: 16),
-                              buildRow('Shift',
-                                  submitPengantaranModel.shiftKe.toString()),
-                              buildRow('Jam Pengiriman',
-                                  submitPengantaranModel.jamPengiriman ?? ''),
-                              buildRow('Jam Kembali',
-                                  submitPengantaranModel.jamKembali ?? ''),
-                              buildRow('Tipe Kendaraan',
-                                  submitPengantaranModel.tipeKendaraan),
-                              buildRow('Nomor Polisi',
-                                  submitPengantaranModel.nomorPolisiKendaraan),
+                              const SizedBox(height: 16),
+                              buildRow(
+                                  'Shift',
+                                  submitPengantaranModel.shiftKe.toString(),
+                                  context),
+                              buildRow(
+                                  'Jam Pengiriman',
+                                  submitPengantaranModel.jamPengiriman ?? '',
+                                  context),
+                              buildRow(
+                                  'Jam Kembali',
+                                  submitPengantaranModel.jamKembali ?? '',
+                                  context),
+                              buildRow(
+                                  'Tipe Kendaraan',
+                                  submitPengantaranModel.tipeKendaraan,
+                                  context),
+                              buildRow(
+                                  'Nomor Polisi',
+                                  submitPengantaranModel.nomorPolisiKendaraan,
+                                  context),
                               buildRow('Created By',
-                                  submitPengantaranModel.createdBy),
+                                  submitPengantaranModel.createdBy, context),
                             ],
                           ),
                         ),
@@ -149,103 +245,136 @@ class SubmitResultPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                     padding: const EdgeInsets.all(8.0),
-                    margin: const EdgeInsets.only(
-                      left: 300,
-                      right: 300,
-                      bottom: 10,
-                    ),
+                    margin: EdgeInsets.only(
+                      left: marginSize,
+                      right: marginSize,
+                      bottom: 20,
+                    ), // Margin bottom added
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'Detail Customers',
                           style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF363535)),
+                            fontSize:
+                                getFontSize(context, 24), // FontSize responsif
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF363535),
+                          ),
                         ),
-                        ...submitPengantaranModel.kontaks.map((kontak) {
-                          return ListTile(
-                            title: Text(
-                              kontak.displayName,
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF363535)),
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                buildRow('Urutan Pengiriman',
-                                    kontak.urutanPengiriman.toString()),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 2.0),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment
-                                        .center, // Mengatur ke tengah
+                        const SizedBox(height: 16),
+                        // Mapping dari data kontak, urutkan berdasarkan urutan pengiriman
+                        ...allKontaks
+                            .map((kontak) => ListTile(
+                                  title: Text(
+                                    kontak.displayName,
+                                    style: TextStyle(
+                                      fontSize: getFontSize(
+                                          context, 20), // FontSize responsif
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF363535),
+                                    ),
+                                  ),
+                                  subtitle: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      SizedBox(
-                                        width: 250,
-                                        child: Text(
-                                          'Latitude',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 18,
-                                            color: CustomColorPalette.textColor,
-                                          ),
+                                      buildRow(
+                                          'Urutan Pengiriman',
+                                          kontak.urutanPengiriman.toString(),
+                                          context),
+                                      if (kontak.latitude.isEmpty ||
+                                          kontak.longitude.isEmpty)
+                                        const Text(
+                                          'Pelanggan ini tidak memiliki latitude/longitude',
+                                          style: TextStyle(color: Colors.red),
+                                        ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 2.0),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            SizedBox(
+                                              width: getLabelWidth(
+                                                  context), // Lebar kolom label responsif
+                                              child: Text(
+                                                'Latitude',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize:
+                                                      getFontSize(context, 18),
+                                                  color: CustomColorPalette
+                                                      .textColor,
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              ":",
+                                              style: TextStyle(
+                                                fontSize: getFontSize(context,
+                                                    20), // Ukuran font responsif
+                                                color: CustomColorPalette
+                                                    .textColor,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Flexible(
+                                              fit: FlexFit.loose,
+                                              child: Text(
+                                                kontak.latitude.isEmpty
+                                                    ? 'Tidak ada'
+                                                    : kontak.latitude,
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      getFontSize(context, 20),
+                                                  color: CustomColorPalette
+                                                      .textColor,
+                                                ),
+                                              ),
+                                            ),
+                                            IconButton(
+                                              icon: Icon(
+                                                Icons.location_on_rounded,
+                                                size: getIconSize(context,
+                                                    30), // Ukuran ikon responsif
+                                                color: Color(0xFF8A2BE2),
+                                              ),
+                                              onPressed: () {
+                                                if (kontak.longitude != '') {
+                                                  launch(
+                                                    'https://www.google.com/maps/search/?api=1&query=${kontak.latitude},${kontak.longitude}',
+                                                  );
+                                                }
+                                              },
+                                            )
+                                          ],
                                         ),
                                       ),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        ":",
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          color: CustomColorPalette.textColor,
-                                        ),
+                                      buildRow(
+                                        'Longitude',
+                                        kontak.longitude.isEmpty
+                                            ? 'Tidak ada'
+                                            : kontak.longitude,
+                                        context,
                                       ),
-                                      SizedBox(width: 8),
-                                      Flexible(
-                                        child: Text(
-                                          kontak.latitude.toString(),
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            color: CustomColorPalette.textColor,
-                                          ),
-                                        ),
-                                      ),
-                                      IconButton(
-                                        icon: const Icon(
-                                          Icons.location_on_rounded,
-                                          size: 20,
-                                          color: Color(0xFF8A2BE2),
-                                        ),
-                                        onPressed: () {
-                                          if (kontak.latitude != null &&
-                                              kontak.longitude != null) {
-                                            launch(
-                                                'https://www.google.com/maps/search/?api=1&query=${kontak.latitude},${kontak.longitude}');
-                                          }
-                                        },
-                                      ),
+                                      buildRow(
+                                          'Lokasi', kontak.lokasi, context),
+                                      buildRow(
+                                          'Nomor Faktur',
+                                          kontak.nomorFaktur.toString(),
+                                          context),
+                                      const Divider(color: Colors.purple),
                                     ],
                                   ),
-                                ),
-                                buildRow(
-                                    'Longitude', kontak.longitude.toString()),
-                                buildRow('Lokasi', kontak.lokasi),
-                                buildRow(
-                                  'Nomor Faktur',
-                                  kontak.nomorFaktur.toString(),
-                                ),
-                                const Divider(color: Colors.purple),
-                              ],
-                            ),
-                          );
-                        }).toList(),
+                                ))
+                            .toList(),
                       ],
                     ),
                   ),
+
+                  // Container Google Maps dan Distance/Duration
                   Container(
                     decoration: BoxDecoration(
                       color: CustomColorPalette.BgBorder,
@@ -255,35 +384,36 @@ class SubmitResultPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                     padding: const EdgeInsets.all(16.0),
-                    margin: const EdgeInsets.only(
-                      left: 300,
-                      right: 300,
-                    ),
+                    margin: EdgeInsets.only(
+                      left: marginSize,
+                      right: marginSize,
+                      bottom: 20,
+                    ), // Margin bottom added
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
-                          crossAxisAlignment:
-                              CrossAxisAlignment.center, // Mengatur ke tengah
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            const Text(
+                            Text(
                               'Google Maps',
                               style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF363535)),
+                                fontSize: getFontSize(
+                                    context, 24), // Ukuran font responsif
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF363535),
+                              ),
                             ),
+                            // Ikon Google Maps dengan ukuran responsif
                             IconButton(
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.map_rounded,
-                                size: 30,
-                                color: Color(0xFF8A2BE2),
+                                size: getIconSize(
+                                    context, 30), // Ukuran ikon responsif
+                                color: const Color(0xFF8A2BE2),
                               ),
                               onPressed: () {
-                                if (submitPengantaranModel.googleMapsUrl !=
-                                    null) {
-                                  launch(submitPengantaranModel.googleMapsUrl!);
-                                }
+                                launch(submitPengantaranModel.googleMapsUrl);
                               },
                             ),
                           ],
@@ -294,18 +424,22 @@ class SubmitResultPage extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const SizedBox(height: 16),
-                                buildRow('Min Distance',
-                                    '${submitPengantaranModel.minDistance.toStringAsFixed(2)} km'),
+                                buildRow(
+                                    'Min Distance',
+                                    '${submitPengantaranModel.minDistance.toStringAsFixed(2)} km',
+                                    context),
                                 const SizedBox(height: 8),
-                                buildRow('Min Duration',
-                                    '${submitPengantaranModel.minDuration.toStringAsFixed(2)} minutes'),
+                                buildRow(
+                                    'Min Duration',
+                                    '${submitPengantaranModel.minDuration.toStringAsFixed(2)} minutes',
+                                    context),
                               ],
                             ),
                           ],
                         ),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
             ),

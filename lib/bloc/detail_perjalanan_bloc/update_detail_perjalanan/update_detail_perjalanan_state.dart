@@ -4,7 +4,7 @@ abstract class UpdateDetailPerjalananState extends Equatable {
   const UpdateDetailPerjalananState();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class UpdateDetailPerjalananInitial extends UpdateDetailPerjalananState {}
@@ -19,5 +19,5 @@ class UpdateDetailPerjalananError extends UpdateDetailPerjalananState {
   const UpdateDetailPerjalananError(this.message);
 
   @override
-  List<Object> get props => [message];
+  List<Object?> get props => [message];
 }

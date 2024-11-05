@@ -1,46 +1,73 @@
+import 'package:diantar_jarak/data/models/history_perjalanan_model/history_pengantaran_model.dart';
 import 'package:diantar_jarak/helpers/api/api_strings.dart';
-import 'package:diantar_jarak/data/models/history_perjalanan_model/history_perjalanan_model.dart';
 import 'package:diantar_jarak/helpers/network/api_helper.dart';
 
-class HistoryPerjalananService {
+class HistoryPengantaranService {
   final ApiHelper apiHelper;
 
-  HistoryPerjalananService({required this.apiHelper});
+  HistoryPengantaranService({required this.apiHelper});
 
-  Future<HistoryPerjalananModelData> getHistoriesWithFilters({
-    required String namaDriver,
-    required String createdBy,
-    required String status,
-    required String timeline,
+  Future<HistoryPengantaranResponse> getHistoryPengantaran({
+    required int page,
+    required int pageSize,
+    required Map<String, String?> filters, // Nullable filters
   }) async {
     try {
+      // Siapkan body request dengan nilai default ""
+      final Map<String, dynamic> body = {
+        'nama_driver': filters['nama_driver'] ?? '',
+        'created_by': filters['created_by'] ?? '',
+        'status': filters['status'] ?? '',
+        'timeline': filters['timeline'] ?? '', // Tambahkan timelin
+        'start_date': filters['start_date'] ?? '',
+        'end_date': filters['end_date'] ?? '',
+      };
+
+      // Panggil API dengan POST
       final response = await apiHelper.post(
         url: APIJarakLocal.historyPengantaran,
-        body: {
-          "nama_driver": namaDriver,
-          "created_by": createdBy,
-          "status": status,
-          "timeline": timeline,
+        body: body,
+        queryParameters: {
+          'page': page.toString(),
+          'page_size': pageSize.toString(),
+          ...filters,
         },
       );
-      print('Response: ${response.data}');
 
-      // Periksa dan ubah nilai default dalam response.data
-      Map<String, dynamic> data = response.data;
-      data['data'] = (data['data'] as List).map((item) {
-        if (item['jam_kembali'] == "Mon, 01 Jan 1900 00:00:00 GMT") {
-          item['jam_kembali'] = "Yok Di Update!!";
-        }
-        if (item['jam_pengiriman'] == "Mon, 01 Jan 1900 00:00:00 GMT") {
-          item['jam_pengiriman'] = "Yok Di Update!!";
-        }
-        return item;
-      }).toList();
+      // Validasi respons dan cek apakah data ada
+      if (response.data == null || !(response.data['data'] is List)) {
+        throw Exception("Invalid API response");
+      }
 
-      return HistoryPerjalananModelData.fromJson(data);
+      // Transformasi data jika diperlukan
+      List dataList = _transformData(response.data['data']);
+
+      // Buat ulang respons dengan data yang dimodifikasi
+      response.data['data'] = dataList;
+
+      // Parsing respons menjadi model
+      return HistoryPengantaranResponse.fromJson(response.data);
     } catch (e) {
-      print('Error fetching history pengantaran: $e');
-      rethrow;
+      // Log error untuk debugging
+      print("Error fetching history: $e");
+      rethrow; // Rethrow agar error bisa ditangani di tempat lain
     }
+  }
+
+  // Helper untuk memodifikasi data jika tanggal default ditemukan
+  List _transformData(List data) {
+    return data.map((item) {
+      item['jam_kembali'] =
+          item['jam_kembali'] == "Mon, 01 Jan 1900 00:00:00 GMT"
+              ? "Yok Di Update!!"
+              : item['jam_kembali'];
+
+      item['jam_pengiriman'] =
+          item['jam_pengiriman'] == "Mon, 01 Jan 1900 00:00:00 GMT"
+              ? "Yok Di Update!!"
+              : item['jam_pengiriman'];
+
+      return item;
+    }).toList();
   }
 }

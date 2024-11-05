@@ -5,9 +5,9 @@ class DropdownCustomerModel extends Equatable {
   final String displayName;
   final String kontakID;
   final String? type;
-  final String latitude;
+  String latitude;
   final String lokasi;
-  final String longitude;
+  String longitude;
   final String nomorFaktur;
   final int urutanPengiriman;
 
@@ -22,6 +22,10 @@ class DropdownCustomerModel extends Equatable {
     required this.urutanPengiriman,
   });
 
+  bool hasValidLocation() {
+    return latitude.isNotEmpty && longitude.isNotEmpty;
+  }
+
   factory DropdownCustomerModel.fromJson(Map<String, dynamic> json) {
     return DropdownCustomerModel(
       displayName: json['DisplayName'] ?? '',
@@ -30,8 +34,8 @@ class DropdownCustomerModel extends Equatable {
       latitude: json['latitude'] ?? '',
       lokasi: json['lokasi'] ?? '',
       longitude: json['longitude'] ?? '',
-      nomorFaktur: json['nomor_faktur'],
-      urutanPengiriman: json['urutan_pengiriman'],
+      nomorFaktur: json['nomor_faktur'] ?? '',
+      urutanPengiriman: json['urutan_pengiriman'] ?? 0,
     );
   }
 

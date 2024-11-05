@@ -1,326 +1,365 @@
-import 'package:diantar_jarak/bloc/search_dropdown_bloc/dropdown_driver_bloc/dropdown_driver_event.dart';
-import 'package:diantar_jarak/util/capitalize_word.dart';
-import 'package:diantar_jarak/util/size.dart';
+import 'package:diantar_jarak/bloc/history_perjalanan_bloc/history_perjalanan/history_perjalanan_bloc.dart';
+import 'package:diantar_jarak/bloc/history_perjalanan_bloc/history_perjalanan/history_perjalanan_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:diantar_jarak/bloc/history_perjalanan_bloc/history_perjalanan/history_perjalanan_bloc.dart';
-import 'package:diantar_jarak/bloc/history_perjalanan_bloc/history_perjalanan/history_perjalanan_event.dart';
 import 'package:diantar_jarak/bloc/search_dropdown_bloc/dropdown_driver_bloc/dropdown_driver_bloc.dart';
+import 'package:diantar_jarak/bloc/search_dropdown_bloc/dropdown_driver_bloc/dropdown_driver_event.dart';
 import 'package:diantar_jarak/bloc/search_dropdown_bloc/dropdown_driver_bloc/dropdown_driver_state.dart';
 import 'package:diantar_jarak/data/models/search_dropdown_model/dropdown_drive_model.dart';
 import 'package:diantar_jarak/theme/theme.dart';
+import 'package:intl/intl.dart';
 
-class FilterHistory extends StatefulWidget {
+class FilterWidget extends StatefulWidget {
+  final Function(Map<String, dynamic>) onFilterChanged;
+
+  const FilterWidget({
+    Key? key,
+    required this.onFilterChanged,
+  }) : super(key: key);
+
   @override
-  _FilterHistoryState createState() => _FilterHistoryState();
+  _FilterWidgetState createState() => _FilterWidgetState();
 }
 
-class _FilterHistoryState extends State<FilterHistory> {
+class _FilterWidgetState extends State<FilterWidget> {
   String? selectedDriver;
   String? selectedChecker;
   String? selectedStatus;
   String? selectedTimeline;
+  DateTime? startDate;
+  DateTime? endDate;
+  double? totalJarakKeseluruhan;
 
   List<DropdownDriveModel> driverList = [];
+
+  void _clearDate(String label) {
+    setState(() {
+      if (label == 'Start Date') {
+        startDate = null;
+      } else {
+        endDate = null;
+      }
+    });
+    _applyFilters();
+  }
+
+  final List<String> statusList = [
+    'Sudah Dikirim',
+    'Belum Dikirim',
+    'Selesai',
+    'Tidak Dikirim',
+    'Salah Input',
+  ];
+
+  final List<String> checkerList = [
+    'Dita',
+    'Dona',
+    'Gita',
+    'Linda',
+    'Richard',
+    'Ryan'
+  ];
+
+  final Map<String, String> timelineMapping = {
+    'Hari Ini': 'Today',
+    'Kemarin': 'Yesterday',
+    'Minggu Ini': 'Week',
+    'Minggu Lalu': 'LastWeek',
+    'Bulan Ini': 'Month',
+    'Bulan Lalu': 'LastMonth',
+  };
 
   @override
   void initState() {
     super.initState();
-    context.read<DriverBloc>().add(FetchDrivers());
+    context.read<DriverBloc>().add(const FetchDrivers());
   }
 
-  InputDecoration getInputDecoration(String labelText,
-      {bool hasValue = false}) {
+  void _applyFilters() {
+    widget.onFilterChanged({
+      'nama_driver': selectedDriver ?? '',
+      'created_by': selectedChecker ?? '',
+      'status': selectedStatus ?? '',
+      'timeline': selectedTimeline != null
+          ? timelineMapping[selectedTimeline] ?? ''
+          : '', // Convert display value to backend value
+      'start_date':
+          startDate != null ? DateFormat('yyyy-MM-dd').format(startDate!) : '',
+      'end_date':
+          endDate != null ? DateFormat('yyyy-MM-dd').format(endDate!) : '',
+    });
+  }
+
+  InputDecoration _inputDecoration(String labelText, {bool hasValue = false}) {
     return InputDecoration(
       labelText: labelText,
-      labelStyle: TextStyle(fontSize: 14),
-      hintStyle:
-          TextStyle(color: CustomColorPalette.hintTextColor, fontSize: 14),
-      border: OutlineInputBorder(
+      border: const OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(10.0)),
       ),
       filled: true,
       fillColor: CustomColorPalette.surfaceColor,
-      contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+      contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
       isDense: true,
       suffixIcon: hasValue
           ? IconButton(
-              icon: Icon(Icons.clear),
+              icon: const Icon(Icons.clear),
               onPressed: () {
-                setState(() {
-                  if (labelText == 'Nama Driver') {
-                    selectedDriver = null;
-                  } else if (labelText == 'Checker') {
-                    selectedChecker = null;
-                  } else if (labelText == 'Status') {
-                    selectedStatus = null;
-                  } else if (labelText == 'Timeline') {
-                    selectedTimeline = null;
-                  }
-                });
-                _applyFilters();
+                _clearFilter(labelText);
               },
             )
           : null,
     );
   }
 
-  void _applyFilters() {
-    context.read<HistoryPerjalananBloc>().add(
-          FetchHistory(
-            page: 1,
-            namaDriver: selectedDriver ?? '',
-            createdBy: selectedChecker ?? '',
-            status: selectedStatus ?? '',
-            timeline: selectedTimeline ?? '',
-          ),
-        );
+  void _clearFilter(String label) {
+    setState(() {
+      switch (label) {
+        case 'Nama Driver':
+          selectedDriver = null;
+          break;
+        case 'Checker':
+          selectedChecker = null;
+          break;
+        case 'Status':
+          selectedStatus = null;
+          break;
+        case 'Periode': // Changed from 'Timeline' to match the label
+          selectedTimeline = null;
+          break;
+        case 'Start Date':
+          startDate = null;
+          break;
+        case 'End Date':
+          endDate = null;
+          break;
+      }
+    });
+    _applyFilters();
+  }
+
+  Future<void> _selectDate(BuildContext context, bool isStartDate) async {
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2100),
+      locale: const Locale('id', 'ID'), // Bahasa Indonesia untuk bulan
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        if (isStartDate) {
+          startDate = pickedDate;
+        } else {
+          endDate = pickedDate;
+        }
+      });
+      _applyFilters();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Filter",
-              style: TextStyle(
-                color: CustomColorPalette.textColor,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+    return BlocBuilder<HistoryPengantaranBloc, HistoryPengantaranState>(
+      builder: (context, state) {
+        if (state is HistoryLoaded) {
+          totalJarakKeseluruhan = state.totalJarak ?? 0.0;
+        }
+
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Filter",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            SizedBox(
-              height: Sizes.dp1(context),
-            ),
-            Row(
-              children: [
-                SizedBox(
-                  width: 150,
-                  child: BlocListener<DriverBloc, DriverState>(
-                    listener: (context, state) {
-                      if (state is DriverHasData) {
-                        setState(() {
-                          driverList = state.drivers;
-                        });
-                      }
-                    },
-                    child: DropdownButtonFormField<String>(
-                      decoration: getInputDecoration('Nama Driver',
-                          hasValue: selectedDriver != null),
-                      items: [
-                        DropdownMenuItem<String>(
-                          value: '',
-                          child: Text('Pilih Nama Driver'),
-                        ),
-                        ...driverList.map((DropdownDriveModel driver) {
-                          return DropdownMenuItem<String>(
-                            value: driver.nama,
-                            child: Text(capitalizeWords(driver.nama ?? '')),
-                          );
-                        }).toList(),
-                      ],
-                      selectedItemBuilder: (BuildContext context) {
-                        return driverList.map((DropdownDriveModel driver) {
-                          return Text(
-                            selectedDriver != null
-                                ? capitalizeWords(selectedDriver!)
-                                : 'Nama Driver',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.black,
-                            ),
-                          );
-                        }).toList();
-                      },
-                      onChanged: (value) {
-                        setState(() {
-                          selectedDriver = value;
-                        });
-                        _applyFilters();
-                      },
-                      value: selectedDriver,
-                      style: TextStyle(fontSize: 14),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 8.0),
-                SizedBox(
-                  width: 150,
-                  child: DropdownButtonFormField<String>(
-                    decoration: getInputDecoration('Checker',
-                        hasValue: selectedChecker != null),
-                    items: [
-                      DropdownMenuItem<String>(
-                        value: '',
-                        child: Text('Pilih Checker'),
-                      ),
-                      DropdownMenuItem<String>(
-                        value: 'Dita',
-                        child: Text('Dita'),
-                      ),
-                      DropdownMenuItem<String>(
-                        value: 'Dona',
-                        child: Text('Dona'),
-                      ),
-                      DropdownMenuItem<String>(
-                        value: 'Gita',
-                        child: Text('Gita'),
-                      ),
-                      DropdownMenuItem<String>(
-                        value: 'Linda',
-                        child: Text('Linda'),
-                      ),
-                      DropdownMenuItem<String>(
-                        value: 'Richard',
-                        child: Text('Richard'),
-                      ),
-                    ],
-                    selectedItemBuilder: (BuildContext context) {
-                      return <String>[
-                        '',
-                        'Dita',
-                        'Dona',
-                        'Gita',
-                        'Linda',
-                        'Richard',
-                      ].map((String value) {
-                        return Text(
-                          selectedChecker ?? 'Checker',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.black,
-                          ),
-                        );
-                      }).toList();
-                    },
-                    onChanged: (value) {
-                      setState(() {
-                        selectedChecker = value;
-                      });
-                      _applyFilters();
-                    },
-                    value: selectedChecker,
-                    style: TextStyle(fontSize: 14),
-                  ),
-                ),
-                SizedBox(width: 8.0),
-                SizedBox(
-                  width: 175,
-                  child: DropdownButtonFormField<String>(
-                    decoration: getInputDecoration('Status',
-                        hasValue: selectedStatus != null),
-                    items: [
-                      DropdownMenuItem<String>(
-                        value: '',
-                        child: Text('Pilih Status'),
-                      ),
-                      DropdownMenuItem<String>(
-                        value: 'Belum Dikirim',
-                        child: Text('Belum Dikirim'),
-                      ),
-                      DropdownMenuItem<String>(
-                        value: 'Sudah Dikirim',
-                        child: Text('Sudah Dikirim'),
-                      ),
-                      DropdownMenuItem<String>(
-                        value: 'Selesai',
-                        child: Text('Selesai'),
-                      ),
-                      DropdownMenuItem<String>(
-                        value: 'Tidak Dikirim',
-                        child: Text('Tidak Dikirim'),
-                      ),
-                      DropdownMenuItem<String>(
-                        value: 'Tidak Diinput',
-                        child: Text('Tidak Diinput'),
-                      ),
-                    ],
-                    selectedItemBuilder: (BuildContext context) {
-                      return <String>[
-                        '',
-                        'Belum Dikirim',
-                        'Sudah Dikirim',
-                        'Selesai',
-                        'Tidak Dikirim',
-                        'Salah Input',
-                      ].map((String value) {
-                        return Text(
-                          selectedStatus ?? 'Status',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.black,
-                          ),
-                        );
-                      }).toList();
-                    },
-                    onChanged: (value) {
-                      setState(() {
-                        selectedStatus = value;
-                      });
-                      _applyFilters();
-                    },
-                    value: selectedStatus,
-                    style: TextStyle(fontSize: 14),
-                  ),
-                ),
-                SizedBox(width: 8.0),
-                SizedBox(
-                  width: 150,
-                  child: DropdownButtonFormField<String>(
-                    decoration: getInputDecoration('Timeline',
-                        hasValue: selectedTimeline != null),
-                    items: [
-                      DropdownMenuItem<String>(
-                        value: '',
-                        child: Text('Pilih Timeline'),
-                      ),
-                      DropdownMenuItem<String>(
-                        value: 'Today',
-                        child: Text('Today'),
-                      ),
-                      DropdownMenuItem<String>(
-                        value: 'Yesterday',
-                        child: Text('Yesterday'),
-                      ),
-                      DropdownMenuItem<String>(
-                        value: 'Week',
-                        child: Text('Week'),
-                      ),
-                    ],
-                    selectedItemBuilder: (BuildContext context) {
-                      return <String>[
-                        '',
-                        'Today',
-                        'Yesterday',
-                        'Week',
-                      ].map((String value) {
-                        return Text(
-                          selectedTimeline ?? 'Timeline',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.black,
-                          ),
-                        );
-                      }).toList();
-                    },
-                    onChanged: (value) {
-                      setState(() {
-                        selectedTimeline = value;
-                      });
-                      _applyFilters();
-                    },
-                    value: selectedTimeline,
-                    style: TextStyle(fontSize: 14),
-                  ),
-                ),
-              ],
-            ),
-          ],
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  _buildDriverDropdown(),
+                  const SizedBox(width: 8),
+                  _buildCheckerDropdown(),
+                  const SizedBox(width: 8),
+                  _buildStatusDropdown(),
+                  const SizedBox(width: 8),
+                  _buildTimelineDropdown(),
+                  const SizedBox(width: 8),
+                  _buildDateField('Start Date', true),
+                  const SizedBox(width: 8),
+                  _buildDateField('End Date', false),
+                  const SizedBox(width: 8),
+                  if (selectedDriver != null && selectedDriver!.isNotEmpty)
+                    _buildTotalKeseluruhanJarak(),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildDriverDropdown() {
+    return BlocBuilder<DriverBloc, DriverState>(
+      builder: (context, state) {
+        if (state is DriverHasData) {
+          driverList = state.drivers;
+        }
+        return SizedBox(
+          width: 180,
+          child: DropdownButtonFormField<String>(
+            decoration: _inputDecoration('Nama Driver',
+                hasValue: selectedDriver != null),
+            items: driverList
+                .map((driver) => DropdownMenuItem(
+                      value: driver.nama,
+                      child: Text(driver.nama ?? ''),
+                    ))
+                .toList(),
+            onChanged: (value) {
+              setState(() {
+                selectedDriver = value;
+              });
+              _applyFilters();
+            },
+            value: selectedDriver,
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildCheckerDropdown() {
+    return SizedBox(
+      width: 180,
+      child: DropdownButtonFormField<String>(
+        decoration:
+            _inputDecoration('Checker', hasValue: selectedChecker != null),
+        items: checkerList
+            .map((checker) => DropdownMenuItem(
+                  value: checker,
+                  child: Text(checker),
+                ))
+            .toList(),
+        onChanged: (value) {
+          setState(() {
+            selectedChecker = value;
+          });
+          _applyFilters();
+        },
+        value: selectedChecker,
+      ),
+    );
+  }
+
+  Widget _buildStatusDropdown() {
+    return SizedBox(
+      width: 180,
+      child: DropdownButtonFormField<String>(
+        decoration:
+            _inputDecoration('Status', hasValue: selectedStatus != null),
+        items: statusList
+            .map((status) => DropdownMenuItem(
+                  value: status,
+                  child: Text(status),
+                ))
+            .toList(),
+        onChanged: (value) {
+          setState(() {
+            selectedStatus = value;
+          });
+          _applyFilters();
+        },
+        value: selectedStatus,
+      ),
+    );
+  }
+
+  Widget _buildTimelineDropdown() {
+    return SizedBox(
+      width: 180,
+      child: DropdownButtonFormField<String>(
+        decoration:
+            _inputDecoration('Periode', hasValue: selectedTimeline != null),
+        items: timelineMapping.keys
+            .map((timeline) => DropdownMenuItem(
+                  value: timeline,
+                  child: Text(timeline),
+                ))
+            .toList(),
+        onChanged: (value) {
+          setState(() {
+            selectedTimeline = value;
+          });
+          _applyFilters();
+        },
+        value: selectedTimeline,
+      ),
+    );
+  }
+
+  Widget _buildDateField(String label, bool isStartDate) {
+    final selectedDate = isStartDate ? startDate : endDate;
+
+    // Controller untuk menampilkan tanggal dalam format 'dd MMMM yyyy'
+    final controller = TextEditingController(
+      text: selectedDate != null
+          ? DateFormat('dd MMMM yyyy', 'id_ID').format(selectedDate)
+          : '',
+    );
+
+    return SizedBox(
+      width: 180, // Lebar yang cukup untuk menampilkan nama bulan
+      child: TextFormField(
+        controller: controller,
+        decoration: _inputDecoration(label, hasValue: selectedDate != null),
+        readOnly: true, // Agar tidak bisa diedit manual, hanya lewat DatePicker
+        onTap: () async {
+          final pickedDate = await showDatePicker(
+            context: context,
+            initialDate: selectedDate ?? DateTime.now(),
+            firstDate: DateTime(2020),
+            lastDate: DateTime(2100),
+            locale:
+                const Locale('id', 'ID'), // Bahasa Indonesia untuk nama bulan
+          );
+
+          if (pickedDate != null) {
+            setState(() {
+              if (isStartDate) {
+                startDate = pickedDate;
+              } else {
+                endDate = pickedDate;
+              }
+            });
+
+            // Terapkan filter dengan format backend 'yyyy-MM-dd'
+            _applyFilters();
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _buildTotalKeseluruhanJarak() {
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        color: CustomColorPalette.pastelBlue,
+        border: Border.all(color: Colors.black),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        'Total Jarak: ${totalJarakKeseluruhan?.toStringAsFixed(2) ?? '0.0'} km',
+        style: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
         ),
       ),
     );

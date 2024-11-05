@@ -7,10 +7,10 @@ class DropdownAgent extends StatefulWidget {
   final Function(String) onAgentSelected;
 
   const DropdownAgent({
-    Key? key,
+    super.key,
     required this.controller,
     required this.onAgentSelected,
-  }) : super(key: key);
+  });
 
   @override
   _DropdownAgentState createState() => _DropdownAgentState();
@@ -24,19 +24,20 @@ class _DropdownAgentState extends State<DropdownAgent> {
         controller: widget.controller,
         decoration: InputDecoration(
           labelText: 'Checker',
-          labelStyle: TextStyle(fontSize: 14),
+          labelStyle: const TextStyle(fontSize: 14),
           hintText: 'Masukkan Checker',
           hintStyle:
               TextStyle(color: CustomColorPalette.hintTextColor, fontSize: 14),
-          border: OutlineInputBorder(
+          border: const OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(10.0)),
           ),
           filled: true,
           fillColor: CustomColorPalette.surfaceColor,
-          contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
           isDense: true, // Reduces the height of the TextField
         ),
-        style: TextStyle(fontSize: 14),
+        style: const TextStyle(fontSize: 14),
       ),
       suggestionsCallback: (pattern) async {
         await Future.delayed(const Duration(milliseconds: 500));
@@ -46,6 +47,7 @@ class _DropdownAgentState extends State<DropdownAgent> {
           'Gita',
           'Linda',
           'Richard',
+          'Ryan',
         ]
             .where(
                 (agent) => agent.toLowerCase().contains(pattern.toLowerCase()))
@@ -53,7 +55,7 @@ class _DropdownAgentState extends State<DropdownAgent> {
       },
       itemBuilder: (context, String suggestion) {
         return ListTile(
-          title: Text(suggestion, style: TextStyle(fontSize: 14)),
+          title: Text(suggestion, style: const TextStyle(fontSize: 14)),
         );
       },
       onSuggestionSelected: (String suggestion) {
@@ -63,7 +65,7 @@ class _DropdownAgentState extends State<DropdownAgent> {
         });
       },
       noItemsFoundBuilder: (context) => Padding(
-        padding: EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8.0),
         child: Text('Checker Tidak Ditemukan',
             style:
                 TextStyle(color: CustomColorPalette.textColor, fontSize: 14)),

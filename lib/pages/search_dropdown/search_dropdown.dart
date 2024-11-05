@@ -1,14 +1,15 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:diantar_jarak/bloc/search_dropdown_bloc/submit_perjalanan/submit_perjalanan_bloc.dart';
 import 'package:diantar_jarak/bloc/search_dropdown_bloc/submit_perjalanan/submit_perjalanan_event.dart';
 import 'package:diantar_jarak/bloc/search_dropdown_bloc/submit_perjalanan/submit_perjalanan_state.dart';
 import 'package:diantar_jarak/data/models/submit_perjalanan_model/submit_perjalanan_model.dart';
 import 'package:diantar_jarak/data/service/submit_perjalanan_service/submit_perjalanan_service.dart';
 import 'package:diantar_jarak/pages/search_dropdown/search_dropdown_widget/show_load.dart';
+import 'package:diantar_jarak/pages/search_dropdown/search_footer_widget/search_footer_widget.dart';
 import 'package:diantar_jarak/pages/submit_perjalanan/submit_pengantaran.dart';
 import 'package:diantar_jarak/pages/search_dropdown/search_dropdown_widget/cek_google_widget/container_cek_google.dart';
-import 'package:diantar_jarak/util/size.dart';
 import 'package:diantar_jarak/theme/theme.dart';
-import 'package:flutter/material.dart';
 import 'package:diantar_jarak/data/models/search_dropdown_model/dropdown_drive_model.dart';
 import 'package:diantar_jarak/pages/history_perjalanan/history_perjalanan_page.dart';
 import 'package:diantar_jarak/data/models/search_dropdown_model/dropdown_customer_model.dart';
@@ -21,10 +22,9 @@ import 'package:diantar_jarak/pages/search_dropdown/search_dropdown_widget/dropd
 import 'package:diantar_jarak/pages/search_dropdown/search_dropdown_widget/dropdown_widget/dropdown_shift.dart';
 import 'package:diantar_jarak/pages/search_dropdown/search_dropdown_widget/dropdown_widget/dropdown_tipekendaraan.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SearchDropdown extends StatefulWidget {
-  const SearchDropdown({super.key});
+  const SearchDropdown({Key? key}) : super(key: key);
 
   @override
   _SearchPageState createState() => _SearchPageState();
@@ -56,6 +56,17 @@ class _SearchPageState extends State<SearchDropdown> {
         submitPerjalananService: SubmitPerjalananService(apiHelper: apiHelper));
   }
 
+  double _getResponsiveMargin(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    if (width > 1024) {
+      return 200;
+    } else if (width > 768 && width <= 1024) {
+      return 100;
+    } else {
+      return 20;
+    }
+  }
+
   void showLoadingDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -64,25 +75,6 @@ class _SearchPageState extends State<SearchDropdown> {
         return LoadingDialog();
       },
     );
-  }
-
-  Future<void> someAsyncOperation(BuildContext context) async {
-    showLoadingDialog(context);
-
-    try {
-      // Simulate a delay for the async operation
-      await Future.delayed(Duration(seconds: 3));
-      // Perform your async operations here
-
-      // Close the dialog after the operation
-      Navigator.of(context).pop();
-    } catch (error) {
-      // Handle errors
-      Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $error')),
-      );
-    }
   }
 
   void _addCustomerDropdown() {
@@ -148,64 +140,80 @@ class _SearchPageState extends State<SearchDropdown> {
 
   void _submitData(BuildContext context) async {
     try {
-      if (_selectedCustomers.isNotEmpty && _selectedDriver != null) {
-        // Generate Google Maps URL
-        String maps = '';
-        for (int i = 0; i < _selectedCustomers.length; i++) {
-          final customer = _selectedCustomers[i];
-          maps += '/${customer.latitude},${customer.longitude}';
-        }
-        maps = maps.replaceAll(' ', '');
-        String googleMapsUrl = 'https://www.google.com/maps/dir' + maps;
-
-        // Show loading dialog
-        showLoadingDialog(context);
-
-        // Call the API to get minDistance and minDuration
-        final cekGoogleResult = await cekGoogleService.cekGoogle(
-            _selectedCustomers, _selectedDriver!);
-
-        // Create Kontak objects from API result
-        final kontaks = cekGoogleResult.kontaks.map((customer) {
-          return Kontak(
-            displayName: customer.displayName,
-            kontakID: customer.kontakID,
-            type: customer.type,
-            urutanPengiriman: customer.urutanPengiriman,
-            latitude: customer.latitude,
-            lokasi: customer.lokasi,
-            longitude: customer.longitude,
-            nomorFaktur: int.tryParse(customer.nomorFaktur) ?? 0,
-          );
-        }).toList();
-
-        // Create SubmitPengantaranModel object with API response
-        final submitPengantaranModel = SubmitPerjalananModel(
-          googleMapsUrl: googleMapsUrl,
-          shiftKe: int.parse(_shiftController.text),
-          jamPengiriman: _jamPengirimanController.text,
-          jamKembali: _jamKembaliController.text,
-          driverId: _selectedDriver!.karyawanID ?? 0,
-          namaDriver: _selectedDriver!.nama ?? '',
-          tipeKendaraan: _selectedVehicle!.tipe,
-          nomorPolisiKendaraan: _selectedVehicle!.nomorPolisi,
-          createdBy: _agentController.text,
-          kontaks: kontaks,
-          minDistance: cekGoogleResult.minDistance,
-          minDuration: cekGoogleResult.minDuration,
-        );
-
-        // Close loading dialog
-        Navigator.of(context).pop();
-
-        // Submit detailPengantaran to Bloc with waktuPesanan
-        submitPerjalananBloc.add(SubmitPerjalanan(
-          submitPerjalananModel: submitPengantaranModel,
-        ));
-      } else {
+      // Validasi apakah customers dan driver sudah dipilih
+      if (_selectedCustomers.isEmpty || _selectedDriver == null) {
         throw FormatException("Selected customers or driver is invalid");
       }
+
+      // Pisahkan pelanggan yang memiliki dan tidak memiliki latitude/longitude
+      List<DropdownCustomerModel> validCustomers = [];
+      List<DropdownCustomerModel> invalidCustomers = [];
+
+      for (var customer in _selectedCustomers) {
+        if (customer.latitude.isNotEmpty && customer.longitude.isNotEmpty) {
+          validCustomers.add(customer);
+        } else {
+          invalidCustomers.add(customer); // Simpan pelanggan tanpa lokasi
+        }
+      }
+
+      // Panggil API cekGoogle hanya untuk pelanggan yang memiliki lokasi valid
+      final cekGoogleResult =
+          await cekGoogleService.cekGoogle(validCustomers, _selectedDriver!);
+
+      // Perbarui urutan pengiriman dari hasil cekGoogle
+      List<Kontak> sortedKontaks = cekGoogleResult.kontaks.map((customer) {
+        return Kontak(
+          displayName: customer.displayName,
+          kontakID: customer.kontakID,
+          type: customer.type,
+          urutanPengiriman:
+              customer.urutanPengiriman, // Urutan pengiriman yang diperbarui
+          latitude: customer.latitude,
+          lokasi: customer.lokasi,
+          longitude: customer.longitude,
+          nomorFaktur: int.tryParse(customer.nomorFaktur) ?? 0,
+        );
+      }).toList();
+
+      // Tambahkan pelanggan yang tidak memiliki latitude/longitude di akhir urutan
+      for (var customer in invalidCustomers) {
+        sortedKontaks.add(Kontak(
+          displayName: customer.displayName,
+          kontakID: customer.kontakID,
+          type: customer.type,
+          urutanPengiriman:
+              sortedKontaks.length + 1, // Tambahkan urutan di akhir
+          latitude: 'Tidak ada',
+          lokasi: customer.lokasi,
+          longitude: 'Tidak ada',
+          nomorFaktur: int.tryParse(customer.nomorFaktur) ?? 0,
+        ));
+      }
+
+      // Buat objek SubmitPerjalananModel dengan kontak yang sudah diurutkan dan lengkap
+      final submitPengantaranModel = SubmitPerjalananModel(
+        googleMapsUrl: cekGoogleResult.googleMapsUrl,
+        shiftKe: int.tryParse(_shiftController.text) ?? 0,
+        jamPengiriman: _jamPengirimanController.text,
+        jamKembali: _jamKembaliController.text,
+        driverId: _selectedDriver?.karyawanID ?? 0,
+        namaDriver: _selectedDriver?.nama ?? '',
+        tipeKendaraan: _selectedVehicle?.tipe ?? '',
+        nomorPolisiKendaraan: _selectedVehicle?.nomorPolisi ?? '',
+        createdBy: _agentController.text,
+        kontaks:
+            sortedKontaks, // Kontak yang sudah diurutkan, termasuk yang tidak punya lokasi
+        minDistance: cekGoogleResult.minDistance,
+        minDuration: cekGoogleResult.minDuration,
+      );
+
+      // Submit pengantaran dengan kontak yang sudah diurutkan
+      submitPerjalananBloc.add(SubmitPerjalanan(
+        submitPerjalananModel: submitPengantaranModel,
+      ));
     } catch (e) {
+      // Tangani kesalahan
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: $e')),
       );
@@ -236,7 +244,7 @@ class _SearchPageState extends State<SearchDropdown> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => HistoryPerjalananPage()));
+                        builder: (context) => HistoryPengantaranPage()));
               },
             ),
             SizedBox(width: 4),
@@ -245,7 +253,7 @@ class _SearchPageState extends State<SearchDropdown> {
         body: BlocListener<SubmitPerjalananBloc, SubmitPerjalananState>(
           listener: (context, state) {
             if (state is PerjalananSubmitted) {
-              Navigator.of(context).pop(); // Close the loading dialog
+              Navigator.of(context).pop();
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -255,155 +263,168 @@ class _SearchPageState extends State<SearchDropdown> {
                 ),
               );
             } else if (state is SubmitPerjalananError) {
-              Navigator.of(context).pop(); // Close the loading dialog
+              Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('Error: ${state.message}')),
               );
             }
           },
-          child: Padding(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              children: [
-                Expanded(
-                  child: Container(
-                    margin: const EdgeInsets.only(
-                      left: 300,
-                      right: 300,
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: SingleChildScrollView(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      DropdownAgent(
-                                        controller: _agentController,
-                                        onAgentSelected: (agent) {
-                                          setState(() {
-                                            // Handle agent selected
-                                          });
-                                        },
-                                      ),
-                                      const SizedBox(height: 12),
-                                      DropdownDriver(
-                                        controller: _driverController,
-                                        onPositionSelected: (position) {
-                                          setState(() {
-                                            // Handle position selected
-                                          });
-                                        },
-                                        onDriverSelected: (driver) {
-                                          setState(() {
-                                            _selectedDriver = driver;
-                                          });
-                                        },
-                                      ),
-                                      const SizedBox(height: 12),
-                                      DropdownShift(
-                                        controller: _shiftController,
-                                        onShiftSelected: (shift) {
-                                          setState(() {
-                                            // Handle shift selected
-                                          });
-                                        },
-                                      ),
-                                      const SizedBox(height: 12),
-                                      DropdownTipeKendaraan(
-                                        vehicleTypeController:
-                                            _tipeKendaraanController,
-                                        plateNumberController:
-                                            _nomorPolisiKendaraanController,
-                                        onTipeSelected: (tipe) {
-                                          setState(() {
-                                            _selectedVehicle =
-                                                DropdownVehicleModel(
-                                              tipe:
-                                                  _tipeKendaraanController.text,
-                                              nomorPolisi:
-                                                  _nomorPolisiKendaraanController
-                                                      .text,
-                                            );
-                                          });
-                                        },
-                                        selectedDriver: _selectedDriver,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return Column(
+                children: [
+                  // Expanded to take available height
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: _getResponsiveMargin(context),
                         ),
-                        SizedBox(width: Sizes.dp3(context)),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: ElevatedButton(
-                                  onPressed: _addCustomerDropdown,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor:
-                                        CustomColorPalette.buttonTextColor,
-                                    backgroundColor:
-                                        CustomColorPalette.buttonColor,
-                                  ),
-                                  child: const Icon(Icons.add),
-                                ),
-                              ),
-                              SizedBox(height: 4),
-                              Expanded(
-                                child: SingleChildScrollView(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children:
-                                        _selectedCustomers.map((customer) {
-                                      return _buildCustomerDropdown(customer);
-                                    }).toList(),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 20),
-                              if (_selectedCustomers.isNotEmpty &&
-                                  _selectedDriver != null)
-                                Expanded(
-                                  child: ContainerCekGoogle(
-                                    key: UniqueKey(),
-                                    selectedCustomers: _selectedCustomers,
-                                    selectedDriver: _selectedDriver!,
-                                    cekGoogleService: cekGoogleService,
-                                  ),
-                                ),
-                            ],
-                          ),
+                        child: Column(
+                          children: [
+                            if (constraints.maxWidth > 768)
+                              _buildDesktopLayout()
+                            else
+                              _buildMobileLayout(),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () => _submitData(context),
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: CustomColorPalette.buttonTextColor,
-                    backgroundColor: CustomColorPalette.buttonColor,
+
+                  // Submit Button above Footer
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: ElevatedButton(
+                      onPressed: () => _submitData(context),
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: CustomColorPalette.buttonTextColor,
+                        backgroundColor: CustomColorPalette.buttonColor,
+                      ),
+                      child: const Text('Submit'),
+                    ),
                   ),
-                  child: const Text('Submit'),
-                ),
-              ],
-            ),
+
+                  // Footer stays at the bottom
+                  const SearchFooterWidget(),
+                ],
+              );
+            },
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildDesktopLayout() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: _buildLeftColumn(),
+        ),
+        SizedBox(width: 20),
+        Expanded(
+          child: _buildRightColumn(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMobileLayout() {
+    return Column(
+      children: [
+        _buildLeftColumn(),
+        SizedBox(height: 20),
+        _buildRightColumn(),
+      ],
+    );
+  }
+
+  Widget _buildLeftColumn() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        DropdownAgent(
+          controller: _agentController,
+          onAgentSelected: (agent) {
+            setState(() {
+              // Handle agent selected
+            });
+          },
+        ),
+        const SizedBox(height: 12),
+        DropdownDriver(
+          controller: _driverController,
+          onPositionSelected: (position) {
+            setState(() {
+              // Handle position selected
+            });
+          },
+          onDriverSelected: (driver) {
+            setState(() {
+              _selectedDriver = driver;
+            });
+          },
+        ),
+        const SizedBox(height: 12),
+        DropdownShift(
+          controller: _shiftController,
+          onShiftSelected: (shift) {
+            setState(() {
+              // Handle shift selected
+            });
+          },
+        ),
+        const SizedBox(height: 12),
+        DropdownTipeKendaraan(
+          vehicleTypeController: _tipeKendaraanController,
+          plateNumberController: _nomorPolisiKendaraanController,
+          onTipeSelected: (tipe) {
+            setState(() {
+              _selectedVehicle = DropdownVehicleModel(
+                tipe: _tipeKendaraanController.text,
+                nomorPolisi: _nomorPolisiKendaraanController.text,
+              );
+            });
+          },
+          selectedDriver: _selectedDriver,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRightColumn() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: ElevatedButton(
+            onPressed: _addCustomerDropdown,
+            style: ElevatedButton.styleFrom(
+              foregroundColor: CustomColorPalette.buttonTextColor,
+              backgroundColor: CustomColorPalette.buttonColor,
+            ),
+            child: const Icon(Icons.add),
+          ),
+        ),
+        SizedBox(height: 4),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: _selectedCustomers.map((customer) {
+            return _buildCustomerDropdown(customer);
+          }).toList(),
+        ),
+        const SizedBox(height: 20),
+        if (_selectedCustomers.isNotEmpty && _selectedDriver != null)
+          ContainerCekGoogle(
+            key: UniqueKey(),
+            selectedCustomers: _selectedCustomers,
+            selectedDriver: _selectedDriver!,
+            cekGoogleService: cekGoogleService,
+          ),
+      ],
     );
   }
 }

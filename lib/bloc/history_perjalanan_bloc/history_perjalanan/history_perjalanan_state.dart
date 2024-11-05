@@ -1,46 +1,65 @@
-import 'package:equatable/equatable.dart';
 import 'package:diantar_jarak/data/models/history_perjalanan_model/history_perjalanan_model.dart';
 
-abstract class HistoryPerjalananState extends Equatable {
-  final bool isLoading;
-
-  HistoryPerjalananState({this.isLoading = true});
-
-  @override
-  List<Object?> get props => [isLoading];
+abstract class HistoryPengantaranState {
+  const HistoryPengantaranState();
+  Map<String, String> get currentFilters => {};
 }
 
-class HistoryPerjalananInitial extends HistoryPerjalananState {}
+class HistoryLoading extends HistoryPengantaranState {}
 
-class HistoryPerjalananLoading extends HistoryPerjalananState {
-  HistoryPerjalananLoading() : super(isLoading: true);
-}
-
-class HistoryPerjalananLoaded extends HistoryPerjalananState {
-  final List<HistoryPerjalananModel> histories;
+class HistoryLoaded extends HistoryPengantaranState {
+  final List<HistoryPengantaranModel> histories;
+  final bool hasReachedMax;
   final int currentPage;
-  final int totalCount;
+  final int totalPages;
+  final int totalItems;
+  final Map<String, String> currentFilters; // Ensure this field exists
+  final double? totalJarak;
 
-  HistoryPerjalananLoaded({
+  HistoryLoaded({
     required this.histories,
+    required this.hasReachedMax,
     required this.currentPage,
-    required this.totalCount,
-    bool isLoading = false,
-  }) : super(isLoading: isLoading);
+    required this.totalPages,
+    required this.totalItems,
+    required this.currentFilters,
+    this.totalJarak,
+  });
 
   @override
-  List<Object?> get props => [histories, currentPage, totalCount, isLoading];
+  List<Object?> get props => [
+        histories,
+        hasReachedMax,
+        currentPage,
+        totalPages,
+        totalItems,
+        currentFilters,
+        totalJarak,
+      ];
+
+  HistoryLoaded copyWith({
+    List<HistoryPengantaranModel>? histories,
+    bool? hasReachedMax,
+    int? currentPage,
+    int? totalPages,
+    int? totalItems,
+    Map<String, String>? currentFilters,
+    double? totalJarak,
+  }) {
+    return HistoryLoaded(
+      histories: histories ?? this.histories,
+      hasReachedMax: hasReachedMax ?? this.hasReachedMax,
+      currentPage: currentPage ?? this.currentPage,
+      totalPages: totalPages ?? this.totalPages,
+      totalItems: totalItems ?? this.totalItems,
+      currentFilters: currentFilters ?? this.currentFilters,
+      totalJarak: totalJarak ?? this.totalJarak,
+    );
+  }
 }
 
-class HistoryPerjalananError extends HistoryPerjalananState {
+class HistoryError extends HistoryPengantaranState {
   final String message;
 
-  HistoryPerjalananError({required this.message}) : super(isLoading: false);
-
-  @override
-  List<Object?> get props => [message, isLoading];
-}
-
-class HistoryPerjalananNoData extends HistoryPerjalananState {
-  HistoryPerjalananNoData() : super(isLoading: false);
+  const HistoryError(this.message);
 }

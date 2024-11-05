@@ -36,8 +36,8 @@ class _DropdownCustomerState extends State<DropdownCustomer> {
     super.initState();
     if (widget.selectedCustomer != null) {
       _typeAheadController.text = widget.selectedCustomer!.displayName;
-      _latitudeController.text = widget.selectedCustomer!.latitude ?? '';
-      _longitudeController.text = widget.selectedCustomer!.longitude ?? '';
+      _latitudeController.text = widget.selectedCustomer!.latitude;
+      _longitudeController.text = widget.selectedCustomer!.longitude;
     }
   }
 
@@ -108,12 +108,12 @@ class _DropdownCustomerState extends State<DropdownCustomer> {
                   onSuggestionSelected: (DropdownCustomerModel suggestion) {
                     setState(() {
                       _typeAheadController.text = suggestion.displayName;
-                      _latitudeController.text = suggestion.latitude ?? '';
-                      _longitudeController.text = suggestion.longitude ?? '';
+                      _latitudeController.text = suggestion.latitude;
+                      _longitudeController.text = suggestion.longitude;
                       widget.onDetailsEntered({
                         'name': suggestion.displayName,
-                        'latitude': suggestion.latitude ?? '',
-                        'longitude': suggestion.longitude ?? '',
+                        'latitude': suggestion.latitude,
+                        'longitude': suggestion.longitude,
                       });
                       widget.onCustomerSelected(suggestion);
                     });

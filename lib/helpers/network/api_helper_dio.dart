@@ -22,7 +22,7 @@ class ApiHelperImpl implements ApiHelper {
       );
       print('Response received: ${response.data}');
       return response;
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       print('DioError: ${e.response?.statusCode} - ${e.message}');
       print('Response data: ${e.response?.data}');
       rethrow;
@@ -49,7 +49,7 @@ class ApiHelperImpl implements ApiHelper {
       );
       print('Response received: ${response.data}');
       return response;
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       print('DioError: ${e.response?.statusCode} - ${e.message}');
       print('Response data: ${e.response?.data}');
       rethrow;
@@ -76,7 +76,7 @@ class ApiHelperImpl implements ApiHelper {
       );
       print('Response received: ${response.data}');
       return response;
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       print('DioError: ${e.response?.statusCode} - ${e.message}');
       print('Response data: ${e.response?.data}');
       rethrow;
@@ -100,7 +100,7 @@ class ApiHelperImpl implements ApiHelper {
       );
       print('Response received: ${response.data}');
       return response;
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       print('DioError: ${e.response?.statusCode} - ${e.message}');
       print('Response data: ${e.response?.data}');
       rethrow;
@@ -124,7 +124,7 @@ class ApiHelperImpl implements ApiHelper {
       );
       print('Response received: ${response.data}');
       return response;
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       print('DioError: ${e.response?.statusCode} - ${e.message}');
       print('Response data: ${e.response?.data}');
       rethrow;

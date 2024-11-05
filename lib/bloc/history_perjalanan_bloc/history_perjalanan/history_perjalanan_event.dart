@@ -1,44 +1,22 @@
-import 'package:equatable/equatable.dart';
-
-abstract class HistoryPerjalananEvent extends Equatable {
-  @override
-  List<Object> get props => [];
+// events.dart
+abstract class HistoryPengantaranEvent {
+  const HistoryPengantaranEvent();
 }
 
-class FetchHistory extends HistoryPerjalananEvent {
+class FetchHistoryPengantaran extends HistoryPengantaranEvent {
   final int page;
-  final String namaDriver;
-  final String createdBy;
-  final String status;
-  final String timeline;
+  final int pageSize;
+  final Map<String, String> filters;
 
-  FetchHistory({
+  const FetchHistoryPengantaran({
     required this.page,
-    this.namaDriver = '',
-    this.createdBy = '',
-    this.status = '',
-    this.timeline = '',
+    required this.pageSize,
+    required this.filters,
   });
-
-  @override
-  List<Object> get props => [page, namaDriver, createdBy, status, timeline];
 }
 
-class ChangeHistoryStatusEvent extends HistoryPerjalananEvent {
-  final String perjalananID;
-  final String newStatus;
+class UpdateFilters extends HistoryPengantaranEvent {
+  final Map<String, String> filters;
 
-  ChangeHistoryStatusEvent(this.perjalananID, this.newStatus);
-
-  @override
-  List<Object> get props => [perjalananID, newStatus];
-}
-
-class UpdateHistoryEvent extends HistoryPerjalananEvent {
-  final String perjalananID;
-
-  UpdateHistoryEvent(this.perjalananID);
-
-  @override
-  List<Object> get props => [perjalananID];
+  const UpdateFilters(this.filters);
 }

@@ -1,6 +1,7 @@
 import 'package:diantar_jarak/util/format_date.dart';
 
-class HistoryPerjalananModel {
+class HistoryPengantaranModel {
+  final String createdAt;
   final String createdBy;
   final String jamPengiriman;
   final String jamKembali;
@@ -13,7 +14,8 @@ class HistoryPerjalananModel {
   final String status;
   final String tipeKendaraan;
 
-  HistoryPerjalananModel({
+  HistoryPengantaranModel({
+    required this.createdAt,
     required this.createdBy,
     required this.jamKembali,
     required this.jamPengiriman,
@@ -27,59 +29,54 @@ class HistoryPerjalananModel {
     required this.tipeKendaraan,
   });
 
-  factory HistoryPerjalananModel.fromJson(Map<String, dynamic> json) {
-    return HistoryPerjalananModel(
-      createdBy: json['createdBy'] ?? '',
-      jamKembali: formatTimeBakAndSend(json['jam_kembali']) ?? '',
-      jamPengiriman: formatTimeBakAndSend(json['jam_pengiriman']) ?? '',
-      minJarakPengiriman: (json['min_jarak_pengiriman'] is String)
-          ? double.parse(json['min_jarak_pengiriman'])
-          : json['min_jarak_pengiriman'] ?? 0.0,
-      minDurasiPengiriman: (json['min_durasi_pengiriman'] is String)
-          ? double.parse(json['min_durasi_pengiriman'])
-          : json['min_durasi_pengiriman'] ?? 0.0,
-      namaDriver: json['nama_driver'] ?? '',
-      nomorPolisiKendaraan: json['nomor_polisi_kendaraan'] ?? '',
-      perjalananId: json['perjalanan_id'] ?? '',
-      shiftKe: json['shift_ke'] ?? 0,
-      status: json['status'] ?? '',
-      tipeKendaraan: json['tipe_kendaraan'] ?? '',
+  factory HistoryPengantaranModel.fromJson(Map<String, dynamic> json) {
+    return HistoryPengantaranModel(
+      createdAt: json['CreatedAt'] ?? '',
+      createdBy: json['CreatedBy'] ?? '',
+      jamKembali: _validateAndFormatTime(json['JamKembali']),
+      jamPengiriman: _validateAndFormatTime(json['JamPengiriman']),
+      minJarakPengiriman: _parseDouble(json['MinJarakPengiriman']),
+      minDurasiPengiriman: _parseDouble(json['MinDurasiPengiriman']),
+      namaDriver: json['NamaDriver'] ?? '',
+      nomorPolisiKendaraan: json['NomorPolisiKendaraan'] ?? '',
+      perjalananId: json['PerjalananID'] ?? '',
+      shiftKe: json['ShiftKe'] ?? 0,
+      status: json['Status'] ?? '',
+      tipeKendaraan: json['TipeKendaraan'] ?? '',
     );
+  }
+
+  static String _validateAndFormatTime(String? timeStr) {
+    const invalidDate = 'Mon, 01 Jan 1900 00:00:00 GMT';
+    if (timeStr == null || timeStr.isEmpty || timeStr == invalidDate) {
+      return 'Perlu di update';
+    }
+    return formatTimeBakAndSend(timeStr) ?? 'Perlu di update';
+  }
+
+  static double _parseDouble(dynamic value) {
+    if (value is String) {
+      return double.tryParse(value) ?? 0.0;
+    } else if (value is double) {
+      return value;
+    }
+    return 0.0;
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'createdBy': createdBy,
-      'jam_kembali': jamKembali,
-      'jam_pengiriman': jamPengiriman,
-      'min_durasi_pengiriman': minDurasiPengiriman.toString(),
-      'min_jarak_pengiriman': minJarakPengiriman.toString(),
-      'nama_driver': namaDriver,
-      'nomor_polisi_kendaraan': nomorPolisiKendaraan,
-      'perjalanan_id': perjalananId,
-      'shift_ke': shiftKe,
-      'status': status,
-      'tipe_kendaraan': tipeKendaraan,
-    };
-  }
-}
-
-class HistoryPerjalananModelData {
-  final List<HistoryPerjalananModel> data;
-
-  HistoryPerjalananModelData({required this.data});
-
-  factory HistoryPerjalananModelData.fromJson(Map<String, dynamic> json) {
-    return HistoryPerjalananModelData(
-      data: (json['data'] as List)
-          .map((item) => HistoryPerjalananModel.fromJson(item))
-          .toList(),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'data': data.map((item) => item.toJson()).toList(),
+      'CreatedAt': createdAt,
+      'CreatedBy': createdBy,
+      'JamKembali': jamKembali,
+      'JamPengiriman': jamPengiriman,
+      'MinDurasiPengiriman': minDurasiPengiriman.toString(),
+      'MinJarakPengiriman': minJarakPengiriman.toString(),
+      'NamaDriver': namaDriver,
+      'NomorPolisiKendaraan': nomorPolisiKendaraan,
+      'PerjalananID': perjalananId,
+      'ShiftKe': shiftKe,
+      'Status': status,
+      'TipeKendaraan': tipeKendaraan,
     };
   }
 }

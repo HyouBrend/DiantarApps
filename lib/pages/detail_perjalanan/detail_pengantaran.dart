@@ -9,6 +9,7 @@ import 'package:diantar_jarak/bloc/detail_perjalanan_bloc/update_detail_perjalan
 import 'package:diantar_jarak/bloc/detail_perjalanan_bloc/update_detail_perjalanan/update_detail_perjalanan_state.dart';
 import 'package:diantar_jarak/bloc/history_perjalanan_bloc/history_perjalanan/history_perjalanan_bloc.dart';
 import 'package:diantar_jarak/bloc/history_perjalanan_bloc/history_perjalanan/history_perjalanan_event.dart';
+import 'package:diantar_jarak/bloc/history_perjalanan_bloc/history_perjalanan/history_perjalanan_state.dart';
 
 import 'package:diantar_jarak/data/models/detail_perjalanan_model/detail_perjalanan_model.dart';
 import 'package:diantar_jarak/data/models/detail_perjalanan_model/update_detail_pengantaran_model.dart';
@@ -234,35 +235,29 @@ class DetailPengantaranPage extends StatelessWidget {
                     }
 
                     try {
-                      // Konversi ke format backend, periksa jika null
-                      final String jamPengirimanBackend =
-                          _getBackendDateFormat(jamPengirimanController.text);
-                      final String jamKembaliBackend = jamKembaliController
-                              .text.isEmpty
-                          ? ''
-                          : _getBackendDateFormat(jamKembaliController.text);
-
-                      // Buat objek detail yang diperbarui
                       final updatedDetail = UpdateDetailPerjalananModel(
                         perjalananID: detail.perjalananID,
                         shiftKe: int.parse(shiftKeController.text),
-                        jamPengiriman: jamPengirimanBackend,
-                        jamKembali: jamKembaliBackend,
+                        jamPengiriman:
+                            _getBackendDateFormat(jamPengirimanController.text),
+                        jamKembali: jamKembaliController.text.isEmpty
+                            ? ''
+                            : _getBackendDateFormat(jamKembaliController.text),
                         updateBy: updateByController.text,
-                        status: selectedStatus ?? '',
+                        status: selectedStatus ?? '', // Pastikan status dikirim
                       );
 
                       // Kirim event untuk update
-                      context
-                          .read<UpdateDetailPerjalananBloc>()
-                          .add(SubmitUpdateDetailPerjalanan(updatedDetail));
+                      context.read<UpdateDetailPerjalananBloc>().add(
+                            SubmitUpdateDetailPerjalanan(updatedDetail),
+                          );
 
-                      // Emit event untuk memperbarui riwayat
-                      context
-                          .read<HistoryPerjalananBloc>()
-                          .add(UpdateHistoryEvent(detail.perjalananID));
+                      Navigator.of(context).pop(); // Tutup dialog
 
-                      Navigator.of(context).pop();
+                      // Emit event untuk memperbarui data di halaman utama
+                      context.read<DetailPerjalananBloc>().add(
+                            FetchDetailPerjalanan(perjalananID),
+                          );
 
                       // Tampilkan dialog sukses
                       _showSuccessDialogPerjalanan(context);
@@ -562,28 +557,87 @@ class DetailPengantaranPage extends StatelessWidget {
               UpdateDetailPengantaranState>(
             listener: (context, state) {
               if (state is UpdateDetailPengantaranSuccess) {
+                // Ambil state terbaru dari HistoryPengantaranBloc
+                final historyState =
+                    context.read<HistoryPengantaranBloc>().state;
+
+                // Tentukan halaman dan page size dinamis dari state
+                int currentPage = 1;
+                int pageSize = 10;
+
+                if (historyState is HistoryLoaded) {
+                  currentPage = historyState.currentPage;
+                  pageSize =
+                      historyState.histories.length; // Ambil page size aktif
+                }
+
+                // Muat ulang data Detail Perjalanan dan History
                 context
                     .read<DetailPerjalananBloc>()
                     .add(FetchDetailPerjalanan(perjalananID));
+                context
+                    .read<HistoryPengantaranBloc>()
+                    .add(FetchHistoryPengantaran(
+                      page: currentPage,
+                      pageSize: pageSize, // Gunakan page size yang dinamis
+                      filters: historyState.currentFilters,
+                    ));
+
                 ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Detail updated successfully!')));
+                  SnackBar(
+                      content: Text('Detail Pengantaran berhasil diperbarui!')),
+                );
               } else if (state is UpdateDetailPengantaranError) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error: ${state.message}')));
+                  SnackBar(content: Text('Error: ${state.message}')),
+                );
               }
             },
           ),
           BlocListener<UpdateDetailPerjalananBloc, UpdateDetailPerjalananState>(
             listener: (context, state) {
               if (state is UpdateDetailPerjalananSuccess) {
-                context
-                    .read<DetailPerjalananBloc>()
-                    .add(FetchDetailPerjalanan(perjalananID));
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text('Perjalanan updated successfully!')));
-              } else if (state is UpdateDetailPerjalananError) {
+                // Memperbarui Detail Perjalanan
+                context.read<DetailPerjalananBloc>().add(
+                      FetchDetailPerjalanan(perjalananID),
+                    );
+
+                // Memastikan HistoryState telah di-load dengan aman
+                final historyState =
+                    context.read<HistoryPengantaranBloc>().state;
+                int currentPage = 1;
+                int pageSize = 10;
+
+                if (historyState is HistoryLoaded) {
+                  currentPage = historyState.currentPage;
+                  pageSize = historyState.histories.length;
+                }
+
+                // Emit event untuk memperbarui history
+                context.read<HistoryPengantaranBloc>().add(
+                      FetchHistoryPengantaran(
+                        page: currentPage,
+                        pageSize: pageSize,
+                        filters: (historyState is HistoryLoaded)
+                            ? historyState.currentFilters
+                            : {},
+                      ),
+                    );
+
+                // Menampilkan notifikasi sukses
                 ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error: ${state.message}')));
+                  SnackBar(
+                    content:
+                        Text('Perjalanan dan History berhasil diperbarui!'),
+                  ),
+                );
+              } else if (state is UpdateDetailPerjalananError) {
+                // Menampilkan notifikasi error
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Gagal memperbarui: ${state.message}'),
+                  ),
+                );
               }
             },
           ),
@@ -708,7 +762,7 @@ class DetailPengantaranPage extends StatelessWidget {
                                     title: Row(
                                       children: [
                                         Text(
-                                          detail.displayName ?? '',
+                                          detail.displayName,
                                           style: TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.bold,
