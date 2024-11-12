@@ -1,3 +1,4 @@
+import 'package:diantar_jarak/pages/delivery_order/delivery_order_page.dart';
 import 'package:diantar_jarak/pages/history_perjalanan/history_perjalanan_widget/card_history.dart';
 import 'package:diantar_jarak/pages/history_perjalanan/history_perjalanan_widget/filter_history.dart';
 import 'package:diantar_jarak/pages/history_perjalanan/history_perjalanan_widget/paging_history.dart';
@@ -9,6 +10,8 @@ import 'package:diantar_jarak/bloc/history_perjalanan_bloc/history_perjalanan/hi
 import 'package:diantar_jarak/bloc/history_perjalanan_bloc/history_perjalanan/history_perjalanan_state.dart';
 
 class HistoryPengantaranPage extends StatefulWidget {
+  const HistoryPengantaranPage({super.key});
+
   @override
   _HistoryPengantaranPageState createState() => _HistoryPengantaranPageState();
 }
@@ -83,8 +86,47 @@ class _HistoryPengantaranPageState extends State<HistoryPengantaranPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('History Pengantaran'),
+        title: Text(
+          'History Pengantaran',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: CustomColorPalette.textColor,
+          ),
+        ),
         backgroundColor: CustomColorPalette.backgroundColor,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(
+                horizontal: 16.0), // Memberi sedikit padding pada ikon
+            child: GestureDetector(
+              onTap: () {
+                // Navigasi ke DeliveryOrderPage
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => DeliveryOrderPage()),
+                );
+              },
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.local_shipping,
+                    size: 24.0,
+                    color: CustomColorPalette.buttonColor,
+                  ),
+                  Text(
+                    'Delivery Order',
+                    style: TextStyle(
+                      fontSize: 10.0,
+                      color: CustomColorPalette.textColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(

@@ -25,8 +25,7 @@ import 'package:url_launcher/url_launcher.dart';
 class DetailPengantaranPage extends StatelessWidget {
   final String perjalananID;
 
-  const DetailPengantaranPage({Key? key, required this.perjalananID})
-      : super(key: key);
+  const DetailPengantaranPage({super.key, required this.perjalananID});
 
   Widget buildRow(String label, String? value, {Widget? trailing}) {
     return Padding(
@@ -52,7 +51,7 @@ class DetailPengantaranPage extends StatelessWidget {
               color: CustomColorPalette.textColor,
             ),
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Expanded(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -106,7 +105,7 @@ class DetailPengantaranPage extends StatelessWidget {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             return AlertDialog(
-              title: Text('Update Detail Perjalanan'),
+              title: const Text('Update Detail Perjalanan'),
               content: SingleChildScrollView(
                 child: Column(
                   children: [
@@ -115,7 +114,7 @@ class DetailPengantaranPage extends StatelessWidget {
                       children: [
                         TextField(
                           controller: shiftKeController,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             labelText: 'Shift Ke',
                             labelStyle: TextStyle(fontSize: 14),
                             hintStyle:
@@ -132,8 +131,8 @@ class DetailPengantaranPage extends StatelessWidget {
                           ),
                         ),
                         if (isShiftKeEmpty)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 4.0),
+                          const Padding(
+                            padding: EdgeInsets.only(top: 4.0),
                             child: Text(
                               "Harus Diisi",
                               style: TextStyle(
@@ -144,15 +143,15 @@ class DetailPengantaranPage extends StatelessWidget {
                           ),
                       ],
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildDateTimePicker(
                             context, jamPengirimanController, 'Jam Pengiriman'),
                         if (isJamPengirimanEmpty)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 4.0),
+                          const Padding(
+                            padding: EdgeInsets.only(top: 4.0),
                             child: Text(
                               "Harus Diisi",
                               style: TextStyle(
@@ -163,13 +162,13 @@ class DetailPengantaranPage extends StatelessWidget {
                           ),
                       ],
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     _buildDateTimePicker(
                         context, jamKembaliController, 'Jam Kembali'),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     TextField(
                       controller: updateByController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Update By',
                         labelStyle: TextStyle(fontSize: 14),
                         hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
@@ -183,10 +182,10 @@ class DetailPengantaranPage extends StatelessWidget {
                         isDense: true,
                       ),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     DropdownButtonFormField<String>(
                       value: selectedStatus,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Status',
                         labelStyle: TextStyle(fontSize: 14),
                         hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
@@ -214,13 +213,13 @@ class DetailPengantaranPage extends StatelessWidget {
               ),
               actions: [
                 TextButton(
-                  child: Text('Cancel'),
+                  child: const Text('Cancel'),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
                 ),
                 TextButton(
-                  child: Text('Update'),
+                  child: const Text('Update'),
                   onPressed: () {
                     // Validasi input yang wajib
                     setState(() {
@@ -280,7 +279,7 @@ class DetailPengantaranPage extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          content: Column(
+          content: const Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
@@ -299,7 +298,7 @@ class DetailPengantaranPage extends StatelessWidget {
           ),
           actions: [
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -317,15 +316,16 @@ class DetailPengantaranPage extends StatelessWidget {
       readOnly: true,
       decoration: InputDecoration(
         labelText: label,
-        suffixIcon: Icon(Icons.calendar_today),
-        labelStyle: TextStyle(fontSize: 14),
-        hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
-        border: OutlineInputBorder(
+        suffixIcon: const Icon(Icons.calendar_today),
+        labelStyle: const TextStyle(fontSize: 14),
+        hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
+        border: const OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(10.0)),
         ),
         filled: true,
         fillColor: Colors.white,
-        contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
         isDense: true,
       ),
       onTap: () async {
@@ -377,7 +377,7 @@ class DetailPengantaranPage extends StatelessWidget {
 // Fungsi untuk memformat tanggal ke format "Jumat, 30 Agustus 2024 15:11 WIB"
   String formatDate(DateTime dateTime) {
     DateFormat uiFormat = DateFormat('EEEE, dd MMMM yyyy HH:mm', 'id_ID');
-    return uiFormat.format(dateTime) + ' WIB';
+    return '${uiFormat.format(dateTime)} WIB';
   }
 
   void showUpdateDialogPengantaran(
@@ -395,7 +395,7 @@ class DetailPengantaranPage extends StatelessWidget {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             return AlertDialog(
-              title: Text('Update Detail Pengantaran'),
+              title: const Text('Update Detail Pengantaran'),
               content: SingleChildScrollView(
                 child: Column(
                   children: [
@@ -403,44 +403,44 @@ class DetailPengantaranPage extends StatelessWidget {
                       controller: nomorFakturController,
                       decoration: InputDecoration(
                         labelText: 'Nomor Faktur',
-                        labelStyle: TextStyle(fontSize: 14),
+                        labelStyle: const TextStyle(fontSize: 14),
                         hintStyle: TextStyle(
                             color: CustomColorPalette.hintTextColor,
                             fontSize: 14),
-                        border: OutlineInputBorder(
+                        border: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(10.0)),
                         ),
                         filled: true,
                         fillColor: CustomColorPalette.surfaceColor,
-                        contentPadding:
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 12),
                         isDense: true,
                       ),
                     ),
                     if (showError)
-                      Align(
+                      const Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
                           'Nomor Faktur wajib di update!',
                           style: TextStyle(color: Colors.red, fontSize: 12),
                         ),
                       ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     TextField(
                       controller: updateByController,
                       decoration: InputDecoration(
                         labelText: 'Update By',
-                        labelStyle: TextStyle(fontSize: 14),
+                        labelStyle: const TextStyle(fontSize: 14),
                         hintStyle: TextStyle(
                             color: CustomColorPalette.hintTextColor,
                             fontSize: 14),
-                        border: OutlineInputBorder(
+                        border: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(10.0)),
                         ),
                         filled: true,
                         fillColor: CustomColorPalette.surfaceColor,
-                        contentPadding:
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 12),
                         isDense: true,
                       ),
                     ),
@@ -449,13 +449,13 @@ class DetailPengantaranPage extends StatelessWidget {
               ),
               actions: [
                 TextButton(
-                  child: Text('Cancel'),
+                  child: const Text('Cancel'),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
                 ),
                 TextButton(
-                  child: Text('Update'),
+                  child: const Text('Update'),
                   onPressed: () {
                     // Cek jika nomor faktur masih "0"
                     if (nomorFakturController.text.trim() == '0') {
@@ -495,7 +495,7 @@ class DetailPengantaranPage extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          content: Column(
+          content: const Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
@@ -514,7 +514,7 @@ class DetailPengantaranPage extends StatelessWidget {
           ),
           actions: [
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -533,12 +533,12 @@ class DetailPengantaranPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Detail Perjalanan',
           style: TextStyle(
-            fontSize: 28,
+            fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF363535),
+            color: CustomColorPalette.textColor,
           ),
         ),
         backgroundColor: CustomColorPalette.backgroundColor,
@@ -584,7 +584,7 @@ class DetailPengantaranPage extends StatelessWidget {
                     ));
 
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
+                  const SnackBar(
                       content: Text('Detail Pengantaran berhasil diperbarui!')),
                 );
               } else if (state is UpdateDetailPengantaranError) {
@@ -626,7 +626,7 @@ class DetailPengantaranPage extends StatelessWidget {
 
                 // Menampilkan notifikasi sukses
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
+                  const SnackBar(
                     content:
                         Text('Perjalanan dan History berhasil diperbarui!'),
                   ),
@@ -645,7 +645,7 @@ class DetailPengantaranPage extends StatelessWidget {
         child: BlocBuilder<DetailPerjalananBloc, DetailPerjalananState>(
           builder: (context, state) {
             if (state is DetailPerjalananLoading) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             } else if (state is DetailPerjalananLoaded) {
               state.detailPerjalanan.sort(
                   (a, b) => a.urutanPengiriman.compareTo(b.urutanPengiriman));
@@ -687,7 +687,7 @@ class DetailPengantaranPage extends StatelessWidget {
                               ),
                             ],
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           ListTile(
                             title: Text(
                               capitalizeWords(
@@ -701,7 +701,7 @@ class DetailPengantaranPage extends StatelessWidget {
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                SizedBox(height: 16),
+                                const SizedBox(height: 16),
                                 buildRow(
                                     'Shift',
                                     state.detailPerjalanan[0].shiftKe
@@ -744,7 +744,7 @@ class DetailPengantaranPage extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             'Detail Customers',
                             style: TextStyle(
                               fontSize: 24,
@@ -752,7 +752,7 @@ class DetailPengantaranPage extends StatelessWidget {
                               color: Color(0xFF363535),
                             ),
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           Column(
                             children: state.detailPerjalanan.map((detail) {
                               return Column(
@@ -812,7 +812,7 @@ class DetailPengantaranPage extends StatelessWidget {
                                                       .textColor,
                                                 ),
                                               ),
-                                              SizedBox(width: 8),
+                                              const SizedBox(width: 8),
                                               Flexible(
                                                 child: Text(
                                                   detail.inputLatitude
@@ -882,7 +882,7 @@ class DetailPengantaranPage extends StatelessWidget {
                                 ),
                               ),
                               IconButton(
-                                icon: Icon(
+                                icon: const Icon(
                                   Icons.map_rounded,
                                   size: 30,
                                   color: Color(0xFF8A2BE2),

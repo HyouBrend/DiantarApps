@@ -123,12 +123,12 @@ class _DropdownCustomerState extends State<DropdownCustomer> {
                     child: Text('Pelanggan Tidak Ada',
                         style: TextStyle(fontSize: 14)),
                   ),
-                  loadingBuilder: (context) => Center(
+                  loadingBuilder: (context) => const Center(
                     child: CircularProgressIndicator(),
                   ),
                   hideOnLoading:
                       !_isLoading, // Mengontrol visibilitas indikator loading
-                  suggestionsBoxDecoration: SuggestionsBoxDecoration(
+                  suggestionsBoxDecoration: const SuggestionsBoxDecoration(
                     constraints: BoxConstraints(
                         maxHeight: 500), // Mengatur tinggi maksimal dropdown
                   ),

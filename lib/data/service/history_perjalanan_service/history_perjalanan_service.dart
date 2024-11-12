@@ -35,7 +35,7 @@ class HistoryPengantaranService {
       );
 
       // Validasi respons dan cek apakah data ada
-      if (response.data == null || !(response.data['data'] is List)) {
+      if (response.data == null || response.data['data'] is! List) {
         throw Exception("Invalid API response");
       }
 

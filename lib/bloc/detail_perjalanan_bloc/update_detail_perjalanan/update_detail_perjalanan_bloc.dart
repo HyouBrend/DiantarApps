@@ -31,7 +31,7 @@ class UpdateDetailPerjalananBloc
       emit(UpdateDetailPerjalananSuccess());
 
       // Emit event ke history untuk memperbarui data
-      historyBloc.add(FetchHistoryPengantaran(
+      historyBloc.add(const FetchHistoryPengantaran(
         page: 1,
         pageSize: 10,
         filters: {},

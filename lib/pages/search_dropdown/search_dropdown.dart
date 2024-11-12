@@ -24,7 +24,7 @@ import 'package:diantar_jarak/pages/search_dropdown/search_dropdown_widget/dropd
 import 'package:dio/dio.dart';
 
 class SearchDropdown extends StatefulWidget {
-  const SearchDropdown({Key? key}) : super(key: key);
+  const SearchDropdown({super.key});
 
   @override
   _SearchPageState createState() => _SearchPageState();
@@ -43,7 +43,7 @@ class _SearchPageState extends State<SearchDropdown> {
   final TextEditingController _driverController = TextEditingController();
   DropdownDriveModel? _selectedDriver;
   DropdownVehicleModel? _selectedVehicle;
-  List<DropdownCustomerModel> _selectedCustomers = [];
+  final List<DropdownCustomerModel> _selectedCustomers = [];
   late final SubmitPerjalananBloc submitPerjalananBloc;
 
   late final ApiHelper apiHelper;
@@ -72,7 +72,7 @@ class _SearchPageState extends State<SearchDropdown> {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return LoadingDialog();
+        return const LoadingDialog();
       },
     );
   }
@@ -120,7 +120,7 @@ class _SearchPageState extends State<SearchDropdown> {
                 selectedCustomer: customer,
               ),
             ),
-            SizedBox(width: 4),
+            const SizedBox(width: 4),
             Align(
               alignment: Alignment.centerLeft,
               child: ElevatedButton(
@@ -142,7 +142,7 @@ class _SearchPageState extends State<SearchDropdown> {
     try {
       // Validasi apakah customers dan driver sudah dipilih
       if (_selectedCustomers.isEmpty || _selectedDriver == null) {
-        throw FormatException("Selected customers or driver is invalid");
+        throw const FormatException("Selected customers or driver is invalid");
       }
 
       // Pisahkan pelanggan yang memiliki dan tidak memiliki latitude/longitude
@@ -226,12 +226,12 @@ class _SearchPageState extends State<SearchDropdown> {
       create: (context) => submitPerjalananBloc,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(
+          title: Text(
             'Diantar Jarak',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF363535),
+              color: CustomColorPalette.textColor,
             ),
           ),
           centerTitle: true,
@@ -244,10 +244,10 @@ class _SearchPageState extends State<SearchDropdown> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => HistoryPengantaranPage()));
+                        builder: (context) => const HistoryPengantaranPage()));
               },
             ),
-            SizedBox(width: 4),
+            const SizedBox(width: 4),
           ],
         ),
         body: BlocListener<SubmitPerjalananBloc, SubmitPerjalananState>(
@@ -323,7 +323,7 @@ class _SearchPageState extends State<SearchDropdown> {
         Expanded(
           child: _buildLeftColumn(),
         ),
-        SizedBox(width: 20),
+        const SizedBox(width: 20),
         Expanded(
           child: _buildRightColumn(),
         ),
@@ -335,7 +335,7 @@ class _SearchPageState extends State<SearchDropdown> {
     return Column(
       children: [
         _buildLeftColumn(),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         _buildRightColumn(),
       ],
     );
@@ -409,7 +409,7 @@ class _SearchPageState extends State<SearchDropdown> {
             child: const Icon(Icons.add),
           ),
         ),
-        SizedBox(height: 4),
+        const SizedBox(height: 4),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: _selectedCustomers.map((customer) {

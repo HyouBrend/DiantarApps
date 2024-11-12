@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:diantar_jarak/bloc/delivery_order_bloc/get_delivery_order_bloc.dart/get_delivery_order_bloc.dart';
+import 'package:diantar_jarak/bloc/delivery_order_bloc/product_bloc/produk_bloc.dart';
+import 'package:diantar_jarak/data/service/delivery_order_service/get_delivery_order_service.dart';
+import 'package:diantar_jarak/data/service/delivery_order_service/produk_service.dart';
+import 'package:diantar_jarak/helpers/api/api_strings.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -31,6 +36,7 @@ import 'package:diantar_jarak/theme/theme.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('id_ID');
+  await Config.loadConfig();
   runApp(const MyApp());
 }
 
@@ -39,19 +45,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _buildApp(_setupServices());
-  }
-
-  MultiRepositoryProvider _buildApp(List<RepositoryProvider> services) {
     return MultiRepositoryProvider(
-      providers: services,
+      providers: _setupServices(),
       child: MultiBlocProvider(
         providers: _setupBlocs(),
         child: MaterialApp(
           title: 'Diantar Jarak',
           debugShowCheckedModeBanner: false,
           theme: _buildTheme(),
-          home: SplashScreen(),
+          home: const SplashScreen(),
           localizationsDelegates: const [
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
@@ -59,7 +61,7 @@ class MyApp extends StatelessWidget {
           ],
           supportedLocales: const [
             Locale('id', 'ID'), // Bahasa Indonesia
-            Locale('en', 'US'), // Bahasa Inggris
+            Locale('en', 'US'), // English
           ],
         ),
       ),
@@ -67,14 +69,7 @@ class MyApp extends StatelessWidget {
   }
 
   List<RepositoryProvider> _setupServices() {
-    final apiHelper = ApiHelperImpl(
-      dio: Dio()
-        ..options = BaseOptions(
-          connectTimeout: const Duration(seconds: 30),
-          receiveTimeout: const Duration(seconds: 30),
-          sendTimeout: const Duration(seconds: 30),
-        ),
-    );
+    final apiHelper = ApiHelperImpl(dio: Dio());
 
     return [
       RepositoryProvider<ApiHelper>(
@@ -100,11 +95,27 @@ class MyApp extends StatelessWidget {
         create: (context) =>
             UpdateDetailPerjalananService(apiHelper: apiHelper),
       ),
+      RepositoryProvider<DropProductService>(
+        create: (context) => DropProductService(apiHelper: apiHelper),
+      ),
+      RepositoryProvider<DeliveryOrderService>(
+        create: (context) => DeliveryOrderService(apiHelper: apiHelper),
+      ),
     ];
   }
 
   List<BlocProvider> _setupBlocs() {
     return [
+      BlocProvider<DeliveryOrderBloc>(
+        create: (context) => DeliveryOrderBloc(
+          deliveryOrderService: context.read<DeliveryOrderService>(),
+        ),
+      ),
+      BlocProvider<ProductBloc>(
+        create: (context) => ProductBloc(
+          productService: context.read<DropProductService>(),
+        ),
+      ),
       BlocProvider<DetailPerjalananBloc>(
         create: (context) => DetailPerjalananBloc(
           context.read<DetailPerjalananService>(),

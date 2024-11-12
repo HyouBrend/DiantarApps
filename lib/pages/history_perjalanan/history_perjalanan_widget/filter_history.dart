@@ -13,9 +13,9 @@ class FilterWidget extends StatefulWidget {
   final Function(Map<String, dynamic>) onFilterChanged;
 
   const FilterWidget({
-    Key? key,
+    super.key,
     required this.onFilterChanged,
-  }) : super(key: key);
+  });
 
   @override
   _FilterWidgetState createState() => _FilterWidgetState();

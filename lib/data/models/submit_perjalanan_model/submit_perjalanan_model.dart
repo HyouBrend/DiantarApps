@@ -11,7 +11,7 @@ class Kontak extends Equatable {
   final String longitude;
   final int nomorFaktur;
 
-  Kontak({
+  const Kontak({
     required this.displayName,
     required this.kontakID,
     this.type,
@@ -66,7 +66,7 @@ class SubmitPerjalananModel extends Equatable {
   final double minDistance;
   final double minDuration;
 
-  SubmitPerjalananModel({
+  const SubmitPerjalananModel({
     required this.googleMapsUrl,
     required this.shiftKe,
     this.jamPengiriman,

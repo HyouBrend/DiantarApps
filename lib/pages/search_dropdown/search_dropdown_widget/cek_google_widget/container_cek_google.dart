@@ -40,7 +40,8 @@ class ContainerCekGoogle extends StatelessWidget {
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('No valid locations to check on Google Maps')),
+          const SnackBar(
+              content: Text('No valid locations to check on Google Maps')),
         );
       }
     } catch (e) {
@@ -164,7 +165,7 @@ class ContainerCekGoogle extends StatelessWidget {
                         buildRow('Urutan Pengiriman',
                             customer.urutanPengiriman.toString(), context),
                         if (!customer.hasValidLocation())
-                          Text(
+                          const Text(
                             'Pelanggan ini tidak memiliki latitude/longitude',
                             style: TextStyle(color: Colors.red, fontSize: 12),
                           ),

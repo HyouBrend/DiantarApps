@@ -206,8 +206,8 @@ class CardHistory extends StatelessWidget {
                                   ),
                                 ),
                                 TextSpan(
-                                  text:
-                                      "${_validateTime(currentHistoryItem.jamKembali)}",
+                                  text: _validateTime(
+                                      currentHistoryItem.jamKembali),
                                   style: TextStyle(
                                     fontSize: getFontSize(context, 18),
                                     color: CustomColorPalette.textColor,

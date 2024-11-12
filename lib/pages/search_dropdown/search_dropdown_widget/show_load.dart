@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
 class LoadingDialog extends StatelessWidget {
+  const LoadingDialog({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
-      child: Padding(
+      child: const Padding(
         padding: EdgeInsets.all(30), // Padding
         child: Column(
           mainAxisSize: MainAxisSize.min,

@@ -13,6 +13,7 @@ class HistoryLoaded extends HistoryPengantaranState {
   final int currentPage;
   final int totalPages;
   final int totalItems;
+  @override
   final Map<String, String> currentFilters; // Ensure this field exists
   final double? totalJarak;
 

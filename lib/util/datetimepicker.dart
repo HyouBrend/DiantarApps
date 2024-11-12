@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 
 class DateTimePicker extends StatefulWidget {
   final TextEditingController controller;
-  const DateTimePicker({required this.controller, Key? key}) : super(key: key);
+  const DateTimePicker({required this.controller, super.key});
 
   @override
   _DateTimePickerState createState() => _DateTimePickerState();
@@ -48,7 +48,7 @@ class _DateTimePickerState extends State<DateTimePicker> {
         selectedDate!.day,
         selectedTime!.hour,
         selectedTime!.minute,
-      ).subtract(Duration(hours: 7)); // Kurangi 7 jam untuk GMT+7
+      ).subtract(const Duration(hours: 7)); // Kurangi 7 jam untuk GMT+7
 
       // Format output sesuai dengan yang dibutuhkan
       final DateFormat outputFormat = DateFormat('yyyy-MM-dd HH:mm:ss.SSS');
@@ -65,7 +65,7 @@ class _DateTimePickerState extends State<DateTimePicker> {
           readOnly: true,
           decoration: InputDecoration(
             suffixIcon: IconButton(
-              icon: Icon(Icons.calendar_today),
+              icon: const Icon(Icons.calendar_today),
               onPressed: () async {
                 await _selectDate(context);
                 await _selectTime(context);

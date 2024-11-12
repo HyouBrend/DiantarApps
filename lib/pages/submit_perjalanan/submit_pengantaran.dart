@@ -140,12 +140,12 @@ class SubmitResultPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Detail Perjalanan',
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF363535),
+            color: CustomColorPalette.textColor,
           ),
         ),
         backgroundColor: CustomColorPalette.backgroundColor,
@@ -190,7 +190,7 @@ class SubmitResultPage extends StatelessWidget {
                             fontSize:
                                 getFontSize(context, 24), // Responsif font size
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF363535),
+                            color: const Color(0xFF363535),
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -201,7 +201,7 @@ class SubmitResultPage extends StatelessWidget {
                               fontSize: getFontSize(
                                   context, 20), // Responsif font size
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF363535),
+                              color: const Color(0xFF363535),
                             ),
                           ),
                           subtitle: Column(
@@ -259,117 +259,110 @@ class SubmitResultPage extends StatelessWidget {
                             fontSize:
                                 getFontSize(context, 24), // FontSize responsif
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF363535),
+                            color: const Color(0xFF363535),
                           ),
                         ),
                         const SizedBox(height: 16),
                         // Mapping dari data kontak, urutkan berdasarkan urutan pengiriman
-                        ...allKontaks
-                            .map((kontak) => ListTile(
-                                  title: Text(
-                                    kontak.displayName,
-                                    style: TextStyle(
-                                      fontSize: getFontSize(
-                                          context, 20), // FontSize responsif
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF363535),
+                        ...allKontaks.map((kontak) => ListTile(
+                              title: Text(
+                                kontak.displayName,
+                                style: TextStyle(
+                                  fontSize: getFontSize(
+                                      context, 20), // FontSize responsif
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF363535),
+                                ),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  buildRow(
+                                      'Urutan Pengiriman',
+                                      kontak.urutanPengiriman.toString(),
+                                      context),
+                                  if (kontak.latitude.isEmpty ||
+                                      kontak.longitude.isEmpty)
+                                    const Text(
+                                      'Pelanggan ini tidak memiliki latitude/longitude',
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 2.0),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        SizedBox(
+                                          width: getLabelWidth(
+                                              context), // Lebar kolom label responsif
+                                          child: Text(
+                                            'Latitude',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize:
+                                                  getFontSize(context, 18),
+                                              color:
+                                                  CustomColorPalette.textColor,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          ":",
+                                          style: TextStyle(
+                                            fontSize: getFontSize(context,
+                                                20), // Ukuran font responsif
+                                            color: CustomColorPalette.textColor,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Flexible(
+                                          fit: FlexFit.loose,
+                                          child: Text(
+                                            kontak.latitude.isEmpty
+                                                ? 'Tidak ada'
+                                                : kontak.latitude,
+                                            style: TextStyle(
+                                              fontSize:
+                                                  getFontSize(context, 20),
+                                              color:
+                                                  CustomColorPalette.textColor,
+                                            ),
+                                          ),
+                                        ),
+                                        IconButton(
+                                          icon: Icon(
+                                            Icons.location_on_rounded,
+                                            size: getIconSize(context,
+                                                30), // Ukuran ikon responsif
+                                            color: const Color(0xFF8A2BE2),
+                                          ),
+                                          onPressed: () {
+                                            if (kontak.longitude != '') {
+                                              launch(
+                                                'https://www.google.com/maps/search/?api=1&query=${kontak.latitude},${kontak.longitude}',
+                                              );
+                                            }
+                                          },
+                                        )
+                                      ],
                                     ),
                                   ),
-                                  subtitle: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      buildRow(
-                                          'Urutan Pengiriman',
-                                          kontak.urutanPengiriman.toString(),
-                                          context),
-                                      if (kontak.latitude.isEmpty ||
-                                          kontak.longitude.isEmpty)
-                                        const Text(
-                                          'Pelanggan ini tidak memiliki latitude/longitude',
-                                          style: TextStyle(color: Colors.red),
-                                        ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 2.0),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            SizedBox(
-                                              width: getLabelWidth(
-                                                  context), // Lebar kolom label responsif
-                                              child: Text(
-                                                'Latitude',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize:
-                                                      getFontSize(context, 18),
-                                                  color: CustomColorPalette
-                                                      .textColor,
-                                                ),
-                                              ),
-                                            ),
-                                            const SizedBox(width: 8),
-                                            Text(
-                                              ":",
-                                              style: TextStyle(
-                                                fontSize: getFontSize(context,
-                                                    20), // Ukuran font responsif
-                                                color: CustomColorPalette
-                                                    .textColor,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 8),
-                                            Flexible(
-                                              fit: FlexFit.loose,
-                                              child: Text(
-                                                kontak.latitude.isEmpty
-                                                    ? 'Tidak ada'
-                                                    : kontak.latitude,
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      getFontSize(context, 20),
-                                                  color: CustomColorPalette
-                                                      .textColor,
-                                                ),
-                                              ),
-                                            ),
-                                            IconButton(
-                                              icon: Icon(
-                                                Icons.location_on_rounded,
-                                                size: getIconSize(context,
-                                                    30), // Ukuran ikon responsif
-                                                color: Color(0xFF8A2BE2),
-                                              ),
-                                              onPressed: () {
-                                                if (kontak.longitude != '') {
-                                                  launch(
-                                                    'https://www.google.com/maps/search/?api=1&query=${kontak.latitude},${kontak.longitude}',
-                                                  );
-                                                }
-                                              },
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                      buildRow(
-                                        'Longitude',
-                                        kontak.longitude.isEmpty
-                                            ? 'Tidak ada'
-                                            : kontak.longitude,
-                                        context,
-                                      ),
-                                      buildRow(
-                                          'Lokasi', kontak.lokasi, context),
-                                      buildRow(
-                                          'Nomor Faktur',
-                                          kontak.nomorFaktur.toString(),
-                                          context),
-                                      const Divider(color: Colors.purple),
-                                    ],
+                                  buildRow(
+                                    'Longitude',
+                                    kontak.longitude.isEmpty
+                                        ? 'Tidak ada'
+                                        : kontak.longitude,
+                                    context,
                                   ),
-                                ))
-                            .toList(),
+                                  buildRow('Lokasi', kontak.lokasi, context),
+                                  buildRow('Nomor Faktur',
+                                      kontak.nomorFaktur.toString(), context),
+                                  const Divider(color: Colors.purple),
+                                ],
+                              ),
+                            )),
                       ],
                     ),
                   ),
@@ -401,7 +394,7 @@ class SubmitResultPage extends StatelessWidget {
                                 fontSize: getFontSize(
                                     context, 24), // Ukuran font responsif
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF363535),
+                                color: const Color(0xFF363535),
                               ),
                             ),
                             // Ikon Google Maps dengan ukuran responsif

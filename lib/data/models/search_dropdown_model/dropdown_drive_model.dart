@@ -8,7 +8,7 @@ class DropdownDriveModel extends Equatable {
   final String? posisi;
   final String? imageName;
 
-  DropdownDriveModel({
+  const DropdownDriveModel({
     this.karyawanID,
     this.nama,
     this.noHP,

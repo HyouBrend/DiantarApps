@@ -13,14 +13,14 @@ class PaginationControls extends StatefulWidget {
   final Function(int) onPageChanged;
 
   const PaginationControls({
-    Key? key,
+    super.key,
     required this.currentPage,
     required this.totalPages,
     required this.rowsPerPage,
     required this.totalItems,
     required this.pageController,
     required this.onPageChanged,
-  }) : super(key: key);
+  });
 
   @override
   _PaginationControlsState createState() => _PaginationControlsState();

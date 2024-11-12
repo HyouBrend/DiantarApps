@@ -11,7 +11,7 @@ abstract class SubmitPerjalananEvent extends Equatable {
 class SubmitPerjalanan extends SubmitPerjalananEvent {
   final SubmitPerjalananModel submitPerjalananModel;
 
-  SubmitPerjalanan({
+  const SubmitPerjalanan({
     required this.submitPerjalananModel,
   });
 

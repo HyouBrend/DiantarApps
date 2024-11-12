@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
@@ -22,9 +24,9 @@ class _SplashScreenState extends State<SplashScreen>
       vsync: this,
     );
 
-    _slideAnimation =
-        Tween<Offset>(begin: Offset(-1.0, 0.0), end: Offset(0.0, 0.0))
-            .animate(CurvedAnimation(
+    _slideAnimation = Tween<Offset>(
+            begin: const Offset(-1.0, 0.0), end: const Offset(0.0, 0.0))
+        .animate(CurvedAnimation(
       parent: _controller,
       curve: Curves.easeInOut,
     ));
@@ -37,9 +39,9 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.forward();
 
-    Timer(Duration(seconds: 3), () {
+    Timer(const Duration(seconds: 3), () {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => PageScreen()),
+        MaterialPageRoute(builder: (context) => const PageScreen()),
       );
     });
   }
