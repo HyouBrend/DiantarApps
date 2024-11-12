@@ -1,3 +1,5 @@
+import 'package:diantar_jarak/data/service/delivery_order_service/delete_detail_delivery_order.dart';
+import 'package:diantar_jarak/data/service/delivery_order_service/edit_detail_delivery_order_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:diantar_jarak/bloc/delivery_order_bloc/get_delivery_order_bloc.dart/get_delivery_order_bloc.dart';
@@ -101,6 +103,12 @@ class MyApp extends StatelessWidget {
       RepositoryProvider<DeliveryOrderService>(
         create: (context) => DeliveryOrderService(apiHelper: apiHelper),
       ),
+      RepositoryProvider<DeleteDeliveryOrderService>(
+        create: (context) => DeleteDeliveryOrderService(apiHelper: apiHelper),
+      ),
+      RepositoryProvider<EditDeliveryOrderService>(
+        create: (context) => EditDeliveryOrderService(apiHelper: apiHelper),
+      ),
     ];
   }
 
@@ -109,6 +117,9 @@ class MyApp extends StatelessWidget {
       BlocProvider<DeliveryOrderBloc>(
         create: (context) => DeliveryOrderBloc(
           deliveryOrderService: context.read<DeliveryOrderService>(),
+          deleteDeliveryOrderService:
+              context.read<DeleteDeliveryOrderService>(),
+          editDeliveryOrderService: context.read<EditDeliveryOrderService>(),
         ),
       ),
       BlocProvider<ProductBloc>(

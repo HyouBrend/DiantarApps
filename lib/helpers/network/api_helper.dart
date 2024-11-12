@@ -39,4 +39,11 @@ abstract class ApiHelper {
     Map<String, dynamic>? headers,
     Map<String, dynamic>? queryParameters,
   });
+
+  Future<Response> delete({
+    required String url,
+    Options? options,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? queryParameters,
+  });
 }

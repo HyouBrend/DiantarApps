@@ -27,7 +27,6 @@ class HistoryLoaded extends HistoryPengantaranState {
     this.totalJarak,
   });
 
-  @override
   List<Object?> get props => [
         histories,
         hasReachedMax,

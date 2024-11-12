@@ -132,4 +132,29 @@ class ApiHelperImpl implements ApiHelper {
       rethrow;
     }
   }
+
+  @override
+  Future<Response> delete({
+    required String url,
+    Options? options,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? queryParameters,
+  }) async {
+    try {
+      print('Sending DELETE request to: $url');
+      Response response = await dio.delete(
+        url,
+        options: options,
+        queryParameters: queryParameters,
+      );
+      print('Response received: ${response.data}');
+      return response;
+    } on DioException catch (e) {
+      print('DioError: ${e.response?.statusCode} - ${e.message}');
+      print('Response data: ${e.response?.data}');
+      rethrow;
+    } on Exception {
+      rethrow;
+    }
+  }
 }

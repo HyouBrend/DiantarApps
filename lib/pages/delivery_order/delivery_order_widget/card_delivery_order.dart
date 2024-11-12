@@ -1,27 +1,23 @@
-import 'package:diantar_jarak/bloc/delivery_order_bloc/edit_delivery_order_bloc/edit_delivery_order_bloc.dart';
-import 'package:diantar_jarak/data/service/delivery_order_service/edit_detail_delivery_order_service.dart';
-import 'package:diantar_jarak/helpers/network/api_helper_dio.dart';
 import 'package:diantar_jarak/pages/detail_delivery_order_page/detail_delivery_order_page.dart';
 import 'package:diantar_jarak/theme/theme.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:diantar_jarak/data/models/delivery_order_model/get_delivery_order_model.dart';
 
 class DeliveryOrderCard extends StatelessWidget {
   final DeliveryOrder order;
+  final void Function()? onOrderUpdated; // Changed Function to void Function()?
 
-  const DeliveryOrderCard({super.key, required this.order});
+  const DeliveryOrderCard({
+    Key? key,
+    required this.order,
+    required this.onOrderUpdated,
+  }) : super(key: key);
 
-  // Function to format DateTime to a readable string
+  // Format DateTime to a readable string
   String formatDate(DateTime? date) {
     if (date == null) return 'Unknown Date';
-    try {
-      return DateFormat('EEEE, dd MMMM yyyy', 'id_ID').format(date);
-    } catch (e) {
-      return 'Invalid Date';
-    }
+    return DateFormat('EEEE, dd MMMM yyyy', 'id_ID').format(date);
   }
 
   // Function to format quantity values
@@ -29,30 +25,28 @@ class DeliveryOrderCard extends StatelessWidget {
     return quantity?.toString() ?? '0';
   }
 
-  // Function to navigate to the detail page of the delivery order
-  void navigateToDetailPage(BuildContext context, DeliveryOrder order) {
-    Navigator.push(
+  // Navigate to the detail page of the delivery order
+  Future<void> navigateToDetailPage(BuildContext context) async {
+    final bool? updated = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
-        builder: (context) => BlocProvider(
-          create: (context) => EditDeliveryOrderBloc(
-            editDeliveryOrderService:
-                EditDeliveryOrderService(apiHelper: ApiHelperImpl(dio: Dio())),
-          ),
-          child: DetailDeliveryOrderPage(
-            deliveryOrderId:
-                order.id, // Pass the correct order ID to the detail page
-          ),
+        builder: (context) => DetailDeliveryOrderPage(
+          deliveryOrderId: order.id,
+          onSuccess: onOrderUpdated,
         ),
       ),
     );
+
+    if (updated == true) {
+      onOrderUpdated?.call(); // Call refresh if updated
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => navigateToDetailPage(
-          context, order), // Navigate to detail page on tap
+      onTap: () =>
+          navigateToDetailPage(context), // Navigate to detail page on tap
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Card(

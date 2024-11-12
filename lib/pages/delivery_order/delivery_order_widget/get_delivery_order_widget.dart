@@ -61,7 +61,10 @@ class GetOrderDeliveryWidgetState extends State<GetOrderDeliveryWidget> {
                   itemCount: state.orders.length,
                   itemBuilder: (context, index) {
                     final order = state.orders[index];
-                    return DeliveryOrderCard(order: order);
+                    return DeliveryOrderCard(
+                      order: order,
+                      onOrderUpdated: refreshOrders, // Refresh after an update
+                    );
                   },
                 ),
               ),
