@@ -1,3 +1,4 @@
+import 'package:diantar_jarak/data/service/delivery_order_service/delete_detail_delivery_order.dart';
 import 'package:flutter/material.dart';
 import 'package:diantar_jarak/data/models/delivery_order_model/get_delivery_order_model.dart';
 import 'package:diantar_jarak/theme/theme.dart';
@@ -9,13 +10,12 @@ import 'widget_detail_delivery_order_page/edit_detail_delivery_order_page.dart';
 
 class DetailDeliveryOrderPage extends StatefulWidget {
   final int deliveryOrderId;
-  final void Function()?
-      onSuccess; // Changed Null Function()? to void Function()?
+  final void Function()? onSuccess;
 
   const DetailDeliveryOrderPage({
     Key? key,
     required this.deliveryOrderId,
-    required this.onSuccess, // Use void Function()? for nullable success callback
+    required this.onSuccess,
   }) : super(key: key);
 
   @override
@@ -24,14 +24,18 @@ class DetailDeliveryOrderPage extends StatefulWidget {
 }
 
 class _DetailDeliveryOrderPageState extends State<DetailDeliveryOrderPage> {
-  late DetailDeliveryOrderService _service;
+  late DetailDeliveryOrderService _detailService;
+  late DeleteDeliveryOrderService _deleteService;
   late Future<DeliveryOrder> _deliveryOrder;
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _service = DetailDeliveryOrderService(apiHelper: ApiHelperImpl(dio: Dio()));
+    _detailService =
+        DetailDeliveryOrderService(apiHelper: ApiHelperImpl(dio: Dio()));
+    _deleteService =
+        DeleteDeliveryOrderService(apiHelper: ApiHelperImpl(dio: Dio()));
     _loadData();
   }
 
@@ -40,7 +44,8 @@ class _DetailDeliveryOrderPageState extends State<DetailDeliveryOrderPage> {
       _isLoading = true;
     });
 
-    _deliveryOrder = _service.getDeliveryOrderById(widget.deliveryOrderId);
+    _deliveryOrder =
+        _detailService.getDeliveryOrderById(widget.deliveryOrderId);
 
     try {
       await _deliveryOrder;
@@ -65,15 +70,14 @@ class _DetailDeliveryOrderPageState extends State<DetailDeliveryOrderPage> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(); // Close the dialog
               },
               child: Text("Cancel"),
             ),
             ElevatedButton(
-              onPressed: () {
-                // Delete logic here (this part assumes you have a delete service in place)
-                Navigator.of(context).pop();
-                Navigator.of(context).pop(true);
+              onPressed: () async {
+                Navigator.of(context).pop(); // Close the dialog
+                await _deleteOrder();
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: CustomColorPalette.BelumDikirimStats,
@@ -87,9 +91,30 @@ class _DetailDeliveryOrderPageState extends State<DetailDeliveryOrderPage> {
     );
   }
 
+  Future<void> _deleteOrder() async {
+    try {
+      final success =
+          await _deleteService.deleteDeliveryOrderById(widget.deliveryOrderId);
+      if (success && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Delivery order deleted successfully")),
+        );
+        Navigator.of(context).pop(true); // Close the page and indicate success
+        widget.onSuccess?.call(); // Trigger onSuccess callback if defined
+      }
+    } catch (e) {
+      if (mounted) {
+        _showError("Failed to delete the delivery order: $e");
+      }
+    }
+  }
+
   void _showError(String message) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+    }
   }
 
   Future<void> openEditDialog(BuildContext context, DeliveryOrder order) async {
@@ -99,32 +124,36 @@ class _DetailDeliveryOrderPageState extends State<DetailDeliveryOrderPage> {
         return EditDeliveryOrderDialog(
           order: order,
           onSuccess: () {
-            Navigator.of(dialogContext).pop(true); // Close the dialog
-            _loadData(); // Reload the data to show updates
-            widget.onSuccess?.call(); // Call onSuccess callback if provided
+            Navigator.of(dialogContext).pop(true);
+            _loadData();
+            widget.onSuccess?.call();
           },
         );
       },
     );
 
     if (result == true) {
-      _loadData(); // Reload data after successful edit
+      _loadData();
     }
   }
 
   Widget buildRow(String label, dynamic value, BuildContext context) {
     double getLabelWidth(BuildContext context) {
       double screenWidth = MediaQuery.of(context).size.width;
-      if (screenWidth > 1024) return 200;
-      if (screenWidth > 768 && screenWidth <= 1024) return 150;
-      return 120;
+      return screenWidth > 1024
+          ? 200
+          : screenWidth > 768
+              ? 150
+              : 120;
     }
 
     double getFontSize(BuildContext context) {
       double screenWidth = MediaQuery.of(context).size.width;
-      if (screenWidth > 1024) return 18;
-      if (screenWidth > 768 && screenWidth <= 1024) return 16;
-      return 14;
+      return screenWidth > 1024
+          ? 18
+          : screenWidth > 768
+              ? 16
+              : 14;
     }
 
     String formattedValue;
@@ -149,16 +178,20 @@ class _DetailDeliveryOrderPageState extends State<DetailDeliveryOrderPage> {
               ),
             ),
           ),
-          Text(":",
-              style: TextStyle(
-                  fontSize: getFontSize(context),
-                  color: CustomColorPalette.textColor)),
+          Text(
+            ":",
+            style: TextStyle(
+                fontSize: getFontSize(context),
+                color: CustomColorPalette.textColor),
+          ),
           const SizedBox(width: 8),
           Expanded(
-            child: Text(formattedValue,
-                style: TextStyle(
-                    fontSize: getFontSize(context),
-                    color: CustomColorPalette.textColor)),
+            child: Text(
+              formattedValue,
+              style: TextStyle(
+                  fontSize: getFontSize(context),
+                  color: CustomColorPalette.textColor),
+            ),
           ),
         ],
       ),

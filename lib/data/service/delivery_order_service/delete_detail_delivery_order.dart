@@ -6,17 +6,15 @@ class DeleteDeliveryOrderService {
 
   DeleteDeliveryOrderService({required this.apiHelper});
 
-  Future<String> deleteDeliveryOrderById(int id) async {
-    final response = await apiHelper.delete(
-      url: '${APIJarakLocal.deleteDeliveryOrder}/$id',
-    );
-
+  Future<bool> deleteDeliveryOrderById(int id) async {
+    final response =
+        await apiHelper.delete(url: '${APIJarakLocal.deleteDeliveryOrder}/$id');
     if (response.statusCode == 200) {
-      return response.data['message'];
+      return true; // Successfully deleted
     } else if (response.statusCode == 404) {
-      throw Exception('Delivery order tidak ditemukan');
+      throw Exception('Delivery order not found');
     } else {
-      throw Exception('Gagal menghapus delivery order');
+      throw Exception('Failed to delete delivery order');
     }
   }
 }

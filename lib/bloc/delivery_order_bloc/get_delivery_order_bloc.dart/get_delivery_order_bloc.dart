@@ -48,6 +48,7 @@ class DeliveryOrderBloc extends Bloc<DeliveryOrderEvent, DeliveryOrderState> {
   ) async {
     try {
       await deleteDeliveryOrderService.deleteDeliveryOrderById(event.id);
+      emit(DeliveryOrderDeleted()); // Emit a new state on successful deletion
       add(const FetchDeliveryOrders()); // Refresh data after deletion
     } catch (e) {
       emit(DeliveryOrderError("Failed to delete delivery order."));

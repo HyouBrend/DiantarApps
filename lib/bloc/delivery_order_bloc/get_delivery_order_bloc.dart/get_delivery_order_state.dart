@@ -35,3 +35,5 @@ class DeliveryOrderError extends DeliveryOrderState {
   @override
   List<Object> get props => [message];
 }
+
+class DeliveryOrderDeleted extends DeliveryOrderState {}
