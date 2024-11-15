@@ -15,11 +15,11 @@ class DropdownProduct extends StatefulWidget {
   final Function(DropdownProductModel) onProductSelected;
 
   const DropdownProduct({
-    Key? key,
+    super.key,
     required this.controller,
     required this.onCategorySelected,
     required this.onProductSelected,
-  }) : super(key: key);
+  });
 
   @override
   _DropdownProductState createState() => _DropdownProductState();

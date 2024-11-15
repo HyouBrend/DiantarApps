@@ -9,10 +9,10 @@ class DeliveryOrderCard extends StatelessWidget {
   final void Function()? onOrderUpdated; // Changed Function to void Function()?
 
   const DeliveryOrderCard({
-    Key? key,
+    super.key,
     required this.order,
     required this.onOrderUpdated,
-  }) : super(key: key);
+  });
 
   // Format DateTime to a readable string
   String formatDate(DateTime? date) {

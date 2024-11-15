@@ -12,10 +12,10 @@ class EditDeliveryOrderDialog extends StatefulWidget {
   final void Function()? onSuccess;
 
   const EditDeliveryOrderDialog({
-    Key? key,
+    super.key,
     required this.order,
     this.onSuccess,
-  }) : super(key: key);
+  });
 
   @override
   _EditDeliveryOrderDialogState createState() =>
@@ -113,7 +113,7 @@ class _EditDeliveryOrderDialogState extends State<EditDeliveryOrderDialog> {
 
       widget.onSuccess?.call();
       Navigator.of(context).pop();
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Gagal memperbarui data: ${e.message}')),
       );

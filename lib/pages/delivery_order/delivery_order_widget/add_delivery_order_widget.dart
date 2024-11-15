@@ -26,7 +26,7 @@ class AddDeliveryOrderWidget extends StatefulWidget {
 }
 
 class _AddDeliveryOrderWidgetState extends State<AddDeliveryOrderWidget> {
-  List<DeliveryOrderItemContainer> _deliveryOrderItems = [];
+  final List<DeliveryOrderItemContainer> _deliveryOrderItems = [];
 
   @override
   void initState() {
@@ -83,15 +83,15 @@ class _AddDeliveryOrderWidgetState extends State<AddDeliveryOrderWidget> {
         _addNewOrderContainer();
       });
 
-      context.read<DeliveryOrderBloc>().add(FetchDeliveryOrders());
+      context.read<DeliveryOrderBloc>().add(const FetchDeliveryOrders());
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Orders submitted successfully")),
+        const SnackBar(content: Text("Orders submitted successfully")),
       );
     } catch (e) {
       print("Error submitting orders: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to submit orders")),
+        const SnackBar(content: Text("Failed to submit orders")),
       );
     }
   }
@@ -124,11 +124,11 @@ class _AddDeliveryOrderWidgetState extends State<AddDeliveryOrderWidget> {
                     color: CustomColorPalette.textColor,
                   ),
                 ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 Column(
                   children: _deliveryOrderItems,
                 ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 Align(
                   alignment: Alignment.centerRight,
                   child: Container(
@@ -138,7 +138,7 @@ class _AddDeliveryOrderWidgetState extends State<AddDeliveryOrderWidget> {
                     ),
                     child: IconButton(
                       onPressed: _addNewOrderContainer,
-                      icon: Icon(Icons.add, color: Colors.white),
+                      icon: const Icon(Icons.add, color: Colors.white),
                     ),
                   ),
                 ),
@@ -152,10 +152,10 @@ class _AddDeliveryOrderWidgetState extends State<AddDeliveryOrderWidget> {
             alignment: Alignment.centerLeft,
             child: ElevatedButton(
               onPressed: _submitOrders,
-              child: Text('Submit Orders'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: CustomColorPalette.SudahDikirimStats,
               ),
+              child: Text('Submit Orders'),
             ),
           ),
         ),
@@ -173,8 +173,8 @@ class DeliveryOrderItemContainer extends StatefulWidget {
     required this.dropdownProductService,
     required this.onRemove,
     required this.index,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final TextEditingController productController = TextEditingController();
   final TextEditingController deliveryOrderController = TextEditingController();
@@ -220,8 +220,8 @@ class _DeliveryOrderItemContainerState
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 8.0),
-      padding: EdgeInsets.all(8.0),
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
         color: CustomColorPalette.lavender,
         borderRadius: BorderRadius.circular(8.0),
@@ -307,10 +307,10 @@ class _DeliveryOrderItemContainerState
             alignment: Alignment.centerRight,
             child: ElevatedButton(
               onPressed: () => widget.onRemove(widget.index),
-              child: Text('Remove', style: TextStyle(color: Colors.white)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: CustomColorPalette.buttonColor,
               ),
+              child: Text('Remove', style: TextStyle(color: Colors.white)),
             ),
           ),
         ],

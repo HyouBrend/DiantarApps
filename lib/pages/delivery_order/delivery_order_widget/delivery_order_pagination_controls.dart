@@ -10,14 +10,14 @@ class DeliverOrderPaginationControls extends StatefulWidget {
   final Function(int, int) onPageChanged;
 
   const DeliverOrderPaginationControls({
-    Key? key,
+    super.key,
     required this.currentPage,
     required this.totalPages,
     required this.rowsPerPage,
     required this.totalItems,
     required this.pageController,
     required this.onPageChanged,
-  }) : super(key: key);
+  });
 
   @override
   _DeliverOrderPaginationControlsState createState() =>

@@ -12,7 +12,7 @@ import 'package:dio/dio.dart';
 import 'package:diantar_jarak/data/service/delivery_order_service/add_delivery_order_service.dart';
 
 class DeliveryOrderPage extends StatefulWidget {
-  DeliveryOrderPage({super.key});
+  const DeliveryOrderPage({super.key});
 
   @override
   DeliveryOrderPageState createState() => DeliveryOrderPageState();

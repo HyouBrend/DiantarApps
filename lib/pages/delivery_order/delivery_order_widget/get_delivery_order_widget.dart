@@ -12,10 +12,10 @@ class GetOrderDeliveryWidget extends StatefulWidget {
   final VoidCallback? onRefresh;
 
   const GetOrderDeliveryWidget({
-    Key? key,
+    super.key,
     required this.deliveryOrderService,
     this.onRefresh,
-  }) : super(key: key);
+  });
 
   @override
   GetOrderDeliveryWidgetState createState() => GetOrderDeliveryWidgetState();

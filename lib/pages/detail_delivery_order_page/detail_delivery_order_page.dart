@@ -13,10 +13,10 @@ class DetailDeliveryOrderPage extends StatefulWidget {
   final void Function()? onSuccess;
 
   const DetailDeliveryOrderPage({
-    Key? key,
+    super.key,
     required this.deliveryOrderId,
     required this.onSuccess,
-  }) : super(key: key);
+  });
 
   @override
   _DetailDeliveryOrderPageState createState() =>
@@ -65,14 +65,15 @@ class _DetailDeliveryOrderPageState extends State<DetailDeliveryOrderPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Confirm Delete"),
-          content: Text("Are you sure you want to delete this delivery order?"),
+          title: const Text("Confirm Delete"),
+          content: const Text(
+              "Are you sure you want to delete this delivery order?"),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: Text("Cancel"),
+              child: const Text("Cancel"),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -81,9 +82,9 @@ class _DetailDeliveryOrderPageState extends State<DetailDeliveryOrderPage> {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: CustomColorPalette.BelumDikirimStats,
-                minimumSize: Size(100, 40),
+                minimumSize: const Size(100, 40),
               ),
-              child: Text("Delete"),
+              child: const Text("Delete"),
             ),
           ],
         );
@@ -97,7 +98,7 @@ class _DetailDeliveryOrderPageState extends State<DetailDeliveryOrderPage> {
           await _deleteService.deleteDeliveryOrderById(widget.deliveryOrderId);
       if (success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Delivery order deleted successfully")),
+          const SnackBar(content: Text("Delivery order deleted successfully")),
         );
         Navigator.of(context).pop(true); // Close the page and indicate success
         widget.onSuccess?.call(); // Trigger onSuccess callback if defined
@@ -216,18 +217,18 @@ class _DetailDeliveryOrderPageState extends State<DetailDeliveryOrderPage> {
         child: Container(
           color: CustomColorPalette.backgroundColor,
           child: _isLoading
-              ? Center(child: CircularProgressIndicator())
+              ? const Center(child: CircularProgressIndicator())
               : FutureBuilder<DeliveryOrder>(
                   future: _deliveryOrder,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
+                      return const Center(child: CircularProgressIndicator());
                     }
                     if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     }
                     if (!snapshot.hasData) {
-                      return Center(child: Text('No data found.'));
+                      return const Center(child: Text('No data found.'));
                     }
 
                     DeliveryOrder order = snapshot.data!;
@@ -306,7 +307,7 @@ class _DetailDeliveryOrderPageState extends State<DetailDeliveryOrderPage> {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor:
                                         CustomColorPalette.TidakDikirimStats,
-                                    minimumSize: Size(100, 40),
+                                    minimumSize: const Size(100, 40),
                                   ),
                                   child: Text(
                                     "Edit",
@@ -324,7 +325,7 @@ class _DetailDeliveryOrderPageState extends State<DetailDeliveryOrderPage> {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor:
                                         CustomColorPalette.BelumDikirimStats,
-                                    minimumSize: Size(100, 40),
+                                    minimumSize: const Size(100, 40),
                                   ),
                                   child: Text(
                                     "Delete",
